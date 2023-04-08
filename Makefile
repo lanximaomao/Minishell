@@ -1,17 +1,5 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: srall <srall@student.42.fr>                +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/04/08 01:46:27 by srall             #+#    #+#              #
-#    Updated: 2023/04/08 16:56:29 by srall            ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
 
-
-SRCS = minishell.c
+SRCS = minishell.c mini_utils.c
 OBJS = $(SRCS:.c=.o)
 
 
@@ -20,7 +8,7 @@ OBJS = $(SRCS:.c=.o)
 
 NAME = minishell
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -I./libft_42/inc
+CFLAGS = -I./libft_42/inc
 LDFLAGS = -L./libft_42 -lft -lreadline
 FSANITIZE	= -fsanitize=address -g3
 
@@ -65,6 +53,6 @@ norm:
 	norminette $(SRCS) | grep -v Norme -B1 || true
 debug:
 	$(CC) $(FLAGS) $(SRCS_TEST) -I libft_42/libft.a -o test
-	
+
 .PHONY : all clean fclean re norm debug
 
