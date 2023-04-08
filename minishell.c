@@ -59,7 +59,7 @@ void minishell(char *line)
 	ft_printf("You entered: %s\n", line);
 }
 
-int	main(void)
+int	readline_prompt(t_mini *mini)
 {
 	char	*line;
 
@@ -77,10 +77,64 @@ int	main(void)
 			free(line);
 			break ;
 		}
+		//parsing using mini
 		add_history(line);
 		minishell(line);
 		free(line);
 	}
-	clear_history(); // Clear the history list
+	clear_history(); // ! why rl_clear_history does not work?
 	return (0);
+}
+
+int	main(int argc, char **argv, char **env)
+{
+	t_mini *mini;
+
+	mini = malloc(sizeof(t_mini) * 1);
+	if (!mini)
+		error("malloc fail.\n", 1);
+	if (env_init(mini, env) != 1)
+		error("fail to init env variables.", 3);
+	readline_prompt(mini);
+	return(0);
+}
+
+int env_init(t_mini *mini, char **env)
+{
+	int i;
+	char** env_split;
+	t_env *env_content;
+	t_list *node;
+
+	i = 0;
+	mini->env = NULL;
+	while (env[i])
+	{
+		env_split = ft_split(env[i], '=');
+		if (!env_split)
+			error("malloc fail or null input?\n", 1);
+		env_content = malloc(sizeof(t_env) * 1);
+		if (!env_content)
+			error("malloc fail.\n", 1);
+		env_content->env_name = ft_strdup(env_split[0]); //free
+		env_content->env_value = ft_strdup(env_split[1]); // free
+		if (!mini->env)
+		{
+			mini->env = ft_lstnew(env_content);
+			if (!mini->env)
+				error("fail to init a node\n", 1);
+		}
+		else
+		{
+			node = ft_lstnew(env_content);
+			if (!node)
+				error("fail to init a node\n", 1);
+			ft_lstadd_back(&mini->env, node);
+		}
+		free(env_split[0]);
+		free(env_split[1]);
+		free(env_split);
+		i++;
+	}
+	return (1);
 }
