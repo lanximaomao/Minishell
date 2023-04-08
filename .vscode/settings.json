@@ -1,0 +1,21 @@
+{
+	"files.associations": {
+		"__locale": "c",
+		"__tuple": "c",
+		"bitset": "c",
+		"system_error": "c",
+		"ios": "c",
+		"locale": "c",
+		"random": "c",
+		"*.tcc": "c",
+		"exception": "c",
+		"istream": "c",
+		"limits": "c",
+		"new": "c",
+		"ostream": "c",
+		"stdexcept": "c",
+		"streambuf": "c",
+		"ratio": "c",
+		"functional": "c"
+	}
+}
