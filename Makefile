@@ -6,22 +6,24 @@
 #    By: srall <srall@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/04/08 01:46:27 by srall             #+#    #+#              #
-#    Updated: 2023/04/08 01:57:40 by srall            ###   ########.fr        #
+#    Updated: 2023/04/08 16:56:29 by srall            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 
 SRCS = minishell.c
-
 OBJS = $(SRCS:.c=.o)
 
-SRCS_TEST =		test.c
-OBJS = $(SRCS_TEST:.c=.o)
+
+# SRCS_TEST =		test.c
+# OBJS = $(SRCS_TEST:.c=.o)
 
 NAME = minishell
 CC = cc
-FLAGS = -Wall -Wextra -Werror
-# INCLUDE = -lreadline
+CFLAGS = -Wall -Wextra -Werror -I./libft_42/inc
+LDFLAGS = -L./libft_42 -lft -lreadline
+FSANITIZE	= -fsanitize=address -g3
+
 # NAME_BONUS = minishell_bonus
 
 # formatting
@@ -38,13 +40,16 @@ WHITE		=	\033[0;97m
 
 ECHO		= echo
 
+# OBJS = $(SRCS:.c=.o) This line of code is automatically linked through CFLAGS, which is equivalent to the following line of code.
+# $(OBJ_DIR)/%.o: %.c
+# 	@$(CC) $(CFLAGS) -c $< -o $@
+
 all: $(NAME)
-$(NAME):	$(OBJS)
+$(NAME): $(OBJS)
 	@git submodule update --init --recursive
 	@make -C libft_42
-	@$(CC) $(FLAGS) $(OBJS) -I libft_42/libft.a -o $(NAME)
+	@$(CC) $(LDFLAGS) $(OBJS) -o $(NAME)
 	@$(ECHO) "$(YELLOW)[$(NAME)]:\t$(DEF_COLOR) $(GREEN) => Success!$(DEF_COLOR)"
-
 clean:
 	@make clean -C libft_42
 	@rm -f $(OBJS) $(OBJ_BONUS)
