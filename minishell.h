@@ -30,6 +30,8 @@ typedef struct s_mini
 	t_list *input; //head for input arguments linked list
 }			t_mini;
 
+t_mini *mini;
+
 void		error(char *msg, int error_code);
 int			env_init(t_mini *mini, char **env);
 

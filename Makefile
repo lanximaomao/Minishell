@@ -1,5 +1,5 @@
 
-SRCS = minishell.c mini_utils.c
+SRCS = minishell.c mini_utils.c buildin.c
 OBJS = $(SRCS:.c=.o)
 
 
