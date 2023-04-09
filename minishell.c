@@ -133,15 +133,15 @@ int env_init(t_mini *mini, char **env)
 		//ft_printf("%s=%s\n", env_content->env_name, env_content->env_value);
 		i++;
 	}
-	ft_printf("\nbefore\n");
-	print_env(NULL);
-	char *str[1024] = {"KEY=12345", NULL};
-	export(str);
-	ft_printf("\nafter\n");
-	print_env(NULL);
-	char **str2 = ft_split("KEY=12345", '=');
-	ft_printf("\nafter unset\n");
-	unset(str2);
-	print_env(NULL);
+	//ft_printf("\nbefore\n");
+	//print_env(NULL);
+	//char *str[1024] = {"KEY=12345", NULL};
+	//export(str);
+	//ft_printf("\nafter\n");
+	//print_env(NULL);
+	//char **str2 = ft_split("KEY=12345", '=');
+	//ft_printf("\nafter unset\n");
+	//unset(str2);
+	//print_env(NULL);
 	return (1);
 }
