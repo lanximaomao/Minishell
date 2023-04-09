@@ -27,6 +27,7 @@ echo, pwd, cd, env, export, unset, exit
 
 /*  gcc minishell.c -lreadline */
 #include "minishell.h"
+#include "buidin.h"
 
 void ascii_art_pattern()
 {
@@ -88,8 +89,6 @@ int	readline_prompt(t_mini *mini)
 
 int	main(int argc, char **argv, char **env)
 {
-	t_mini *mini;
-
 	mini = malloc(sizeof(t_mini) * 1);
 	if (!mini)
 		error("malloc fail.\n", 1);
@@ -116,8 +115,8 @@ int env_init(t_mini *mini, char **env)
 		env_content = malloc(sizeof(t_env) * 1);
 		if (!env_content)
 			error("malloc fail.\n", 1);
-		env_content->env_name = ft_strdup(env_split[0]); //free
-		env_content->env_value = ft_strdup(env_split[1]); // free
+		env_content->env_name = env_split[0]; //to be freed
+		env_content->env_value = env_split[1]; // to be freed
 		if (!mini->env)
 		{
 			mini->env = ft_lstnew(env_content);
@@ -131,10 +130,18 @@ int env_init(t_mini *mini, char **env)
 				error("fail to init a node\n", 1);
 			ft_lstadd_back(&mini->env, node);
 		}
-		free(env_split[0]);
-		free(env_split[1]);
-		free(env_split);
+		//ft_printf("%s=%s\n", env_content->env_name, env_content->env_value);
 		i++;
 	}
+	ft_printf("\nbefore\n");
+	print_env(NULL);
+	char *str[1024] = {"KEY=12345", NULL};
+	export(str);
+	ft_printf("\nafter\n");
+	print_env(NULL);
+	char **str2 = ft_split("KEY=12345", '=');
+	ft_printf("\nafter unset\n");
+	unset(str2);
+	print_env(NULL);
 	return (1);
 }
