@@ -42,26 +42,26 @@ echo "Goodbye, World!" >> hello.txt
 echo "-n" --> do nothing
 echo '-n' --> do nothing
 echo --> newline and return
+
+The echo utility exits 0 on success, and >0 if an error occurs.
 */
 
-int check_n(char** arg);
-
-void echo(char **arg)
+int echo(char **arg)
 {
-	//echo "hello world"
 	int i;
 	int ret;
 
-	i = 0;
-	ret = check_n(arg) != 0;
-	printf("ret = %d\n", ret);
-	while (arg[i])
+	if (arg)
+		return (0);
+	ret = check_n(arg);
+	if (ret == 0)
+		printf("%s\n", arg[0]);
+	else
 	{
-		printf("%s", arg[i]);
-		i++;
+		arg[0] = arg[0] + ret;
+		printf("%s", arg[0]);
 	}
-	if (ret != 1)
-		printf("\n");
+	return(0);
 }
 
 int check_n(char** arg)
@@ -69,27 +69,36 @@ int check_n(char** arg)
 	int i;
 
 	i = 2;
-	if (arg[0][0] == '-' && arg[0][1] == 'n')
+	if (arg[0][0] && arg[0][0] == '-' && arg[0][1] && arg[0][1] == 'n')
 	{
 		while (arg[0][i] != '\0')
 		{
-			//write(1, "here\n", 5);
-			if (arg[0][i] != '\0' && arg[0][i] != 'n' && arg[0][1] != ' ')
-			{
-				printf("char = %c", arg[0][i]);
-				write(1, "here\n", 5);
-				return(0);
-			}
+			if (arg[0][i] == ' ')
+				break;
+			if (arg[0][i] != 'n')
+				return(0);//does not satify -n condition
 			i++;
 		}
-		return(1);
+		return(i+1); // satify -n condition
 	}
 	return(0);
 }
 
-int main()
-{
-	char **arg = ft_split("-n hello!", '*');
-	echo(arg);
-	return(0);
-}
+//int main()
+//{
+//	char **arg;
+
+//	arg = ft_split("", '*');
+//	echo(arg);
+//	arg = ft_split("-n -m hello", '*');
+//	echo(arg);
+//	arg = ft_split("-nnn 123 4 56 abcd", '*');
+//	echo(arg);
+//	arg = ft_split("-nnn 123 4 56 abcd", '*');
+//	echo(arg);
+//	arg = ft_split("-nnm123 4 56 abcd", '*');
+//	echo(arg);
+//	arg = ft_split("-nnnnnnnnnnk-- 123 4 56 abcd", '*');
+//	echo(arg);
+//	return(0);
+//}
