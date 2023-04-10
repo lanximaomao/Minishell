@@ -71,6 +71,7 @@ void	unset(char **arg)
 		current = current->next;
 	}
 	if (current == NULL) //node not found, just return (return);
+		return;
 	if (previous == NULL) //remove the head node
 		mini->env = current->next;
 	else

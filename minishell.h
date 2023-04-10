@@ -34,5 +34,5 @@ t_mini *mini;
 
 void		error(char *msg, int error_code);
 int			env_init(t_mini *mini, char **env);
-
+void		minishell(char *line);
 #endif

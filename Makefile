@@ -1,9 +1,9 @@
 
-SRCS = minishell.c mini_utils.c buildin.c
+SRCS = minishell.c mini_utils.c buildin.c pipe.c
 OBJS = $(SRCS:.c=.o)
 
 
-# SRCS_TEST =		test.c
+# SRCS_TEST =		pipe.c
 # OBJS = $(SRCS_TEST:.c=.o)
 
 NAME = minishell

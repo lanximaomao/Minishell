@@ -28,6 +28,7 @@ echo, pwd, cd, env, export, unset, exit
 /*  gcc minishell.c -lreadline */
 #include "minishell.h"
 #include "buidin.h"
+#include "pipe.h"
 
 void ascii_art_pattern()
 {
@@ -55,10 +56,10 @@ void ascii_art_pattern()
 // pipes
 
 
-void minishell(char *line)
-{
-	ft_printf("You entered: %s\n", line);
-}
+//void minishell(char *line)
+//{
+//	ft_printf("You entered: %s\n", line);
+//}
 
 int	readline_prompt(t_mini *mini)
 {
@@ -143,5 +144,6 @@ int env_init(t_mini *mini, char **env)
 	//ft_printf("\nafter unset\n");
 	//unset(str2);
 	//print_env(NULL);
+	update_env();
 	return (1);
 }
