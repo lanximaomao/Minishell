@@ -55,11 +55,21 @@ void ascii_art_pattern()
 // build-ins
 // pipes
 
+void minishell(char *line)
+{
+	int pid1;
+	int status;
 
-//void minishell(char *line)
-//{
-//	ft_printf("You entered: %s\n", line);
-//}
+	pid1 = fork();
+	if (pid1 == -1)
+		error("fork failed.\n", 1);
+	else if (pid1 == 0)
+	{
+		//children process
+		cmd(line);
+	}
+	waitpid(pid1, &status, 0);
+}
 
 int	readline_prompt(t_mini *mini)
 {
