@@ -5,5 +5,8 @@
 #include "buidin.h"
 
 char** update_env();
+int cmd(char* line);
+char* get_path_cmd(char* str);
+char **get_path_env();
 
 #endif
