@@ -27,7 +27,7 @@ typedef struct s_input
 typedef struct s_mini
 {
 	t_list *env;   // head for env linked list
-	t_list *input; //head for input arguments linked list
+	t_list *input; // head for input arguments linked list
 }			t_mini;
 
 t_mini *mini;

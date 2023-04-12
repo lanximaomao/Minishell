@@ -3,12 +3,11 @@ SRCS = minishell.c mini_utils.c buildin.c
 OBJS = $(SRCS:.c=.o)
 
 
-# SRCS_TEST =		test.c
-# OBJS = $(SRCS_TEST:.c=.o)
+SRCS_TEST =		test_lliu.c
 
 NAME = minishell
 CC = cc
-CFLAGS = -I./libft_42/inc
+CFLAGS = -Wall -Wextra -Werror -I./libft_42/inc
 LDFLAGS = -L./libft_42 -lft -lreadline
 FSANITIZE	= -fsanitize=address -g3
 
@@ -52,7 +51,7 @@ re:	fclean all
 norm:
 	norminette $(SRCS) | grep -v Norme -B1 || true
 debug:
-	$(CC) $(FLAGS) $(SRCS_TEST) -I libft_42/libft.a -o test
+	$(CC)  -I./libft_42/inc $(LDFLAGS) $(SRCS_TEST) -g -o test
 
 .PHONY : all clean fclean re norm debug
 
