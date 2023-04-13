@@ -5,6 +5,12 @@ void error(char* msg, int error_code)
 	perror(msg);
 	exit(error_code);
 }
+// error msgs for project
+void ft_error(char* msg)
+{
+	ft_printf("\033[1;31mError\n\033[0m: %s\n", msg);
+	ft_printf("%s\n", msg);
+}
 
 void close(int *fd, int num_fd)
 {
@@ -15,16 +21,23 @@ void close(int *fd, int num_fd)
 	return ;
 }
 
-// free functions
-void free_list(t_list *list)
+// free p2p
+void free_p2p(char **p2p, int num_p2p)
 {
-	t_list *tmp;
-	while (list)
+	while (num_p2p--)
+		free(p2p[num_p2p]);
+	free(p2p);
+}
+
+int count_char(char *str, char char_type)
+{
+	int count_char = 0;
+
+	while (*str)
 	{
-		tmp = list->next;
-		free(list->content);
-		free(list);
-		list = tmp;
+		if (*str == char_type)
+			count_char++;
+		str++;
 	}
-	return ;
+	return (count_char);
 }

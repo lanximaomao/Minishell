@@ -4,17 +4,35 @@
 #include <readline/history.h>
 #include "libft.h"
 
-int main() {
-  char *line;
-  while ((line = readline("Enter a command: ")) != NULL) {
-    add_history(line);
-    printf("You entered: %s\n", line);
-	if (ft_strncmp(line, "exit", 4) == 0)
+char	*ft_strnstr(const char *haystack, const char *needle, size_t len)
+{
+	size_t	i;
+	size_t	j;
+
+	i = 0;
+	if (*needle && !len)
+		return (NULL);
+	if (*needle == 0)
+		return ((char *)haystack);
+	while (haystack[i] && i < len)
 	{
-		free(line);
-		break ;
+		j = 0;
+		while (haystack[i + j] == needle[j] && (i + j) < len)
+		{
+			if (needle[j + 1] == '\0')
+				return ((char *)haystack + i);
+			j++;
+		}
+		i++;
 	}
-    free(line);
-  }
-  return 0;
+	return (0);
+}
+
+int main(int argc, char **argv) {
+	int i = 0;
+	char *line = readline("minishell$ ");
+	add_history(line);
+	printf("You entered: %s\n", line);
+
+	return 0;
 }
