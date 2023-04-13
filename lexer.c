@@ -58,6 +58,15 @@ t_list *get_linelst(char *line)
 			init_input(input);
 			while (!(*line == ' ' || (*line > 8 && *line < 14)) && *line && ++len)
 			{
+				// handle the pipe
+				if (*line == '|')
+				{
+					line--; // if the pipe is the 1st character, then segmentation fault. So change to index
+					if (!(*line == ' ' || (*line > 8 && *line < 14))) // "****|"
+						len--;
+					line++;
+					break;
+				}
 				if (*line == '\'' && (input->quote_type = 1) || *line == '\"' && (input->quote_type = 2))
 					line = handle_char(line, *line, &len);
 				line++;
@@ -99,4 +108,5 @@ int main(int argc, char **argv)
 	}
 	return (0);
 }
+
 
