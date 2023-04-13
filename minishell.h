@@ -15,7 +15,6 @@
 # define OUTRDC 5 	// ">>"
 # define APPEND 6	// "<<"
 # define PIPE 7	// "|"
-# define PIPE 8	// "$"
 
 
 
@@ -27,15 +26,8 @@ typedef struct s_env
 
 typedef struct s_input
 {
-	char	**cmd_segments;
-	t_list	**cmd_tokens;
-	char	**cmd_tokens_q;
-	char	**cmd_tokens_dq;
-
-	int 	token_type;
-
-
-
+	char	*temp_line;
+	int 	quote_type;
 }			t_input;
 
 typedef struct s_token
