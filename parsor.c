@@ -2,51 +2,6 @@
 
 
 
-char **get_tokens(char *line)
-{
-	int i = 0;
-	int j = 0;
-	int len = 0;
-	int count_quote = 0;
-	int count_dquote = 0;
-	t_input	*line_input;
-	t_list node;
-
-	if (line == NULL)
-		return ;
-	if (ft_strnstr(line, "&&", ft_strlen(line)) || ft_strnstr(line, "||", ft_strlen(line)))
-	{
-		ft_printf("\033[1;31mError\n\033[0m: %s\n", "&& or || is handled in BONUS PART\n");
-		return ;
-	}
-	count_quote = count_char(line, '\'');
-	count_dquote = count_char(line, '\"');
-	
-
-
-
-
-	line_input->cmd_segments = ft_split(line, '|');
-	// for count the num_cmd
-	// while (line_input->cmd_segment[i++])
-	// 	count++;
-	while (line_input->cmd_segments[i])
-	{
-		line_input->*cmd_tokens = segment_split_token(line_input->cmd_segments[i], count_quote, count_dquote);
-		if (!line_input->*cmd_tokens)
-			return (NULL);
-		line_input->cmd_tokens++;
-		i++;
-		// for count the num_cmd
-		// while (line_input->cmd_tokens[i++])
-		// 	count++;
-	}
-
-
-	free_p2p(line_input->cmd_segments);
-	return (line_input->cmd_tokens);
-}
-
 t_token *parse_tokens(char **line_input->cmd_tokens)
 {
 	int i = 0;
@@ -79,3 +34,4 @@ t_token *parse_tokens(char **line_input->cmd_tokens)
 	return (token);
 }
 // < infile 'ls' "-l" | wc -l > outfile
+
