@@ -62,7 +62,7 @@ t_list *get_linelst(char *line)
 			input->temp_line = ft_substr(line, i - len, len); // Extract the substring and store it into the data structure of a lst node.
 			if (input->pipe_sign == 1) // 为了不死循环，正确存储temp_line（without the pipe）后向｜的下一位移动
 				i++;
-			printf("len: %d\n", len);
+			// printf("len: %d\n", len);
 			if (!input->temp_line)
 			{
 				ft_printf("\033[1;31mError!\033[0m: %s", "Malloc failed\n");
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 	t_list *line_lst = NULL;
 	t_input *input;
 
-	line_lst = get_linelst(argv[1]);
+	line_lst = get_linelst(readline("minishell$ "));
 	while (line_lst)
 	{
 		ft_printf("%s\n", ((t_input *)line_lst->content)->temp_line);
