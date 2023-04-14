@@ -74,10 +74,13 @@ void minishell(t_mini *mini, char *line)
 int	readline_prompt(t_mini *mini)
 {
 	char	*line;
+	char	buf[256];
 
 	//ascii_art_pattern();
 	while (1)
 	{
+		if (getcwd(buf, sizeof(buf)) == NULL) // getcwd get the pwd show frond of the input
+			error("Error: getcwd failed\n", 1);
 		line = readline("\033[32m\U0001F40C Minishell > ");
 		if (!line)
 		{

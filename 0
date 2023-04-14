@@ -1,0 +1,22 @@
+total 256
+-rw-r--r--@  1 srall  staff      0 Apr 15 00:03 0
+-rw-r--r--@  1 srall  staff      9 Apr 14 23:57 1
+-rw-r--r--@  1 srall  staff   1466 Apr 13 20:17 Makefile
+-rw-r--r--@  1 srall  staff    235 Apr 11 04:04 buidin.h
+-rw-r--r--@  1 srall  staff   1556 Apr 11 04:04 buildin.c
+-rw-r--r--@  1 srall  staff   1834 Apr 11 04:04 echo.c
+-rw-r--r--@  1 srall  staff     30 Apr 11 16:09 error
+-rw-r--r--@  1 srall  staff   2517 Apr 14 23:43 lexer.c
+drwxr-xr-x  11 srall  staff    352 Apr 13 23:55 libft_42
+-rw-r--r--@  1 srall  staff    915 Apr 11 04:04 main.c
+-rw-r--r--@  1 srall  staff    816 Apr 14 18:27 mini_utils.c
+-rwxr-xr-x@  1 srall  staff  18900 Apr 11 04:04 minishell
+-rw-r--r--@  1 srall  staff   3992 Apr 11 16:14 minishell.c
+-rw-r--r--@  1 srall  staff   1197 Apr 14 23:20 minishell.h
+-rw-r--r--@  1 srall  staff   1199 Apr 14 23:54 parser.c
+-rwxr-xr-x@  1 srall  staff   8432 Apr 11 04:04 parsing
+-rw-r--r--@  1 srall  staff    114 Apr 11 04:04 pipe.c
+-rw-r--r--@  1 srall  staff   1180 Apr 11 04:04 play_parsing.c
+-rwxr-xr-x@  1 srall  staff  34824 Apr 14 21:40 test
+drwxr-xr-x@  3 srall  staff     96 Apr 11 04:24 test.dSYM
+-rw-r--r--@  1 srall  staff    673 Apr 13 20:13 test_lliu.c

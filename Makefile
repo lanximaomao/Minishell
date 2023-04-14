@@ -1,19 +1,3 @@
-
-SRCS = minishell.c mini_utils.c buildin.c pipe.c env.c
-OBJS = $(SRCS:.c=.o)
-
-
-# SRCS_TEST =		buildin.c
-# OBJS = $(SRCS_TEST:.c=.o)
-
-NAME = minishell
-CC = cc
-CFLAGS = -g -I./libft_42/inc
-LDFLAGS = -L./libft_42 -lft -lreadline
-FSANITIZE	= -fsanitize=address -g3
-
-# NAME_BONUS = minishell_bonus
-
 # formatting
 DEF_COLOR	=	\033[0;39m
 ORANGE		=	\033[0;33m
@@ -27,6 +11,21 @@ CYAN		=	\033[0;96m
 WHITE		=	\033[0;97m
 
 ECHO		= echo
+
+SRCS = minishell.c mini_utils.c buildin.c
+OBJS = $(SRCS:.c=.o)
+
+
+SRCS_TEST =		lexer.c
+
+NAME = minishell
+CC = cc
+CFLAGS = -Wall -Wextra -Werror -I./libft_42/inc
+LDFLAGS = -L./libft_42 -lft -lreadline
+FSANITIZE	= -fsanitize=address -g3
+
+# NAME_BONUS = minishell_bonus
+
 
 # OBJS = $(SRCS:.c=.o) This line of code is automatically linked through CFLAGS, which is equivalent to the following line of code.
 # $(OBJ_DIR)/%.o: %.c
@@ -52,7 +51,10 @@ re:	fclean all
 norm:
 	norminette $(SRCS) | grep -v Norme -B1 || true
 debug:
-	$(CC) $(FLAGS) $(SRCS_TEST) -I libft_42/libft.a -o test
+	@git submodule update --init --recursive
+	@cd libft_42 && git pull origin main
+	@make -C libft_42
+	$(CC)  -I./libft_42/inc $(LDFLAGS) $(SRCS_TEST) -g -o test
 
 .PHONY : all clean fclean re norm debug
 
