@@ -3,11 +3,12 @@
 
 #include <signal.h>
 
-int		cd(char **arg);
-int		pwd(char **arg);
-void	print_env(char **arg);
-void	export(char **arg);
-void	unset(char **arg);
-int		echo(char **arg);
+int		my_cd(char **arg);
+int		my_pwd(char **arg);
+void	my_env(char **arg);
+void	my_export(char **arg);
+void	my_unset(char **arg);
+int		my_echo(char **arg);
 int		check_n(char** arg);
+
 #endif

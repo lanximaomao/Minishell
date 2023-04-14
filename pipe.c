@@ -2,23 +2,25 @@
 #include "buidin.h"
 #include "minishell.h"
 
-int cmd(char* line)
+int cmd(t_mini *mini, char* line)
 {
 	char** cmd_args;
 	char* path_cmd;
 	char* tmp;
 
+	if (*line == '\0')
+		return(1);
 	cmd_args = ft_split(line, ' ');
 	if (!cmd_args)
 		error("split function returns null.\n", 1);
 	if (access(cmd_args[0], X_OK) == 0)
-		execve(cmd_args[0], cmd_args, update_env());
+		execve(cmd_args[0], cmd_args, env_convert(mini->env));
 	else
 	{
 		tmp = ft_strjoin("/", cmd_args[0]);//to be freed
 		path_cmd = get_path_cmd(tmp);
 		free(tmp);
-		execve(path_cmd, cmd_args, update_env());
+		execve(path_cmd, cmd_args, env_convert(mini->env));
 	}
 	return(0);
 }
@@ -69,38 +71,6 @@ char **get_path_env()
 	if (!path_env)
 		error("Malloc fail or PATH is NULL.\n", 1);
 	return(path_env);
-}
-
-char** update_env()
-{
-	int i;
-	int size;
-	char** ret;
-	char* ret_tmp1;
-	char* ret_tmp2;
-	t_list *tmp;
-	t_env *env_content;
-
-	i = 0;
-	size = 0;
-	tmp = mini->env;
-	size = ft_lstsize(mini->env);
-	ret = (char**)malloc(sizeof(char*) * (size + 1)); // to be freed
-	if (!ret)
-		error("malloc fail.\n", 1);
-	ret[size] = NULL;
-	while (i <  size)
-	{
-		env_content = (t_env *)tmp->content;
-		ret_tmp1 = ft_strjoin(env_content->env_name, "=");
-		ret_tmp2 = ft_strjoin(env_content->env_value, "\n");
-		ret[i] = ft_strjoin(ret_tmp1, ret_tmp2); // to be freed
-		free(ret_tmp1);
-		free(ret_tmp2);
-		tmp = tmp->next;
-		i++;
-	}
-	return(ret);
 }
 
 

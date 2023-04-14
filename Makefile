@@ -1,14 +1,14 @@
 
-SRCS = minishell.c mini_utils.c buildin.c pipe.c
+SRCS = minishell.c mini_utils.c buildin.c pipe.c env.c
 OBJS = $(SRCS:.c=.o)
 
 
-# SRCS_TEST =		pipe.c
+# SRCS_TEST =		buildin.c
 # OBJS = $(SRCS_TEST:.c=.o)
 
 NAME = minishell
 CC = cc
-CFLAGS = -I./libft_42/inc
+CFLAGS = -g -I./libft_42/inc
 LDFLAGS = -L./libft_42 -lft -lreadline
 FSANITIZE	= -fsanitize=address -g3
 

@@ -55,7 +55,7 @@ void ascii_art_pattern()
 // build-ins
 // pipes
 
-void minishell(char *line)
+void minishell(t_mini *mini, char *line)
 {
 	int pid1;
 	int status;
@@ -66,7 +66,7 @@ void minishell(char *line)
 	else if (pid1 == 0)
 	{
 		//children process
-		cmd(line);
+		cmd(mini, line);
 	}
 	waitpid(pid1, &status, 0);
 }
@@ -75,7 +75,7 @@ int	readline_prompt(t_mini *mini)
 {
 	char	*line;
 
-	ascii_art_pattern();
+	//ascii_art_pattern();
 	while (1)
 	{
 		line = readline("\033[32m\U0001F40C Minishell > ");
@@ -91,7 +91,7 @@ int	readline_prompt(t_mini *mini)
 		}
 		//parsing using mini
 		add_history(line);
-		minishell(line);
+		minishell(mini, line);
 		free(line);
 	}
 	clear_history(); // ! why rl_clear_history does not work?
@@ -107,53 +107,4 @@ int	main(int argc, char **argv, char **env)
 		error("fail to init env variables.", 3);
 	readline_prompt(mini);
 	return(0);
-}
-
-int env_init(t_mini *mini, char **env)
-{
-	int i;
-	char** env_split;
-	t_env *env_content;
-	t_list *node;
-
-	i = 0;
-	mini->env = NULL;
-	while (env[i])
-	{
-		env_split = ft_split(env[i], '=');
-		if (!env_split)
-			error("malloc fail or null input?\n", 1);
-		env_content = malloc(sizeof(t_env) * 1);
-		if (!env_content)
-			error("malloc fail.\n", 1);
-		env_content->env_name = env_split[0]; //to be freed
-		env_content->env_value = env_split[1]; // to be freed
-		if (!mini->env)
-		{
-			mini->env = ft_lstnew(env_content);
-			if (!mini->env)
-				error("fail to init a node\n", 1);
-		}
-		else
-		{
-			node = ft_lstnew(env_content);
-			if (!node)
-				error("fail to init a node\n", 1);
-			ft_lstadd_back(&mini->env, node);
-		}
-		//ft_printf("%s=%s\n", env_content->env_name, env_content->env_value);
-		i++;
-	}
-	//ft_printf("\nbefore\n");
-	//print_env(NULL);
-	//char *str[1024] = {"KEY=12345", NULL};
-	//export(str);
-	//ft_printf("\nafter\n");
-	//print_env(NULL);
-	//char **str2 = ft_split("KEY=12345", '=');
-	//ft_printf("\nafter unset\n");
-	//unset(str2);
-	//print_env(NULL);
-	update_env();
-	return (1);
 }

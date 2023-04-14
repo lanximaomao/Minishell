@@ -33,6 +33,9 @@ typedef struct s_mini
 t_mini *mini;
 
 void		error(char *msg, int error_code);
+void		minishell(t_mini *mini, char *line);
 int			env_init(t_mini *mini, char **env);
-void		minishell(char *line);
+char**		env_convert(t_list* env);
+char*		env_handler(t_list *env, char* str);
+
 #endif

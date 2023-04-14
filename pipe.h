@@ -4,8 +4,7 @@
 #include "minishell.h"
 #include "buidin.h"
 
-char** update_env();
-int cmd(char* line);
+int cmd(t_mini *mini, char* line);
 char* get_path_cmd(char* str);
 char **get_path_env();
 

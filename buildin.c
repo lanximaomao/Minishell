@@ -5,15 +5,15 @@ cd, pwd, env, export, unset, exit
 #include "buidin.h"
 #include "minishell.h"
 
-int	cd(char **arg)
+int	my_cd(char **arg)
 {
 	if (chdir(arg[0]) != 0)
 		error("chdir error", 1);
-	pwd(NULL);
+	my_pwd(NULL);
 	return (1);
 }
 
-int	pwd(char **arg)
+int	my_pwd(char **arg)
 {
 	char	buf[1024];
 
@@ -25,7 +25,7 @@ int	pwd(char **arg)
 	return (0);
 }
 
-void	print_env(char **arg)
+void	my_env(char **arg)
 {
 	t_list	*tmp;
 	t_env	*env_content;
@@ -39,7 +39,7 @@ void	print_env(char **arg)
 	}
 }
 
-void	export(char **arg)
+void	my_export(char **arg)
 {
 	char	**arg_split;
 	t_env	*env_content;
@@ -54,7 +54,7 @@ void	export(char **arg)
 	ft_lstadd_back(&mini->env, node);
 }
 
-void	unset(char **arg)
+void	my_unset(char **arg)
 {
 	t_list	*current;
 	t_list	*previous;
