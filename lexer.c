@@ -55,6 +55,27 @@ t_list *get_linelst(char *line)
 					// i--; // 直接break出来，就没有执行下面的i++；所以不要i--
 					break;
 				}
+				// if (line[i] == '<') // 函数内部可以直接判断后面有没有东西，没有的话syntax error，或者在parser上做
+				// {
+				// 	if (line[i + 1] == '<')
+				// 	{
+				// 		input->redrc_sign = 2; // heredoc
+				// 	}
+				// 	input->redrc_sign = 1; // infile
+				// 	len--;
+				// 	break;
+				// }
+				// if (line[i] == '>')
+				// {
+				// 	fi (line[i + 1] == '>')
+				// 	{
+				// 		input->redrc_sign = 4; // append
+				// 	}
+				// 	input->redrc_sign = 3; // outfile
+				// 	len--;
+				// 	break;
+				// }
+
 				if (line[i] == '\'' && (input->quote_type = 1) || line[i] == '\"' && (input->quote_type = 2))
 					i = handle_char(line, i, &len);
 				i++;
