@@ -63,16 +63,16 @@ void minishell(char *line)
 int	readline_prompt(t_mini *mini)
 {
 	char	*line;
+	char	buf[256];
 
 	ascii_art_pattern();
 	while (1)
 	{
-		line = readline("\033[32m\U0001F40C Minishell > ");
-		if (!line)
-		{
-			ft_printf("\n");
-			break ;
-		}
+		if (getcwd(buf, sizeof(buf)) == NULL) // getcwd get the pwd show frond of the input
+			error("Error: getcwd failed\n", 1);
+		ft_printf("\033[32m\U0001F40C %s \033[31m>\033[0;39m", buf);
+		if (!(line = readline(" ")))
+			error("Error: readline failed\n", 1);
 		if (ft_strncmp(line, "exit", 4) == 0)
 		{
 			free(line);
@@ -81,23 +81,22 @@ int	readline_prompt(t_mini *mini)
 		//parsing using mini
 		add_history(line);
 		minishell(line);
+		// clear_history();
 		free(line);
 	}
-	clear_history(); // ! why rl_clear_history does not work?
 	return (0);
 }
 
 int	main(int argc, char **argv, char **env)
 {
-	mini = malloc(sizeof(t_mini) * 1);
-	if (!mini)
+	if (!(mini = malloc(sizeof(t_mini) * 1)))
 		error("malloc fail.\n", 1);
 	if (env_init(mini, env) != 1)
 		error("fail to init env variables.", 3);
 	readline_prompt(mini);
 	return(0);
 }
-
+// create env linkedlist
 int env_init(t_mini *mini, char **env)
 {
 	int i;
