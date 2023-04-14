@@ -27,7 +27,8 @@ typedef struct s_env
 typedef struct s_input
 {
 	char	*temp_line;
-	int 	quote_type;
+	int 	quote_type; // 0 for no quote, 1 for single quote, 2 for double quote
+	int 	pipe_sign; // 0 for no pipe, 1 for left pipe, 2 for right pipe
 }			t_input;
 
 typedef struct s_token

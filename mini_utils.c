@@ -41,3 +41,18 @@ int count_char(char *str, char char_type)
 	}
 	return (count_char);
 }
+
+void	free_input(t_input *input)
+{
+	if (input != NULL)
+	{
+		if (input->temp_line != NULL)
+		{
+			free(input->temp_line);
+			input->temp_line = NULL;
+		}
+		input->quote_type = 0;
+		free(input);
+		input = NULL;
+	}
+}
