@@ -12,7 +12,7 @@ void ft_error(char* msg)
 	ft_printf("%s\n", msg);
 }
 
-void close(int *fd, int num_fd)
+void ft_close(int *fd, int num_fd)
 {
 	int i;
 	i = 0;

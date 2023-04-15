@@ -103,6 +103,8 @@ int	readline_prompt(t_mini *mini)
 
 int	main(int argc, char **argv, char **env)
 {
+	t_mini *mini;
+	
 	mini = malloc(sizeof(t_mini) * 1);
 	if (!mini)
 		error("malloc fail.\n", 1);

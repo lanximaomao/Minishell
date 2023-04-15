@@ -3,7 +3,6 @@ cd, pwd, env, export, unset, exit
 */
 
 #include "buidin.h"
-#include "minishell.h"
 
 int	my_cd(char **arg)
 {
@@ -25,12 +24,12 @@ int	my_pwd(char **arg)
 	return (0);
 }
 
-void	my_env(char **arg)
+void	my_env(char **arg, t_list *env)
 {
 	t_list	*tmp;
 	t_env	*env_content;
 
-	tmp = mini->env;
+	tmp = env;
 	while (tmp)
 	{
 		env_content = (t_env *)tmp->content;
@@ -39,7 +38,7 @@ void	my_env(char **arg)
 	}
 }
 
-void	my_export(char **arg)
+void	my_export(char **arg, t_list *env)
 {
 	char	**arg_split;
 	t_env	*env_content;
@@ -51,16 +50,16 @@ void	my_export(char **arg)
 	node = ft_lstnew(env_content);
 	if (!node)
 		error("cann't create a new node.\n", 1);
-	ft_lstadd_back(&mini->env, node);
+	ft_lstadd_back(&env, node);
 }
 
-void	my_unset(char **arg)
+void	my_unset(char **arg, t_list *env)
 {
 	t_list	*current;
 	t_list	*previous;
 	t_env	*env_content;
 
-	current = mini->env;
+	current = env;
 	previous = NULL;
 	while (current)
 	{
@@ -73,7 +72,7 @@ void	my_unset(char **arg)
 	if (current == NULL) //node not found, just return (return);
 		return;
 	if (previous == NULL) //remove the head node
-		mini->env = current->next;
+		env = current->next;
 	else
 		previous->next = current->next;
 	free(env_content->env_name);

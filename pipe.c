@@ -18,21 +18,21 @@ int cmd(t_mini *mini, char* line)
 	else
 	{
 		tmp = ft_strjoin("/", cmd_args[0]);//to be freed
-		path_cmd = get_path_cmd(tmp);
+		path_cmd = get_path_cmd(tmp, mini->env);
 		free(tmp);
 		execve(path_cmd, cmd_args, env_convert(mini->env));
 	}
 	return(0);
 }
 
-char* get_path_cmd(char* str)
+char* get_path_cmd(char* str, t_list *env)
 {
 	int i;
 	char **path_env;
 	char *path_cmd;
 
 	i = 0;
-	path_env = get_path_env();
+	path_env = get_path_env(env);
 	while (path_env[i])
 	{
 		path_cmd = ft_strjoin(path_env[i], str);
@@ -50,7 +50,7 @@ char* get_path_cmd(char* str)
 	return(path_cmd);
 }
 
-char **get_path_env()
+char **get_path_env(t_list *env)
 {
 	int i;
 	t_list	*tmp;
@@ -58,7 +58,7 @@ char **get_path_env()
 	char **path_env;
 
 	i = 0;
-	tmp = mini->env;
+	tmp = env;
 	while (tmp)
 	{
 		env_content = (t_env*)tmp->content;

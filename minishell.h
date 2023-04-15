@@ -64,8 +64,6 @@ char*		env_handler(t_list *env, char* str);
 void		parser(char *line);
 
 // minishell.c
-void		minishell(char *line);
-
 
 
 #endif
