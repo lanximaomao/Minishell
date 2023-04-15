@@ -27,13 +27,13 @@ int	my_pwd(char **arg)
 void	my_env(char **arg, t_list *env)
 {
 	t_list	*tmp;
-	t_env	*env_content;
+	char**	*env_content;
 
 	tmp = env;
 	while (tmp)
 	{
-		env_content = (t_env *)tmp->content;
-		ft_printf("%s=%s\n", env_content->env_name, env_content->env_value);
+		env_content = (char**)tmp->content;
+		ft_printf("%s=%s\n", env_content[0], env_content[1]);
 		tmp = tmp->next;
 	}
 }

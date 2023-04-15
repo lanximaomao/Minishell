@@ -1,4 +1,5 @@
 #include "minishell.h"
+#include "env.h"
 #include "buidin.h"
 #include "pipe.h"
 
@@ -10,40 +11,39 @@
 int env_init(t_mini *mini, char **env)
 {
 	int i;
-	char** env_split;
-	t_env *env_content;
+	char **env_content;
 	t_list *node;
 
 	i = 0;
 	mini->env = NULL;
 	while (env[i])
 	{
-		env_split = ft_split(env[i], '=');
-		if (!env_split)
-			error("malloc fail or null input?\n", 1);
-		env_content = malloc(sizeof(t_env) * 1);
+		env_content = ft_split(env[i], '=');
 		if (!env_content)
-			error("malloc fail.\n", 1);
-		env_content->env_name = env_split[0]; //to be freed
-		env_content->env_value = env_split[1]; // to be freed
-		if (!mini->env)
-		{
-			mini->env = ft_lstnew(env_content);
-			if (!mini->env)
-				error("fail to init a node\n", 1);
-		}
-		else
-		{
+			error("malloc fail or null input?\n", 1);
 			node = ft_lstnew(env_content);
 			if (!node)
 				error("fail to init a node\n", 1);
 			ft_lstadd_back(&mini->env, node);
-		}
-		//ft_printf("%s=%s\n", env_content->env_name, env_content->env_value);
 		i++;
 	}
-	//ft_printf("\nbefore\n");
-	//my_env(NULL);
+	test_env_functions(mini);
+	return (1);
+}
+
+void test_env_functions(t_mini *mini)
+{
+	//test env_handler
+	printf("\nenv handler: %s\n", env_handler(mini->env, "HOME"));
+	printf("\nenv handler: %s\n", env_handler(mini->env, "NONE"));
+	// test env_converter
+	//char** test = env_convert(mini->env);
+	//printf("\n%s\n%s\n%s\n%s\n", test[0], test[1], test[2], test[3]);
+
+	//ft_printf("\nbefore\n\n");
+	//my_env(NULL, mini->env);
+
+
 	//char *str[1024] = {"KEY=12345", NULL};
 	//my_export(str);
 	//ft_printf("\nafter\n");
@@ -54,7 +54,7 @@ int env_init(t_mini *mini, char **env)
 	//my_env(NULL);
 	//env_convert(mini->env);
 	//printf("%s\n", env_handler(mini->env, "HOME"));
-	return (1);
+
 }
 
 /*
@@ -64,20 +64,21 @@ int env_init(t_mini *mini, char **env)
 
 char* env_handler(t_list *env, char* str)
 {
-	t_env *env_content;
+	char** env_content;
 	t_list *tmp;
 	int len;
 
 	tmp = env;
+	env_content = (char**)env->content;
 	while (tmp)
 	{
-		env_content = (t_env*)tmp->content;
-		len = ft_strlen(env_content->env_name);
+		env_content = (char**)tmp->content;
+		len = ft_strlen(env_content[0]);
 		//printf("name=%s len=%d\n", env_content->env_name, len);
 		if (len < ft_strlen(str))
 			len = ft_strlen(str);
-		if (ft_strncmp(str, env_content->env_name, len) == 0)
-			return(env_content->env_value);
+		if (ft_strncmp(str, env_content[0], len) == 0)
+			return(env_content[1]);
 		tmp = tmp->next;
 	}
 	return(NULL);
@@ -94,9 +95,8 @@ char** env_convert(t_list* env)
 	int size;
 	char** ret;
 	char* ret_tmp1;
-	char* ret_tmp2;
 	t_list *tmp;
-	t_env *env_content;
+	char** env_content;
 
 	i = 0;
 	size = 0;
@@ -108,13 +108,11 @@ char** env_convert(t_list* env)
 	ret[size] = NULL;
 	while (i <  size)
 	{
-		env_content = (t_env *)tmp->content;
-		ret_tmp1 = ft_strjoin(env_content->env_name, "=");
-		ret_tmp2 = ft_strjoin(env_content->env_value, "\n");
-		ret[i] = ft_strjoin(ret_tmp1, ret_tmp2); // to be freed
+		env_content = (char**)tmp->content;
+		ret_tmp1 = ft_strjoin(env_content[0], "=");
+		ret[i] = ft_strjoin(ret_tmp1, env_content[1]); // to be freed
 		//printf("%s", ret[i]);
 		free(ret_tmp1);
-		free(ret_tmp2);
 		tmp = tmp->next;
 		i++;
 	}
