@@ -29,9 +29,8 @@ typedef struct s_input
 	char	*temp_line; // cmd_parts, split from readline
 	int 	quote_type; // 0 for no quote, 1 for single quote, 2 for double quote
 	int 	pipe_sign; // 0 for no pipe, 1 for left pipe, 2 for right pipe
-	int		redir_sign; // 0 for stdin, 1 for infile, 2 for heredoc, 3 for outfile, 4 for append, 5 for error
-
-
+	int		redir_sign; // 0 for stdin, 1 for infile "<", 2 for heredoc "<<", 3 for outfile ">", 4 for append ">>"
+						// 5 for errinfile "2<", 6 for errheredoc "2<<", 7 for erroutfile "2>", 8 for errappend "2>>"
 }			t_input;
 
 typedef struct s_token
@@ -39,7 +38,10 @@ typedef struct s_token
 	char	*cmd;
 	char	**infile;
 	char	**outfile;
-	int		output_type; // 0 for stdout, 1 for outfile, 2 for append outfile.
+	char	**errfile;
+	char	*redir_string;
+	int		*output_type; // 0 for stdout, 1 for outfile, 2 for append outfile.
+
 
 	char	*heredoc;
 	int		sign_in;

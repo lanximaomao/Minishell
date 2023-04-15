@@ -83,17 +83,27 @@ t_list *get_linelst(char *line)
 					len--; // 为了不把｜给添加到temp_line里main
 					break;
 				}
+				if (line[i] == '2')
+				{ // 执行器考虑：5后面可以接1，eccho test 2<>infile。但是7/8后面接5/6就是错误eccho test 2><infiel
+					if (line[i + 1] == '<' && line[i + 2] != '<')
+						input->redir_sign = 5; // errinfile, 2<
+					else if (line[i + 1] == '<' && line[i + 2] == '<')
+						input->redir_sign = 6; // errheredoc. 2<<
+					else if (line[i + 1] == '>' && line[i + 2] != '>')
+						input->redir_sign = 7; // erroutfile, 2>
+					else if (line[i + 1] == '>' && line[i + 2] == '>')
+						input->redir_sign = 8; // errappend, 2>>
+					len--;
+					break;
+				}
 				if (line[i] == '<') // 函数内部可以直接判断后面有没有东西，没有的话syntax error，或者在parser上做
 				{
 					if (line[i + 1] == '<' && line[i + 2] != '<')
 						input->redir_sign = 2; // heredoc
 					else if (line[i + 1] != '<')
 						input->redir_sign = 1; // infile
-					else
-					{
-						ft_error("syntax error: more then two '<'.");
-						return (NULL);
-					}
+					else if (line[i + 1] == '<' && line[i + 2] == '<')
+						input->redir_sign = 9; // the next element as input
 					len--;
 					break;
 				}
@@ -131,8 +141,10 @@ t_list *get_linelst(char *line)
 				input->temp_line = trim_quote(input->temp_line, '\''); // trim the quote
 			else if(input->quote_type == 2)
 				input->temp_line = trim_quote(input->temp_line, '\"'); // trim the double quote
-			if (input->redir_sign == 2 || input->redir_sign == 4)
+			if (input->redir_sign == 2 || input->redir_sign == 4 || input->redir_sign == 5 || input->redir_sign == 7)
 				i += 1; // skip two characters, the other++ in the condition of while loop
+			if (input->redir_sign == 6 || input->redir_sign == 8)
+				i += 2; // skip three characters
 			node = ft_lstnew((t_input *)input);
 			if (!node)
 			{
@@ -162,8 +174,15 @@ int main(int argc, char **argv)
 		while (line_lst)
 		{
 			ft_printf("%s\n", ((t_input *)line_lst->content)->temp_line);
-			ft_printf("%d\n", ((t_input *)line_lst->content)->redir_sign);
+			// ft_printf("%d\n", ((t_input *)line_lst->content)->redir_sign);
+			ft_printf("%d\n", ((t_input *)line_lst->content)->pipe_sign);
+			ft_printf("%d\n", ((t_input *)line_lst->content)->quote_type);
 			line_lst = line_lst->next;
+		}
+		if (ft_strncmp(line, "exit", 4) == 0)
+		{
+			free(line);
+			break ;
 		}
 	}
 	return (0);
