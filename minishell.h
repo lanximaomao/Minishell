@@ -29,7 +29,7 @@ typedef struct s_input
 	char	*temp_line; // cmd_parts, split from readline
 	int 	quote_type; // 0 for no quote, 1 for single quote, 2 for double quote
 	int 	pipe_sign; // 0 for no pipe, 1 for left pipe, 2 for right pipe
-	int		redrc_sign; // 0 for stdin, 1 for infile, 2 for heredoc, 3 for outfile, 4 for append, 5 for error
+	int		redir_sign; // 0 for stdin, 1 for infile, 2 for heredoc, 3 for outfile, 4 for append, 5 for error
 
 
 }			t_input;

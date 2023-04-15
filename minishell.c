@@ -80,7 +80,7 @@ int	readline_prompt(t_mini *mini)
 		}
 		//parsing using mini
 		add_history(line);
-		minishell(line);
+		ft_printf("You entered: %s\n", line);
 		// clear_history();
 		free(line);
 	}
