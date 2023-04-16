@@ -3,7 +3,7 @@
 // error msgs for project
 void ft_error(char* msg)
 {
-	ft_printf("\033[1;31mError! \033[0m%s\n", msg);
+	ft_printf("\033[1;31mError! \033[0m%s", msg);
 	return ;
 }
 
@@ -59,7 +59,7 @@ t_list *get_linelst(char *line)
 		return NULL;
 	if (ft_strnstr(line, "&&", ft_strlen(line)) || ft_strnstr(line, "||", ft_strlen(line)))
 	{
-		ft_error("&& or || is handled in BONUS PART.");
+		ft_error("&& or || is handled in BONUS PART.\n");
 		return NULL;
 	}
 	while (line[++i])
@@ -69,7 +69,7 @@ t_list *get_linelst(char *line)
 			len = 0; //  length of the substring that needs to be extracted currently.
 			if (!(input = (t_input *)malloc(sizeof(t_input))))
 			{
-				ft_error("Malloc failed.");
+				ft_error("Malloc failed.\n");
 				return (NULL);
 			}
 			init_input(input);
@@ -115,7 +115,7 @@ t_list *get_linelst(char *line)
 						input->redir_sign = 3; // outfile
 					else
 					{
-						ft_error("syntax error: more then two '>'.");
+						ft_error("syntax error: more then two '>'.\n");
 						return (NULL);
 					}
 					len--;
@@ -125,7 +125,7 @@ t_list *get_linelst(char *line)
 				{
 					if ((i = handle_char(line, i, &len)) == -1)
 					{
-						ft_error("syntax error: quote not closed.");
+						ft_error("syntax error: quote not closed.\n");
 						return (NULL);
 					}
 				}
@@ -134,7 +134,7 @@ t_list *get_linelst(char *line)
 			input->temp_line = ft_substr(line, i - len, len); // Extract the substring and store it into the data structure of a lst node.
 			if (!input->temp_line)
 			{
-				ft_error("Malloc failed.");
+				ft_error("Malloc failed.\n");
 				return (NULL);
 			}
 			if (input->quote_type == 1)
@@ -148,7 +148,7 @@ t_list *get_linelst(char *line)
 			node = ft_lstnew((t_input *)input);
 			if (!node)
 			{
-				ft_error("Malloc failed.");
+				ft_error("Malloc failed.\n");
 				return (NULL);
 			}
 			ft_lstadd_back(&line_lst, node);

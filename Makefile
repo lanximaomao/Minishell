@@ -16,7 +16,7 @@ SRCS = minishell.c mini_utils.c buildin.c
 OBJS = $(SRCS:.c=.o)
 
 
-SRCS_TEST =		lexer.c
+SRCS_TEST =		test_lliu.c
 
 NAME = minishell
 CC = cc

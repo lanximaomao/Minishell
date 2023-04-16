@@ -28,6 +28,7 @@ typedef struct s_input
 {
 	char	*temp_line; // cmd_parts, split from readline
 	int 	quote_type; // 0 for no quote, 1 for single quote, 2 for double quote
+	// token types
 	int 	pipe_sign; // 0 for no pipe, 1 for left pipe, 2 for right pipe
 	int		redir_sign; // 0 for stdin, 1 for infile "<", 2 for heredoc "<<", 3 for outfile ">", 4 for append ">>"
 						// 5 for errinfile "2<", 6 for errheredoc "2<<", 7 for erroutfile "2>", 8 for errappend "2>>"
