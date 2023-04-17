@@ -82,14 +82,15 @@ t_list *get_linelst(char *line);
 
 // mini_utils.c
 void		error(char *msg, int error_code);
+void		minishell(t_mini *mini, char *line);
 int			env_init(t_mini *mini, char **env);
+char**		env_convert(t_list* env);
+char*		env_handler(t_list *env, char* str);
 
 // parsor.c
 void		parser(char *line);
 
 // minishell.c
-void		minishell(char *line);
-
 
 
 #endif
