@@ -246,7 +246,7 @@ t_list *parse_cmds(t_list *line_lst)
 	return (cmd_lst);
 }
 
-
+/*
 int main(int argc, char **argv)
 {
 	t_list *line_lst = NULL;
@@ -294,7 +294,7 @@ int main(int argc, char **argv)
 		}
 	}
 	return (0);
-}
+} */
 
 
 

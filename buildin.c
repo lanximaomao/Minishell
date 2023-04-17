@@ -7,7 +7,7 @@ cd and export need to redo
 #include "buidin.h"
 #include "env.h"
 
-int is_buildin(char** cmd_args, t_list *env)
+/* int is_buildin(char** cmd_args, t_list *env)
 {
 	int len;
 
@@ -44,7 +44,7 @@ int is_buildin(char** cmd_args, t_list *env)
 		return(1);
 	}
 	return (0);
-}
+} */
 
 int	my_cd(char **arg, t_list *env)
 {

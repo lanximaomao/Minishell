@@ -55,16 +55,65 @@ void ascii_art_pattern()
 // build-ins
 // pipes
 
+int is_buildin(t_list *cmd_lst, t_list *env)
+{
+	int len;
+
+	len = ft_strlen(cmd_args[0]);
+	if (len == 2 && ft_strncmp(cmd_args[0], "cd", len) == 0)
+	{
+		my_cd(cmd_args, env);
+		return(1);
+	}
+	else if (len == 3 && ft_strncmp(cmd_args[0], "pwd", len) == 0)
+	{
+		my_pwd(env);
+		return(1);
+	}
+	else if (len == 4 && ft_strncmp(cmd_args[0], "exit", len) == 0)
+	{
+		my_exit(1);
+		return(1);
+	}
+	else if (len == 4 && ft_strncmp(cmd_args[0], "echo", len) == 0)
+	{
+		printf("\n-----calling my echo buildin:\n");
+		my_echo(cmd_args, env);
+		return (1);
+	}
+	else if (len == 5 && ft_strncmp(cmd_args[0], "unset", len) == 0)
+	{
+		my_unset(cmd_args, env);
+		return (1);
+	}
+	else if (len == 6 && ft_strncmp(cmd_args[0], "export", len) == 0)
+	{
+		my_export(cmd_args, env);
+		return(1);
+	}
+	return (0);
+}
+
 void minishell(t_mini *mini, char *line)
 {
 	int pid1;
 	int status;
 	char** cmd_args;
+	t_list *line_lst = NULL;
+	t_list *cmd_lst = NULL;
+
 
 	// check for single buildin call
 	if (*line == '\0')
 		return;
 	// lexer, expander, and parser
+	line_lst = get_linelst(line);
+	cmd_lst = parse_cmds(line_lst);
+	if (!cmd_lst)
+		return;
+
+
+
 	cmd_args = ft_split(line, ' ');
 	if (!cmd_args)
 		error("split function returns null.\n", 1);
@@ -77,6 +126,8 @@ void minishell(t_mini *mini, char *line)
 	else if (pid1 == 0)
 		cmd(mini, line); //children process
 	waitpid(pid1, &status, 0);
+	handle_exitcode(status);
+	//save the exit status to env variable, but how about for buildins?
 }
 
 int	readline_prompt(t_mini *mini)

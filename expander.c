@@ -9,10 +9,14 @@
 // 5. exp_line = ft_strjoin(env_value[j], tmp_substr);
 // 6. free(temp_line); temp_line = NULL; temp_line = exp_line;
 
+
+
+// handle the $?, use the waitpid() status of process, tips: WEXITSTATUS(), WIFEXITED(), WIFSIGNALED()
 char *handle_expand(t_list *line_lst, t_env *env)
 {
 	int i;
 	int j;
+	int len_envp = 0;
 	char **tmp_exp = NULL;
 	char *tmp_substr = NULL;
 	char *exp_line = NULL;
@@ -35,9 +39,10 @@ char *handle_expand(t_list *line_lst, t_env *env)
 				j = 0;
 				while (env->env_name[j]) // getenv("PATH")
 				{
-					if (ft_strnstr(tmp_exp[i], env_name[j], ft_strlen(env_name[j])))
+					len_envp = ft_strlen(env_name[j]);
+					if (ft_strnstr(tmp_exp[i], env_name[j], len_envp) && !ft_isalnum(tmp_exp[i][len])) // 判断下一个是否是特殊字符（！数字！字母）
 					{
-						tmp_substr = ft_substr(tmp_exp[i], ft_strlen(env_name[j]), ft_strlen(tmp_exp[i])); // 内部已经free了tmp_exp
+						tmp_substr = ft_substr(tmp_exp[i], len_envp, ft_strlen(tmp_exp[i])); // 内部已经free了tmp_exp
 						if (!tmp_substr)
 						{
 							perror("Malloc error.\n");
@@ -62,6 +67,8 @@ char *handle_expand(t_list *line_lst, t_env *env)
 					}
 					j++;
 				}
+				if (tmp_exp[i])
+					tmp_exp[i] = NULL;
 				i++;
 			}
 			j = i; // 复用一下
@@ -90,8 +97,11 @@ char *handle_expand(t_list *line_lst, t_env *env)
 }
 
 
-// handle $?
-void 
+// ***********************handle $?
+void handle_exitcode()
+{
+
+}
 
 int main(int argc, char **argv)
 {
