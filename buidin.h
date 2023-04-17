@@ -5,11 +5,11 @@
 
 int is_buildin(char** cmd_args, t_list *env);
 
-int		my_cd(char *arg, t_list *env);
+int		my_cd(char **arg, t_list *env);
 int		my_pwd(t_list *env);
 void	my_env(t_list *env);
-void	my_export(char *arg, t_list *env);
-void	my_unset(char *arg, t_list *env);
+void	my_export(char **arg, t_list *env);
+void	my_unset(char **arg, t_list *env);
 void	my_exit(int status);
 
 int		my_echo(char **arg, t_list *env);
