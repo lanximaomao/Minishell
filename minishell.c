@@ -59,15 +59,22 @@ void minishell(t_mini *mini, char *line)
 {
 	int pid1;
 	int status;
+	char** cmd_args;
 
+	// check for single buildin call
+	if (*line == '\0')
+		return;
+	cmd_args = ft_split(line, ' ');
+	if (!cmd_args)
+		error("split function returns null.\n", 1);
+	if (is_buildin(cmd_args, mini->env) == 1)
+		return;
+	// if not a buildin, start to fork....
 	pid1 = fork();
 	if (pid1 == -1)
 		error("fork failed.\n", 1);
 	else if (pid1 == 0)
-	{
-		//children process
-		cmd(mini, line);
-	}
+		cmd(mini, line); //children process
 	waitpid(pid1, &status, 0);
 }
 
@@ -104,7 +111,7 @@ int	readline_prompt(t_mini *mini)
 int	main(int argc, char **argv, char **env)
 {
 	t_mini *mini;
-	
+
 	mini = malloc(sizeof(t_mini) * 1);
 	if (!mini)
 		error("malloc fail.\n", 1);
