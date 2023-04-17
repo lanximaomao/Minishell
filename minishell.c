@@ -64,6 +64,7 @@ void minishell(t_mini *mini, char *line)
 	// check for single buildin call
 	if (*line == '\0')
 		return;
+	// lexer, expander, and parser
 	cmd_args = ft_split(line, ' ');
 	if (!cmd_args)
 		error("split function returns null.\n", 1);

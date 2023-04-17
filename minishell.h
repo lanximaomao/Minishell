@@ -32,7 +32,7 @@
 
 typedef struct s_env
 {
-	char	*env_name;
+	char	**envp;
 	char	*env_value;
 }			t_env;
 

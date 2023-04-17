@@ -34,6 +34,7 @@ FSANITIZE	= -fsanitize=address -g3
 all: $(NAME)
 $(NAME): $(OBJS)
 	@git submodule update --init --recursive
+	@cd libft_42 && git pull origin main
 	@make -C libft_42
 	@$(CC) $(LDFLAGS) $(OBJS) -o $(NAME)
 	@$(ECHO) "$(YELLOW)[$(NAME)]:\t$(DEF_COLOR) $(GREEN) => Success!$(DEF_COLOR)"
