@@ -37,8 +37,8 @@ void test_env_functions(t_mini *mini)
 	printf("\nenv handler: %s\n", env_handler(mini->env, "HOME"));
 	printf("\nenv handler: %s\n", env_handler(mini->env, "NONE"));
 	// test env_converter
-	//char** test = env_convert(mini->env);
-	//printf("\n%s\n%s\n%s\n%s\n", test[0], test[1], test[2], test[3]);
+	char** test = env_convert(mini->env);
+	printf("\n%s\n%s\n%s\n%s\n", test[0], test[1], test[2], test[3]);
 
 	//ft_printf("\nbefore\n\n");
 	//my_env(NULL, mini->env);
@@ -110,7 +110,11 @@ char** env_convert(t_list* env)
 	{
 		env_content = (char**)tmp->content;
 		ret_tmp1 = ft_strjoin(env_content[0], "=");
+		if (!ret_tmp1)
+			error("malloc fail.\n", 1);
 		ret[i] = ft_strjoin(ret_tmp1, env_content[1]); // to be freed
+		if (!ret[i])
+			error("malloc fail.\n", 1);
 		//printf("%s", ret[i]);
 		free(ret_tmp1);
 		tmp = tmp->next;

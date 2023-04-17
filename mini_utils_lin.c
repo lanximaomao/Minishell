@@ -1,4 +1,3 @@
-#include "minishell.h"
 
 void free_char(char **str)
 {
