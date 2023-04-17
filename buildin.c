@@ -55,9 +55,7 @@ int	my_cd(char **arg, t_list *env)
 	if (chdir(arg[1]) != 0)
 		error("chdir error", 1);
 	if (getcwd(buf, sizeof(buf)) != NULL)
-	{
 		env_find_and_replace(env, "PWD", buf);
-	}
 	return (1);
 }
 
@@ -87,14 +85,39 @@ void	my_env(t_list *env)
 	}
 }
 
-/* update or create? */
+/* update or create?
+export TEST --> no change
+export TEST --> TEST=
+export TEST=WHATEVER --> TEST=WHATEVER
+export TEST=YES,MINIHELL --> TEST=YES,MINIHELL
+export TEST=YES MINIHELL --> TEST=YES
+*/
 void	my_export(char **arg, t_list *env)
 {
 	int i;
+	int j;
+	int len;
 	t_env	*env_content;
 	t_list	*node;
 
-	//loop throught the string
+	i = 1;
+	len = 0;
+	while (arg[i])
+	{
+		j = 0;
+		while (arg[i][j])
+		{
+			if (arg[i][j] == '=')
+				len++;
+			j++;
+		}
+
+
+		i++;
+	}
+
+
+
 
 	node = ft_lstnew(env_content);
 	if (!node)

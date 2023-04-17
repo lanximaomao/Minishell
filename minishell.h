@@ -17,13 +17,6 @@
 # define PIPE 7	// "|"
 
 
-
-typedef struct s_env
-{
-	char	*env_name;
-	char	*env_value;
-}			t_env;
-
 typedef struct s_input
 {
 	char	*temp_line; // cmd_parts, split from readline
