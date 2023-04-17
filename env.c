@@ -29,7 +29,7 @@ int env_init(t_mini *mini, char **env)
 	}
 	//test_env_functions(mini);
 	return (1);
-} 
+}
 
 /*
 ** by giving the name of the enviromental varible, such as HOME
