@@ -1,12 +1,24 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+# include "libft.h"
 # include "ft_printf.h"
 # include "get_next_line_bonus.h"
-# include "libft.h"
 # include <readline/history.h>
 # include <readline/readline.h>
-# include <stdlib.h>
+# include <stdlib.h> // malloc
+#include <stdio.h> //printf
+#include <unistd.h> // write
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h> // open
+#include <signal.h>
+#include <string.h>
+#include <errno.h>
+#include <stdarg.h>
+#include <dirent.h>
+
 
 # define CMD 1
 # define ARG 2
@@ -37,15 +49,16 @@ typedef struct s_input
 typedef struct s_token
 {
 	char	*cmd;
+	char	**args;
 	char	**infile;
 	char	**outfile;
-	char	**errfile;
-	char	*redir_string;
+	// char	**errfile;
 	int		*output_type; // 0 for stdout, 1 for outfile, 2 for append outfile.
+	int		num_args;
+	int		num_infile;
+	int		num_outfile_type;
+	// int		num_errfile;
 
-
-	char	*heredoc;
-	int		sign_in;
 }			t_token;
 
 
@@ -55,6 +68,17 @@ typedef struct s_mini
 	t_list *cmd_input; // head for input arguments linked list
 }			t_mini;
 
+// utils.c
+void ft_error(char* msg);
+void init_input(t_input *input);
+void init_token(t_token *token);
+char *ft_realloc(void *ptr, size_t old_size, size_t new_size);
+void free_p2p(char **p2p, int num_p2p);
+void free_input(t_input *input);
+void free_token(t_token *token, int num_args, int num_infile, int num_outfile_type);
+
+// lexer.c
+t_list *get_linelst(char *line);
 
 // mini_utils.c
 void		error(char *msg, int error_code);

@@ -7,16 +7,6 @@ void error(char* msg, int error_code)
 }
 
 
-void close(int *fd, int num_fd)
-{
-
-}
-
-// free p2p
-void free_p2p(char **p2p, int num_p2p)
-{
-
-}
 
 int count_char(char *str, char char_type)
 {

@@ -1,20 +1,5 @@
 #include "minishell.h"
 
-// error msgs for project
-void ft_error(char* msg)
-{
-	ft_printf("\033[1;31mError! \033[0m%s", msg);
-	return ;
-}
-
-void init_input(t_input *input)
-{
-	input->temp_line = NULL;
-	input->quote_type = 0;
-	input->pipe_sign = 0;
-	input->redir_sign = 0;
-}
-
 int handle_char(char *line, int i, int *len)
 {
 	int count = 1;
@@ -83,36 +68,36 @@ t_list *get_linelst(char *line)
 					len--; // 为了不把｜给添加到temp_line里main
 					break;
 				}
-				if (line[i] == '2')
-				{ // 执行器考虑：5后面可以接1，eccho test 2<>infile。但是7/8后面接5/6就是错误eccho test 2><infiel
-					if (line[i + 1] == '<' && line[i + 2] != '<')
-						input->redir_sign = 5; // errinfile, 2<
-					else if (line[i + 1] == '<' && line[i + 2] == '<')
-						input->redir_sign = 6; // errheredoc. 2<<
-					else if (line[i + 1] == '>' && line[i + 2] != '>')
-						input->redir_sign = 7; // erroutfile, 2>
-					else if (line[i + 1] == '>' && line[i + 2] == '>')
-						input->redir_sign = 8; // errappend, 2>>
-					len--;
-					break;
-				}
-				if (line[i] == '<') // 函数内部可以直接判断后面有没有东西，没有的话syntax error，或者在parser上做
+				// else if (line[i] == '2')
+				// { // 执行器考虑：5后面可以接1，eccho test 2<>infile。但是7/8后面接5/6就是错误eccho test 2><infiel
+				// 	if (line[i + 1] == '<' && line[i + 2] != '<')
+				// 		input->redir_sign = 5; // errinfile, 2<
+				// 	else if (line[i + 1] == '<' && line[i + 2] == '<')
+				// 		input->redir_sign = 6; // errheredoc. 2<<
+				// 	else if (line[i + 1] == '>' && line[i + 2] != '>')
+				// 		input->redir_sign = 7; // erroutfile, 2>
+				// 	else if (line[i + 1] == '>' && line[i + 2] == '>')
+				// 		input->redir_sign = 8; // errappend, 2>>
+				// 	len--;
+				// 	break;
+				// }
+				else if (line[i] == '<') // 函数内部可以直接判断后面有没有东西，没有的话syntax error，或者在parser上做
 				{
 					if (line[i + 1] == '<' && line[i + 2] != '<')
-						input->redir_sign = 2; // heredoc
+						input->redir_sign = 2; // heredoc, <<
 					else if (line[i + 1] != '<')
-						input->redir_sign = 1; // infile
-					else if (line[i + 1] == '<' && line[i + 2] == '<')
-						input->redir_sign = 9; // the next element as input
+						input->redir_sign = 1; // infile, <
+					// else if (line[i + 1] == '<' && line[i + 2] == '<')
+					// 	input->redir_sign = 9; // the next element as input, <<<
 					len--;
 					break;
 				}
-				if (line[i] == '>')
+				else if (line[i] == '>')
 				{
 					if (line[i + 1] == '>' && line[i + 2] != '>')
-						input->redir_sign = 4; // append
+						input->redir_sign = 4; // append, >>
 					else if (line[i + 1] != '>')
-						input->redir_sign = 3; // outfile
+						input->redir_sign = 3; // outfile, >
 					else
 					{
 						ft_error("syntax error: more then two '>'.\n");
@@ -121,7 +106,7 @@ t_list *get_linelst(char *line)
 					len--;
 					break;
 				}
-				if ((line[i] == '\'' && (input->quote_type = 1)) || (line[i] == '\"' && (input->quote_type = 2)))
+				else if ((line[i] == '\'' && (input->quote_type = 1)) || (line[i] == '\"' && (input->quote_type = 2)))
 				{
 					if ((i = handle_char(line, i, &len)) == -1)
 					{
@@ -159,33 +144,33 @@ t_list *get_linelst(char *line)
 
 // ***** remember to free input after parsing *****
 
-int main(int argc, char **argv)
-{
-	t_list *line_lst = NULL;
-	t_input *input;
-	char *line;
+// int main(int argc, char **argv)
+// {
+// 	t_list *line_lst = NULL;
+// 	t_input *input;
+// 	char *line;
 
-	while (1)
-	{
-		line = readline("minishell\033[31m$\033[0;39m ");
-		add_history(line);
+// 	while (1)
+// 	{
+// 		line = readline("minishell\033[31m$\033[0;39m ");
+// 		add_history(line);
 
-		line_lst = get_linelst(line);
-		while (line_lst)
-		{
-			ft_printf("%s\n", ((t_input *)line_lst->content)->temp_line);
-			// ft_printf("%d\n", ((t_input *)line_lst->content)->redir_sign);
-			ft_printf("%d\n", ((t_input *)line_lst->content)->pipe_sign);
-			ft_printf("%d\n", ((t_input *)line_lst->content)->quote_type);
-			line_lst = line_lst->next;
-		}
-		if (ft_strncmp(line, "exit", 4) == 0)
-		{
-			free(line);
-			break ;
-		}
-	}
-	return (0);
-}
+// 		line_lst = get_linelst(line);
+// 		while (line_lst)
+// 		{
+// 			printf("%s\n", ((t_input *)line_lst->content)->temp_line);
+// 			// printf("%d\n", ((t_input *)line_lst->content)->redir_sign);
+// 			printf("%d\n", ((t_input *)line_lst->content)->pipe_sign);
+// 			printf("%d\n", ((t_input *)line_lst->content)->quote_type);
+// 			line_lst = line_lst->next;
+// 		}
+// 		if (ft_strncmp(line, "exit", 4) == 0)
+// 		{
+// 			free(line);
+// 			break ;
+// 		}
+// 	}
+// 	return (0);
+// }
 
 
