@@ -27,10 +27,7 @@ char *handle_expand(t_list *line_lst, t_env *env)
 		{
 			tmp_exp = ft_split(((t_input *)line_lst->content)->temp_line, '$');
 			if (!tmp_exp)
-			{
-				perror("Malloc error.\n");
-				return (NULL);
-			}
+				ft_error("Malloc failed", MALLOC);
 			free(((t_input *)line_lst->content)->temp_line); // 为后面strjoin使用，从null开始连接
 			((t_input *)line_lst->content)->temp_line = NULL;
 			i = 1;

@@ -31,33 +31,18 @@ int handle_heredoc(char *tmp_file_name, char *eof)
 	while(1)
 	{
 		if (!(line = readline("heredoc >> ")))
-		{
-			perror("Readline error.\n");
-			return (-1);
-		}
+			ft_error("Readline error", FUNC);
 		if (ft_strncmp(line, eof, ft_strlen(line)) == 0)
 		{
 			free(line);
 			break;
 		}
 		if (!(heredoc = ft_strjoin(line, "\n")))
-		{
-			free(line);
-			perror("Malloc error.\n");
-			return (-1);
-		}
+			ft_error("Malloc failed", MALLOC);
 		if (!fd && (fd = open(tmp_file_name, O_WRONLY | O_CREAT | O_TRUNC, 0644)) < 0) // 读写/读/读
-		{
-			free(heredoc);
-			perror("Open infile failed!\n");
-			return (-1);
-		}
+			ft_error("Open tmp_file failed", FILE_OP);
 		if (write(fd, heredoc, ft_strlen(heredoc)) == -1)
-		{
-			free(heredoc);
-			perror("Write infile failed!\n");
-			return (-1);
-		}
+			ft_error("Open tmp_file failed", FILE_OP);
 		free(heredoc);
 		heredoc = NULL;
 	}
@@ -94,33 +79,24 @@ t_list *parse_cmds(t_list *line_lst)
 		init_tokens(cmd_tokens);
 		while (line_lst && ((t_input *)line_lst->content)->pipe_sign != 1)
 		{ // no handle the <>/<>>/></><</<<>/<<>>/>></>><</>>>/>>>>, should be syntax error or
-			// line_lst->next一次我就需要扩展一次，否则得记录很多expand_sign
-			// if (((t_input *)line_lst->content)->quote_type == 2)
-			// 	handle_expand(((t_input *)line_lst->content)->temp_line);
 			if (((t_input *)line_lst->content)->redir_sign != 0)
 			{
 				if (((t_input *)line_lst->content)->redir_sign == 1) // <
 				{ // each redirection file cannot be empty, parse error
 					// maclloc in here
+					if (line_lst->next == NULL)
+						ft_error("Syntax error", SYNTAX);
 					if (!cmd_tokens->infile)
 					{
 						cmd_tokens->infile = (char **)ft_calloc(sizeof(char *), 1);
 						if (!cmd_tokens->infile)
-						{
-							perror("Malloc error.\n");
-							free_tokens(cmd_tokens, i, j, k);
-							return (NULL);
-						}
+							ft_error("Malloc failed", MALLOC);
 					}
 					else
 						cmd_tokens->infile = (char **)ft_realloc(cmd_tokens->infile, sizeof(char *) * (i + 1), sizeof(char *) * (i + 2));
 					cmd_tokens->infile[i] = ft_strdup(((t_input *)line_lst->next->content)->temp_line);
 					if (!cmd_tokens->infile[i])
-					{
-						perror("Malloc error.\n");
-						free_tokens(cmd_tokens, i, j, k);
-						return (NULL);
-					}
+						ft_error("Malloc failed", MALLOC);
 					i++;
 					cmd_tokens->num_infile = i;
 				}
@@ -129,54 +105,36 @@ t_list *parse_cmds(t_list *line_lst)
 					// heredoc 新建一个临时文件，存入输入到数据，并将临时文件的路径保存在cmd_tokens->infile中
 					// delete the heredoc tmp_file after used
 					if (line_lst->next == NULL)
-					{
-						// free();
-						ft_error("heredoc syntax error\n");
-						return (NULL);
-					}
+						ft_error("Syntax error", SYNTAX);
 					error_return = handle_heredoc("tmp_file_name", ((t_input *)line_lst->next->content)->temp_line);
 					if (error_return == -1)
 						return (NULL);
 					cmd_tokens->infile[i] = ft_strdup("tmp_file_name");
 					if (!cmd_tokens->infile[i])
-					{
-						perror("Malloc error.\n");
-						free_tokens(cmd_tokens, i, j, k);
-						return (NULL);
-					}
+						ft_error("Malloc failed", MALLOC);
 					i++;
 					cmd_tokens->num_infile = i;
 				}
 				else if (((t_input *)line_lst->content)->redir_sign == 3) // >
 				{ // each redirection file cannot be empty, parse error
+					if (line_lst->next == NULL)
+						ft_error("Syntax error", SYNTAX);
 					if (!cmd_tokens->outfile)
 					{
 						cmd_tokens->outfile = (char **)ft_calloc(sizeof(char *), 1);
 						if (!cmd_tokens->outfile)
-						{
-							perror("Malloc error.\n");
-							free_tokens(cmd_tokens, i, j, k);
-							return (NULL);
-						}
+							ft_error("Malloc failed", MALLOC);
 					}
 					else
 						cmd_tokens->outfile = (char **)ft_realloc(cmd_tokens->outfile, sizeof(char *) * (j + 1), sizeof(char *) * (j + 2));
 					cmd_tokens->outfile[j] = ft_strdup(((t_input *)line_lst->next->content)->temp_line);
 					if (!cmd_tokens->outfile[j])
-					{
-						perror("Malloc error.\n");
-						free_tokens(cmd_tokens, i, j, k);
-						return (NULL);
-					}
+						ft_error("Malloc failed", MALLOC);
 					if (!cmd_tokens->output_type)
 					{
 						cmd_tokens->output_type = (int *)ft_calloc(sizeof(int), 1);
 						if (!cmd_tokens->output_type)
-						{
-							perror("Malloc error.\n");
-							free_tokens(cmd_tokens, i, j, k);
-							return (NULL);
-						}
+							ft_error("Malloc failed", MALLOC);
 					}
 					else
 						cmd_tokens->output_type = (int *)ft_realloc(cmd_tokens->output_type, sizeof(int) * (j + 1), sizeof(int) * (j + 2));
@@ -186,42 +144,30 @@ t_list *parse_cmds(t_list *line_lst)
 				}
 				else if (((t_input *)line_lst->content)->redir_sign == 4) // >>
 				{ // each redirection file cannot be empty, parse error
+					if (line_lst->next == NULL)
+						ft_error("Syntax error", SYNTAX);
 					if (!cmd_tokens->outfile)
 					{
 						cmd_tokens->outfile = (char **)ft_calloc(sizeof(char *), 1);
 						if (!cmd_tokens->outfile)
-						{
-							perror("Malloc error.\n");
-							free_tokens(cmd_tokens, i, j, k);
-							return (NULL);
-						}
+							ft_error("Malloc failed", MALLOC);
 					}
 					else
 						cmd_tokens->outfile = (char **)ft_realloc(cmd_tokens->outfile, sizeof(char *) * (j + 1), sizeof(char *) * (j + 2));
 					cmd_tokens->outfile[j] = ft_strdup(((t_input *)line_lst->next->content)->temp_line);
 					if (!cmd_tokens->outfile[j])
-					{
-						perror("Malloc error.\n");
-						free_tokens(cmd_tokens, i, j, k);
-						return (NULL);
-					}
+						ft_error("Malloc failed", MALLOC);
 					cmd_tokens->output_type[j] = 2;
 					j++;
 					cmd_tokens->num_outfile_type = j;
 				}
 				line_lst = line_lst->next;
-				// if (((t_input *)line_lst->content)->quote_type == 2)
-				// 	handle_expand(((t_input *)line_lst->content)->temp_line);
 			}
 			else if (!cmd_tokens->cmd) // cmd
 			{
 				cmd_tokens->cmd = ft_strdup(((t_input *)line_lst->content)->temp_line);
 				if (!cmd_tokens->cmd)
-				{
-					perror("Malloc error.\n");
-					free_tokens(cmd_tokens, i, j, k);
-					return (NULL);
-				}
+					ft_error("Malloc failed", MALLOC);
 			}
 			else // args
 			{
@@ -229,29 +175,17 @@ t_list *parse_cmds(t_list *line_lst)
 				{
 					cmd_tokens->args = (char **)ft_calloc(sizeof(char *), 2);
 					if (!cmd_tokens->args)
-					{
-						perror("Malloc error.\n");
-						free_tokens(cmd_tokens, i, j, k);
-						return (NULL);
-					}
+						ft_error("Malloc failed", MALLOC);
 					// add the cmd in front of args
 					cmd_tokens->args[0] = ft_strdup(cmd_tokens->cmd);
 					if (!cmd_tokens->args[0])
-					{
-						perror("Malloc error.\n");
-						free_tokens(cmd_tokens, i, j, k);
-						return (NULL);
-					}
+						ft_error("Malloc failed", MALLOC);
 				}
 				else
 					cmd_tokens->args = (char **)ft_realloc(cmd_tokens->args, sizeof(char *) * (k + 1), sizeof(char *) * (k + 2));
 				cmd_tokens->args[k] = ft_strdup(((t_input *)line_lst->content)->temp_line);
 				if (!cmd_tokens->args[k])
-				{
-					perror("Malloc error.\n");
-					free_tokens(cmd_tokens, i, j, k);
-					return (NULL);
-				}
+					ft_error("Malloc failed", MALLOC);
 				k++;
 				cmd_tokens->num_args = k;
 			}
@@ -259,11 +193,7 @@ t_list *parse_cmds(t_list *line_lst)
 		}
 		node = ft_lstnew((t_token *)cmd_tokens);
 		if (!node)
-		{
-			perror("Malloc Failed.");
-			free_tokens(cmd_tokens, i, j, k);
-			return (NULL);
-		}
+			ft_error("Malloc failed", MALLOC);
 		ft_lstadd_back(&cmd_lst, node);
 		if (!line_lst)
 			break;

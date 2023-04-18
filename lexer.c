@@ -1,14 +1,5 @@
 #include "minishell.h"
 
-
-void init_input(t_input *input)
-{
-	input->temp_line = NULL;
-	input->quote_type = 0;
-	input->pipe_sign = 0;
-	input->redir_sign = 0;
-}
-
 // check if the quote is closed or not
 int handle_char(char *line, int i, int *len)
 {
@@ -62,21 +53,13 @@ t_list *get_linelst(char *line)
 
 	if (line == NULL)
 		return NULL;
-	if (ft_strnstr(line, "&&", ft_strlen(line)) || ft_strnstr(line, "||", ft_strlen(line)))
-	{
-		ft_error("&& or || is handled in BONUS PART.\n");
-		return NULL;
-	}
 	while (line[++i])
 	{
 		if (!(line[i] == ' ' || (line[i] > 8 && line[i] < 14)))
 		{
 			len = 0; //  length of the substring that needs to be extracted currently.
 			if (!(input = (t_input *)malloc(sizeof(t_input))))
-			{
-				ft_error("Malloc failed.\n");
-				return (NULL);
-			}
+				ft_error("Malloc failed", MALLOC);
 			init_input(input);
 			while (!(line[i] == ' ' || (line[i] > 8 && line[i] < 14)) && line[i] && ++len)
 			{
@@ -88,19 +71,6 @@ t_list *get_linelst(char *line)
 					len--; // 为了不把｜给添加到temp_line里main
 					break;
 				}
-				// else if (line[i] == '2')
-				// { // 执行器考虑：5后面可以接1，eccho test 2<>infile。但是7/8后面接5/6就是错误eccho test 2><infiel
-				// 	if (line[i + 1] == '<' && line[i + 2] != '<')
-				// 		input->redir_sign = 5; // errinfile, 2<
-				// 	else if (line[i + 1] == '<' && line[i + 2] == '<')
-				// 		input->redir_sign = 6; // errheredoc. 2<<
-				// 	else if (line[i + 1] == '>' && line[i + 2] != '>')
-				// 		input->redir_sign = 7; // erroutfile, 2>
-				// 	else if (line[i + 1] == '>' && line[i + 2] == '>')
-				// 		input->redir_sign = 8; // errappend, 2>>
-				// 	len--;
-				// 	break;
-				// }
 				else if (line[i] == '<') // 函数内部可以直接判断后面有没有东西，没有的话syntax error，或者在parser上做
 				{
 					if (line[i + 1] == '<' && line[i + 2] != '<')
@@ -119,29 +89,20 @@ t_list *get_linelst(char *line)
 					else if (line[i + 1] != '>')
 						input->redir_sign = 3; // outfile, >
 					else
-					{
-						ft_error("syntax error: more then two '>'.\n");
-						return (NULL);
-					}
+						ft_error("Syntax error: more then two '>'", SYNTAX);
 					len--;
 					break;
 				}
 				else if ((line[i] == '\'' && (input->quote_type = 1)) || (line[i] == '\"' && (input->quote_type = 2)))
 				{
 					if ((i = handle_char(line, i, &len)) == -1)
-					{
-						ft_error("syntax error: quote not closed.\n");
-						return (NULL);
-					}
+						ft_error("Syntax error: quote not closed.", SYNTAX);
 				}
 				i++;
 			}
 			input->temp_line = ft_substr(line, i - len, len); // Extract the substring and store it into the data structure of a lst node.
 			if (!input->temp_line)
-			{
-				ft_error("Malloc failed.\n");
-				return (NULL);
-			}
+				ft_error("Malloc failed", MALLOC);
 			if (input->quote_type == 1)
 				input->temp_line = trim_quote(input->temp_line, '\''); // trim the quote
 			else if(input->quote_type == 2)
@@ -152,10 +113,7 @@ t_list *get_linelst(char *line)
 				i += 2; // skip three characters
 			node = ft_lstnew((t_input *)input);
 			if (!node)
-			{
-				ft_error("Malloc failed.\n");
-				return (NULL);
-			}
+				ft_error("Malloc failed", MALLOC);
 			ft_lstadd_back(&line_lst, node);
 		}
 	}

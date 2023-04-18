@@ -55,7 +55,7 @@ debug:
 	@git submodule update --init --recursive
 	@cd libft_42 && git pull origin main
 	@make -C libft_42
-	$(CC)  -I./libft_42/inc $(LDFLAGS) $(SRCS) -g -o test
+	$(CC)  -I./libft_42/inc $(LDFLAGS) $(SRCS_TEST) -g -o test
 
 .PHONY : all clean fclean re norm debug
 
