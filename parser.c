@@ -128,6 +128,12 @@ t_list *parse_cmds(t_list *line_lst)
 				{
 					// heredoc 新建一个临时文件，存入输入到数据，并将临时文件的路径保存在cmd_tokens->infile中
 					// delete the heredoc tmp_file after used
+					if (line_lst->next == NULL)
+					{
+						free();
+						ft_error("heredoc syntax error\n");
+						return (NULL);
+					}
 					error_return = handle_heredoc("tmp_file_name", ((t_input *)line_lst->next->content)->temp_line);
 					if (error_return == -1)
 						return (NULL);
@@ -266,7 +272,7 @@ t_list *parse_cmds(t_list *line_lst)
 	return (cmd_lst);
 }
 
-/*
+
 int main(int argc, char **argv)
 {
 	t_list *line_lst = NULL;
@@ -294,19 +300,19 @@ int main(int argc, char **argv)
 		if (!cmd_lst)
 			printf("test2\n");
 		ft_lstfree(line_lst);
-		while (cmd_lst)
-		{
-			printf("cmd: %s\n", ((t_token *)cmd_lst->content)->cmd);
-			// printf("%s\n", ((t_token *)cmd_lst->content)->args[0]);
-			// printf("%s\n", ((t_token *)cmd_lst->content)->infile[0]);
-			// printf("%s\n", ((t_token *)cmd_lst->content)->outfile[0]);
-			// printf("%d\n", ((t_token *)cmd_lst->content)->output_type[0]);
-			printf("num_args: %d\n", ((t_token *)cmd_lst->content)->num_args);
-			printf("num_infile: %d\n", ((t_token *)cmd_lst->content)->num_infile);
-			printf("num_outfile_type: %d\n", ((t_token *)cmd_lst->content)->num_outfile_type);
-			printf("expand_sign: %d\n", ((t_token *)cmd_lst->content)->expander_sign);
-			cmd_lst = cmd_lst->next;
-		}
+		// while (cmd_lst)
+		// {
+		// 	printf("cmd: %s\n", ((t_token *)cmd_lst->content)->cmd);
+		// 	// printf("%s\n", ((t_token *)cmd_lst->content)->args[0]);
+		// 	// printf("%s\n", ((t_token *)cmd_lst->content)->infile[0]);
+		// 	// printf("%s\n", ((t_token *)cmd_lst->content)->outfile[0]);
+		// 	// printf("%d\n", ((t_token *)cmd_lst->content)->output_type[0]);
+		// 	printf("num_args: %d\n", ((t_token *)cmd_lst->content)->num_args);
+		// 	printf("num_infile: %d\n", ((t_token *)cmd_lst->content)->num_infile);
+		// 	printf("num_outfile_type: %d\n", ((t_token *)cmd_lst->content)->num_outfile_type);
+		// 	// printf("expand_sign: %d\n", ((t_token *)cmd_lst->content)->expander_sign);
+		// 	cmd_lst = cmd_lst->next;
+		// }
 		if (ft_strncmp(line, "exit", 4) == 0)
 		{
 			free(line);
@@ -314,7 +320,7 @@ int main(int argc, char **argv)
 		}
 	}
 	return (0);
-} */
+}
 
 
 

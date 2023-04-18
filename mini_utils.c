@@ -80,11 +80,11 @@ void free_tokens(t_token *token, int num_args, int num_infile, int num_outfile_t
 			token->cmd = NULL;
 		}
 		if (token->args != NULL)
-			free_p2p(token->args, num_args);
+			free_char(token->args);
 		if (token->infile != NULL)
-			free_p2p(token->infile, num_infile);
+			free_char(token->infile);
 		if (token->outfile != NULL)
-			free_p2p(token->outfile, num_outfile_type);
+			free_char(token->outfile);
 		if (token->output_type != NULL)
 		{
 			free(token->output_type);

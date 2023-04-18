@@ -58,17 +58,17 @@ typedef struct s_token
 typedef struct s_mini
 {
 	t_list *env;   // head for env linked list
-	t_list *cmd_input; // head for input arguments linked list
+	t_list *cmd_lst; // head for input arguments linked list
 }			t_mini;
 
-// utils.c
+// mini_utils.c
 void ft_error(char* msg);
 void init_input(t_input *input);
-void init_token(t_token *token);
+void init_tokens(t_token *token);
 char *ft_realloc(void *ptr, size_t old_size, size_t new_size);
-void free_p2p(char **p2p, int num_p2p);
+void free_char(char **str);
 void free_input(t_input *input);
-void free_token(t_token *token, int num_args, int num_infile, int num_outfile_type);
+void free_tokens(t_token *token, int num_args, int num_infile, int num_outfile_type);
 
 // lexer.c
 t_list *get_linelst(char *line);
