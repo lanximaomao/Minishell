@@ -50,6 +50,11 @@ int is_buildin(char** cmd_args, t_list *env)
 ** !!save current directory into OLDPWD
 */
 
+/*
+** cd with only a relative or absolute path
+** !!save current directory into OLDPWD
+*/
+
 int	my_cd(char **arg, t_list *env)
 {
 	char	buf[1024];
@@ -82,6 +87,10 @@ int	my_pwd(t_list *env)
 	}
 	return (0);
 }
+
+/*
+** env with no options or aguments
+*/
 
 /*
 ** env with no options or aguments
@@ -149,6 +158,12 @@ export TEST=YES MINIHELL --> TEST=YES
 ** update or create?
 */
 
+
+/*
+** create export function with no optios
+** update or create?
+*/
+
 void	my_export(char **arg, t_list *env)
 {
 	int i;
@@ -156,9 +171,14 @@ void	my_export(char **arg, t_list *env)
 	int len;
 	t_list	*node;
 	char** env_content;
+	char** env_content;
 
 	i = 1;
 	len = 0;
+
+	if (!arg[i])
+		my_export_no_aguments(env);
+
 
 	if (!arg[i])
 		my_export_no_aguments(env);
@@ -168,6 +188,24 @@ void	my_export(char **arg, t_list *env)
 		j = 0;
 		while (arg[i][j])
 		{
+			len = 0;
+			if (arg[i][j] != '=')
+			{
+				while (arg[i][j] && arg[i][j] != '=' && ++len)
+				{
+					j++;
+				}
+				env_content = malloc(sizeof(char*) * 3);
+				if (!env_content)
+					error("malloc fail.\n", 1);
+				env_content[0]=ft_substr(arg[i], j-len, len);
+				env_content[1]=ft_substr(arg[i], len+1, ft_strlen(arg[i]));
+				env_content[2] = NULL;
+				//ft_printf("env[0]=%s, env[1]=%s, env[3]=%s\n", env_content[0], env_content[1], env_content[2]);
+				break;
+			}
+			else
+				j++;
 			len = 0;
 			if (arg[i][j] != '=')
 			{
@@ -218,11 +256,14 @@ void	my_unset(char **arg, t_list *env)
 	t_list	*current;
 	t_list	*previous;
 	char** env_content;
+	char** env_content;
 
 	current = env;
 	previous = NULL;
 	while (current)
 	{
+		env_content = (char**)current->content;
+		if (ft_strncmp(arg[1], env_content[0], ft_strlen(arg[1])) == 0)
 		env_content = (char**)current->content;
 		if (ft_strncmp(arg[1], env_content[0], ft_strlen(arg[1])) == 0)
 			break ;
@@ -235,6 +276,8 @@ void	my_unset(char **arg, t_list *env)
 		env = current->next;
 	else
 		previous->next = current->next;
+	free(env_content[0]);
+	free(env_content[1]);
 	free(env_content[0]);
 	free(env_content[1]);
 	free(current);
@@ -310,15 +353,21 @@ int check_n(char** arg)
 
 //	arg = ft_split("", '*');
 //	my_echo(arg);
+//	my_echo(arg);
 //	arg = ft_split("-n -m hello", '*');
 //	my_echo(arg);
-//	arg = ft_split("-nnn 123 4 56 abcd", '*');
 //	my_echo(arg);
 //	arg = ft_split("-nnn 123 4 56 abcd", '*');
+//	my_echo(arg);
+//	my_echo(arg);
+//	arg = ft_split("-nnn 123 4 56 abcd", '*');
+//	my_echo(arg);
 //	my_echo(arg);
 //	arg = ft_split("-nnm123 4 56 abcd", '*');
 //	my_echo(arg);
+//	my_echo(arg);
 //	arg = ft_split("-nnnnnnnnnnk-- 123 4 56 abcd", '*');
+//	my_echo(arg);
 //	my_echo(arg);
 //	return(0);
 //}
