@@ -50,11 +50,6 @@ int is_buildin(char** cmd_args, t_list *env)
 ** !!save current directory into OLDPWD
 */
 
-/*
-** cd with only a relative or absolute path
-** !!save current directory into OLDPWD
-*/
-
 int	my_cd(char **arg, t_list *env)
 {
 	char	buf[1024];
@@ -92,10 +87,6 @@ int	my_pwd(t_list *env)
 ** env with no options or aguments
 */
 
-/*
-** env with no options or aguments
-*/
-
 void	my_env(t_list *env)
 {
 	t_list	*tmp;
@@ -111,9 +102,6 @@ void	my_env(t_list *env)
 }
 
 /* create exit function with no option */
-/*
-exit 255 dafag -- > exit, and print (too many arguments)
-*/
 
 void	my_exit(char** arg, t_list *env)
 {
@@ -158,19 +146,12 @@ export TEST=YES MINIHELL --> TEST=YES
 ** update or create?
 */
 
-
-/*
-** create export function with no optios
-** update or create?
-*/
-
 void	my_export(char **arg, t_list *env)
 {
 	int i;
 	int j;
 	int len;
 	t_list	*node;
-	char** env_content;
 	char** env_content;
 
 	i = 1;
@@ -255,7 +236,6 @@ void	my_unset(char **arg, t_list *env)
 {
 	t_list	*current;
 	t_list	*previous;
-	char** env_content;
 	char** env_content;
 
 	current = env;
