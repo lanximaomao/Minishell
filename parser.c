@@ -298,7 +298,7 @@ int main(int argc, char **argv)
 
 
 
-// < infile 'ls' "-l" | wc -l > outfile
+// < infile 'ls' "-l" |wc -l > outfile
 // <infile grep test | wc -l >outfile
 
 // malloc, free, write, close, fork, waitpid, signal, kill, exit, chdir, execve, dup, dup2, pipe, strcmp, strncmp

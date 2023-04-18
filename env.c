@@ -96,7 +96,7 @@ char** env_convert(t_list* env)
 }
 
 /* this function is used to update the enviromental varible*/
-void env_find_and_replace(t_list *env, char* to_find, char* to_replace)
+int env_find_and_replace(t_list *env, char* to_find, char* to_replace)
 {
 	char** env_content;
 	t_list *tmp;
@@ -115,7 +115,9 @@ void env_find_and_replace(t_list *env, char* to_find, char* to_replace)
 			free(env_content[1]);
 			env_content[1] = ft_strdup(to_replace);
 			//ft_printf("after replace:%s\n", env_content[1]);
+			return (1);
 		}
 		tmp = tmp->next;
 	}
+	return(0);
 }

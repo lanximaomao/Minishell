@@ -54,20 +54,20 @@ char **get_path_env(t_list *env)
 {
 	int i;
 	t_list	*tmp;
-	t_env*	env_content;
+	char**	env_content;
 	char **path_env;
 
 	i = 0;
 	tmp = env;
 	while (tmp)
 	{
-		env_content = (t_env*)tmp->content;
-		if (ft_strncmp(env_content->env_name, "PATH", 4) == 0)
+		env_content = (char**)tmp->content;
+		if (ft_strncmp(env_content[0], "PATH", 4) == 0)
 			break;
 		else
 			tmp = tmp->next;
 	}
-	path_env = ft_split(env_content->env_value, ':');
+	path_env = ft_split(env_content[1], ':');
 	if (!path_env)
 		error("Malloc fail or PATH is NULL.\n", 1);
 	return(path_env);

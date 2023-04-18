@@ -46,11 +46,14 @@ int is_buildin(char** cmd_args, t_list *env)
 	return (0);
 }
 
+/*
+** cd with only a relative or absolute path
+** !!save current directory into OLDPWD
+*/
+
 int	my_cd(char **arg, t_list *env)
 {
 	char	buf[1024];
-
-	//save current directory into OLDPWD
 
 	if (chdir(arg[1]) != 0)
 		error("chdir error", 1);
@@ -58,6 +61,11 @@ int	my_cd(char **arg, t_list *env)
 		env_find_and_replace(env, "PWD", buf);
 	return (1);
 }
+
+/*
+** pwd with no options
+** if there are any argments,just ignore
+*/
 
 int	my_pwd(t_list *env)
 {
@@ -70,6 +78,10 @@ int	my_pwd(t_list *env)
 	}
 	return (0);
 }
+
+/*
+** env with no options or aguments
+*/
 
 void	my_env(t_list *env)
 {
@@ -85,58 +97,98 @@ void	my_env(t_list *env)
 	}
 }
 
-/* update or create?
+
+
+/*
 export TEST --> no change
 export TEST --> TEST=
 export TEST=WHATEVER --> TEST=WHATEVER
 export TEST=YES,MINIHELL --> TEST=YES,MINIHELL
 export TEST=YES MINIHELL --> TEST=YES
 */
+
+/*
+** create export function with no optios
+** update or create?
+*/
+
 void	my_export(char **arg, t_list *env)
 {
 	int i;
 	int j;
 	int len;
-	t_env	*env_content;
 	t_list	*node;
+	char** env_content;
 
 	i = 1;
 	len = 0;
+
+	if (!arg[i])
+		my_export_no_aguments(env);
+
 	while (arg[i])
 	{
 		j = 0;
 		while (arg[i][j])
 		{
-			if (arg[i][j] == '=')
-				len++;
-			j++;
+			len = 0;
+			if (arg[i][j] != '=')
+			{
+				while (arg[i][j] && arg[i][j] != '=' && ++len)
+				{
+					j++;
+				}
+				env_content = malloc(sizeof(char*) * 3);
+				if (!env_content)
+					error("malloc fail.\n", 1);
+				env_content[0]=ft_substr(arg[i], j-len, len);
+				env_content[1]=ft_substr(arg[i], len+1, ft_strlen(arg[i]));
+				env_content[2] = NULL;
+				//ft_printf("env[0]=%s, env[1]=%s, env[3]=%s\n", env_content[0], env_content[1], env_content[2]);
+				break;
+			}
+			else
+				j++;
 		}
-
-
 		i++;
 	}
-
-
-
-
-	node = ft_lstnew(env_content);
-	if (!node)
-		error("cann't create a new node.\n", 1);
-	ft_lstadd_back(&env, node);
+	//loop throught the env, 0 means not found
+	if (env_find_and_replace(env, env_content[0], env_content[1]) == 0)
+	{
+		node = ft_lstnew(env_content);
+		if (!node)
+			error("cann't create a new node.\n", 1);
+		ft_lstadd_back(&env, node);
+	}
 }
+
+void my_export_no_aguments(t_list *env)
+{
+	t_list *tmp;
+	char **env_content;
+
+	tmp = env;
+	while (tmp)
+	{
+		env_content = (char**)tmp->content;
+		ft_printf("declare -x %s=\"%s\"\n", env_content[0], env_content[1]);
+		tmp = tmp->next;
+	}
+}
+
 
 void	my_unset(char **arg, t_list *env)
 {
 	t_list	*current;
 	t_list	*previous;
-	t_env	*env_content;
+	char** env_content;
 
 	current = env;
 	previous = NULL;
 	while (current)
 	{
-		env_content = (t_env *)current->content;
-		if (ft_strncmp(arg[1], env_content->env_name, ft_strlen(arg[1])) == 0)
+		env_content = (char**)current->content;
+		if (ft_strncmp(arg[1], env_content[0], ft_strlen(arg[1])) == 0)
 			break ;
 		previous = current;
 		current = current->next;
@@ -147,8 +199,8 @@ void	my_unset(char **arg, t_list *env)
 		env = current->next;
 	else
 		previous->next = current->next;
-	free(env_content->env_name);
-	free(env_content->env_value);
+	free(env_content[0]);
+	free(env_content[1]);
 	free(current);
 }
 
@@ -201,17 +253,17 @@ int check_n(char** arg)
 //	char **arg;
 
 //	arg = ft_split("", '*');
-//	echo(arg);
+//	my_echo(arg);
 //	arg = ft_split("-n -m hello", '*');
-//	echo(arg);
+//	my_echo(arg);
 //	arg = ft_split("-nnn 123 4 56 abcd", '*');
-//	echo(arg);
+//	my_echo(arg);
 //	arg = ft_split("-nnn 123 4 56 abcd", '*');
-//	echo(arg);
+//	my_echo(arg);
 //	arg = ft_split("-nnm123 4 56 abcd", '*');
-//	echo(arg);
+//	my_echo(arg);
 //	arg = ft_split("-nnnnnnnnnnk-- 123 4 56 abcd", '*');
-//	echo(arg);
+//	my_echo(arg);
 //	return(0);
 //}
 
