@@ -7,7 +7,7 @@ cd and export need to redo
 #include "buidin.h"
 #include "env.h"
 
-/* int is_buildin(char** cmd_args, t_list *env)
+int is_buildin(char** cmd_args, t_list *env)
 {
 	int len;
 
@@ -36,7 +36,7 @@ cd and export need to redo
 	{
 		my_unset(cmd_args, env);
 		return (1);
-		
+
 	}
 	else if (len == 6 && ft_strncmp(cmd_args[0], "export", len) == 0)
 	{
@@ -44,7 +44,7 @@ cd and export need to redo
 		return(1);
 	}
 	return (0);
-} */
+}
 
 /*
 ** cd with only a relative or absolute path
@@ -61,7 +61,7 @@ int	my_cd(char **arg, t_list *env)
 		arg[1] = ft_strdup(home);//to be freed
 	//printf("%s\n", arg[1]);
 	if (chdir(arg[1]) != 0)
-		error("chdir error", 1);
+		ft_error("chdir error", 1);
 	if (getcwd(buf, sizeof(buf)) != NULL)
 		env_find_and_replace(env, "PWD", buf);
 	return (1);
@@ -179,7 +179,7 @@ void	my_export(char **arg, t_list *env)
 				}
 				env_content = malloc(sizeof(char*) * 3);
 				if (!env_content)
-					error("malloc fail.\n", 1);
+					ft_error("malloc fail.\n", 1);
 				env_content[0]=ft_substr(arg[i], j-len, len);
 				env_content[1]=ft_substr(arg[i], len+1, ft_strlen(arg[i]));
 				env_content[2] = NULL;
@@ -197,7 +197,7 @@ void	my_export(char **arg, t_list *env)
 				}
 				env_content = malloc(sizeof(char*) * 3);
 				if (!env_content)
-					error("malloc fail.\n", 1);
+					ft_error("malloc fail.\n", 1);
 				env_content[0]=ft_substr(arg[i], j-len, len);
 				env_content[1]=ft_substr(arg[i], len+1, ft_strlen(arg[i]));
 				env_content[2] = NULL;
@@ -214,7 +214,7 @@ void	my_export(char **arg, t_list *env)
 	{
 		node = ft_lstnew(env_content);
 		if (!node)
-			error("cann't create a new node.\n", 1);
+			ft_error("cann't create a new node.\n", 1);
 		ft_lstadd_back(&env, node);
 	}
 }
@@ -257,8 +257,6 @@ void	my_unset(char **arg, t_list *env)
 		env = current->next;
 	else
 		previous->next = current->next;
-	free(env_content[0]);
-	free(env_content[1]);
 	free(env_content[0]);
 	free(env_content[1]);
 	free(current);

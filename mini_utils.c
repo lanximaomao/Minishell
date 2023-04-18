@@ -1,40 +1,10 @@
 #include "minishell.h"
 
 // combine this error function
-void error(char* msg, int error_code)
+void ft_error(char* msg, int error_code)
 {
 	perror(msg);
 	exit(error_code);
-}
-
-// error msgs for project
-void ft_error(char* msg)
-{
-	printf("\033[1;31mError! \033[0m%s", msg);
-	return ;
-}
-
-// add this function to libft_42 after testing
-char *ft_realloc(void *ptr, size_t old_size, size_t new_size)
-{
-	void *new_ptr = NULL;
-
-	if (!new_size)
-	{
-		free(ptr);
-		return NULL;
-	}
-	new_ptr = (void *)ft_calloc(new_size, sizeof(void));
-	if (!new_ptr)
-		return NULL;
-
-	if (ptr != NULL)
-	{
-		ft_memcpy(new_ptr, ptr, old_size);
-		free(ptr);
-		ptr = NULL;
-	}
-	return new_ptr;
 }
 
 // free char **
@@ -70,30 +40,30 @@ void free_input(t_input *input)
 	}
 }
 
-void free_tokens(t_token *token, int num_args, int num_infile, int num_outfile_type)
+void free_tokens(t_token *tokens, int num_args, int num_infile, int num_outfile_type)
 {
-	if (token != NULL)
+	if (tokens != NULL)
 	{
-		if (token->cmd != NULL)
+		if (tokens->cmd != NULL)
 		{
-			free(token->cmd);
-			token->cmd = NULL;
+			free(tokens->cmd);
+			tokens->cmd = NULL;
 		}
-		if (token->args != NULL)
-			free_char(token->args);
-		if (token->infile != NULL)
-			free_char(token->infile);
-		if (token->outfile != NULL)
-			free_char(token->outfile);
-		if (token->output_type != NULL)
+		if (tokens->args != NULL)
+			free_char(tokens->args);
+		if (tokens->infile != NULL)
+			free_char(tokens->infile);
+		if (tokens->outfile != NULL)
+			free_char(tokens->outfile);
+		if (tokens->output_type != NULL)
 		{
-			free(token->output_type);
-			token->output_type = NULL;
+			free(tokens->output_type);
+			tokens->output_type = NULL;
 		}
 		num_args = 0;
 		num_infile = 0;
 		num_outfile_type = 0;
-		free(token);
-		token = NULL;
+		free(tokens);
+		tokens = NULL;
 	}
 }

@@ -130,7 +130,7 @@ t_list *parse_cmds(t_list *line_lst)
 					// delete the heredoc tmp_file after used
 					if (line_lst->next == NULL)
 					{
-						free();
+						// free();
 						ft_error("heredoc syntax error\n");
 						return (NULL);
 					}
@@ -300,19 +300,19 @@ int main(int argc, char **argv)
 		if (!cmd_lst)
 			printf("test2\n");
 		ft_lstfree(line_lst);
-		// while (cmd_lst)
-		// {
-		// 	printf("cmd: %s\n", ((t_token *)cmd_lst->content)->cmd);
-		// 	// printf("%s\n", ((t_token *)cmd_lst->content)->args[0]);
-		// 	// printf("%s\n", ((t_token *)cmd_lst->content)->infile[0]);
-		// 	// printf("%s\n", ((t_token *)cmd_lst->content)->outfile[0]);
-		// 	// printf("%d\n", ((t_token *)cmd_lst->content)->output_type[0]);
-		// 	printf("num_args: %d\n", ((t_token *)cmd_lst->content)->num_args);
-		// 	printf("num_infile: %d\n", ((t_token *)cmd_lst->content)->num_infile);
-		// 	printf("num_outfile_type: %d\n", ((t_token *)cmd_lst->content)->num_outfile_type);
-		// 	// printf("expand_sign: %d\n", ((t_token *)cmd_lst->content)->expander_sign);
-		// 	cmd_lst = cmd_lst->next;
-		// }
+		while (cmd_lst)
+		{
+			printf("cmd: %s\n", ((t_token *)cmd_lst->content)->cmd);
+			// printf("%s\n", ((t_token *)cmd_lst->content)->args[0]);
+			// printf("%s\n", ((t_token *)cmd_lst->content)->infile[0]);
+			// printf("%s\n", ((t_token *)cmd_lst->content)->outfile[0]);
+			// printf("%d\n", ((t_token *)cmd_lst->content)->output_type[0]);
+			// printf("num_args: %d\n", ((t_token *)cmd_lst->content)->num_args);
+			// printf("num_infile: %d\n", ((t_token *)cmd_lst->content)->num_infile);
+			// printf("num_outfile_type: %d\n", ((t_token *)cmd_lst->content)->num_outfile_type);
+			// printf("expand_sign: %d\n", ((t_token *)cmd_lst->content)->expander_sign);
+			cmd_lst = cmd_lst->next;
+		}
 		if (ft_strncmp(line, "exit", 4) == 0)
 		{
 			free(line);
