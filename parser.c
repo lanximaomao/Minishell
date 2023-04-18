@@ -5,6 +5,18 @@
  * 3. 将cmd组合成char **作为execve的第二个参数
  * 4. 将cmd_tokens存入cmd_lst的node中 */
 
+void init_tokens(t_token *tokens)
+{
+	tokens->cmd = NULL;
+	tokens->args = NULL;
+	tokens->infile = NULL;
+	tokens->outfile = NULL;
+	tokens->output_type = NULL;
+	tokens->num_args = 0;
+	tokens->num_infile = 0;
+	tokens->num_outfile_type = 0;
+
+}
 
 // function: store the heredoc into a tem_heredoc_file(1st argument) line by line followed a newline
 // return: -1 means error and handle this, no more free in this function
@@ -75,11 +87,11 @@ t_list *parse_cmds(t_list *line_lst)
 	{
 		i = 0; // for num_infile
 		j = 0; // for num_outfile
-		k = 0; // for num_args
+		k = 1; // for num_args, k = 0 for cmd in front of args
 		cmd_tokens = (t_token *)ft_calloc(sizeof(t_token), 1);
 		if (!cmd_tokens)
 			return (NULL);
-		init_token(cmd_tokens);
+		init_tokens(cmd_tokens);
 		while (line_lst && ((t_input *)line_lst->content)->pipe_sign != 1)
 		{ // no handle the <>/<>>/></><</<<>/<<>>/>></>><</>>>/>>>>, should be syntax error or
 			// line_lst->next一次我就需要扩展一次，否则得记录很多expand_sign
@@ -96,7 +108,7 @@ t_list *parse_cmds(t_list *line_lst)
 						if (!cmd_tokens->infile)
 						{
 							perror("Malloc error.\n");
-							free_token(cmd_tokens, i, j, k);
+							free_tokens(cmd_tokens, i, j, k);
 							return (NULL);
 						}
 					}
@@ -106,7 +118,7 @@ t_list *parse_cmds(t_list *line_lst)
 					if (!cmd_tokens->infile[i])
 					{
 						perror("Malloc error.\n");
-						free_token(cmd_tokens, i, j, k);
+						free_tokens(cmd_tokens, i, j, k);
 						return (NULL);
 					}
 					i++;
@@ -123,7 +135,7 @@ t_list *parse_cmds(t_list *line_lst)
 					if (!cmd_tokens->infile[i])
 					{
 						perror("Malloc error.\n");
-						free_token(cmd_tokens, i, j, k);
+						free_tokens(cmd_tokens, i, j, k);
 						return (NULL);
 					}
 					i++;
@@ -137,7 +149,7 @@ t_list *parse_cmds(t_list *line_lst)
 						if (!cmd_tokens->outfile)
 						{
 							perror("Malloc error.\n");
-							free_token(cmd_tokens, i, j, k);
+							free_tokens(cmd_tokens, i, j, k);
 							return (NULL);
 						}
 					}
@@ -147,7 +159,7 @@ t_list *parse_cmds(t_list *line_lst)
 					if (!cmd_tokens->outfile[j])
 					{
 						perror("Malloc error.\n");
-						free_token(cmd_tokens, i, j, k);
+						free_tokens(cmd_tokens, i, j, k);
 						return (NULL);
 					}
 					if (!cmd_tokens->output_type)
@@ -156,7 +168,7 @@ t_list *parse_cmds(t_list *line_lst)
 						if (!cmd_tokens->output_type)
 						{
 							perror("Malloc error.\n");
-							free_token(cmd_tokens, i, j, k);
+							free_tokens(cmd_tokens, i, j, k);
 							return (NULL);
 						}
 					}
@@ -174,7 +186,7 @@ t_list *parse_cmds(t_list *line_lst)
 						if (!cmd_tokens->outfile)
 						{
 							perror("Malloc error.\n");
-							free_token(cmd_tokens, i, j, k);
+							free_tokens(cmd_tokens, i, j, k);
 							return (NULL);
 						}
 					}
@@ -184,7 +196,7 @@ t_list *parse_cmds(t_list *line_lst)
 					if (!cmd_tokens->outfile[j])
 					{
 						perror("Malloc error.\n");
-						free_token(cmd_tokens, i, j, k);
+						free_tokens(cmd_tokens, i, j, k);
 						return (NULL);
 					}
 					cmd_tokens->output_type[j] = 2;
@@ -201,7 +213,7 @@ t_list *parse_cmds(t_list *line_lst)
 				if (!cmd_tokens->cmd)
 				{
 					perror("Malloc error.\n");
-					free_token(cmd_tokens, i, j, k);
+					free_tokens(cmd_tokens, i, j, k);
 					return (NULL);
 				}
 			}
@@ -209,11 +221,19 @@ t_list *parse_cmds(t_list *line_lst)
 			{
 				if (!cmd_tokens->args)
 				{
-					cmd_tokens->args = (char **)ft_calloc(sizeof(char *), 1);
+					cmd_tokens->args = (char **)ft_calloc(sizeof(char *), 2);
 					if (!cmd_tokens->args)
 					{
 						perror("Malloc error.\n");
-						free_token(cmd_tokens, i, j, k);
+						free_tokens(cmd_tokens, i, j, k);
+						return (NULL);
+					}
+					// add the cmd in front of args
+					cmd_tokens->args[0] = ft_strdup(cmd_tokens->cmd);
+					if (!cmd_tokens->args[0])
+					{
+						perror("Malloc error.\n");
+						free_tokens(cmd_tokens, i, j, k);
 						return (NULL);
 					}
 				}
@@ -223,7 +243,7 @@ t_list *parse_cmds(t_list *line_lst)
 				if (!cmd_tokens->args[k])
 				{
 					perror("Malloc error.\n");
-					free_token(cmd_tokens, i, j, k);
+					free_tokens(cmd_tokens, i, j, k);
 					return (NULL);
 				}
 				k++;
@@ -235,7 +255,7 @@ t_list *parse_cmds(t_list *line_lst)
 		if (!node)
 		{
 			perror("Malloc Failed.");
-			free_token(cmd_tokens, i, j, k);
+			free_tokens(cmd_tokens, i, j, k);
 			return (NULL);
 		}
 		ft_lstadd_back(&cmd_lst, node);

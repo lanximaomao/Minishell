@@ -1,5 +1,15 @@
 #include "minishell.h"
 
+
+void init_input(t_input *input)
+{
+	input->temp_line = NULL;
+	input->quote_type = 0;
+	input->pipe_sign = 0;
+	input->redir_sign = 0;
+}
+
+// check if the quote is closed or not
 int handle_char(char *line, int i, int *len)
 {
 	int count = 1;

@@ -37,6 +37,7 @@ cd and export need to redo
 	{
 		my_unset(cmd_args, env);
 		return (1);
+		
 	}
 	else if (len == 6 && ft_strncmp(cmd_args[0], "export", len) == 0)
 	{
