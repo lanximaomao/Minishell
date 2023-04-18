@@ -24,12 +24,11 @@ cd and export need to redo
 	}
 	else if (len == 4 && ft_strncmp(cmd_args[0], "exit", len) == 0)
 	{
-		my_exit(1);
+		my_exit(cmd_args, env);
 		return(1);
 	}
 	else if (len == 4 && ft_strncmp(cmd_args[0], "echo", len) == 0)
 	{
-		printf("\n-----calling my echo buildin:\n");
 		my_echo(cmd_args, env);
 		return (1);
 	}
@@ -47,18 +46,31 @@ cd and export need to redo
 	return (0);
 } */
 
+/*
+** cd with only a relative or absolute path
+** !!save current directory into OLDPWD
+*/
+
 int	my_cd(char **arg, t_list *env)
 {
 	char	buf[1024];
+	char *home;
 
-	//save current directory into OLDPWD
-
+	home = env_handler(env, "HOME");
+	if (arg[1] == NULL)
+		arg[1] = ft_strdup(home);//to be freed
+	//printf("%s\n", arg[1]);
 	if (chdir(arg[1]) != 0)
 		error("chdir error", 1);
 	if (getcwd(buf, sizeof(buf)) != NULL)
 		env_find_and_replace(env, "PWD", buf);
 	return (1);
 }
+
+/*
+** pwd with no options
+** if there are any argments,just ignore
+*/
 
 int	my_pwd(t_list *env)
 {
@@ -71,6 +83,10 @@ int	my_pwd(t_list *env)
 	}
 	return (0);
 }
+
+/*
+** env with no options or aguments
+*/
 
 void	my_env(t_list *env)
 {
@@ -86,58 +102,151 @@ void	my_env(t_list *env)
 	}
 }
 
-/* update or create?
+/* create exit function with no option */
+
+void	my_exit(char** arg, t_list *env)
+{
+	int i;
+	unsigned long long status;
+
+	i = 0;
+	ft_printf("exit\n");
+	while (arg[1][i]) 	//check if arg[1] is numeric
+	{
+		if (arg[1][i] == '+' || arg[1][i] == '-')
+			i++;
+		if (ft_isdigit(arg[1][i]) == 0)
+		{
+			ft_printf("minishell: exit: %s: numeric argument required.\n", arg[1]);
+			exit(255);
+			return;
+		}
+		i++;
+	}
+	status = ft_atoi(arg[1]);
+	if (status > 9223372036854775807)
+		ft_printf("minishell: exit: %s: numeric argument required.\n", arg[1]);
+	if (arg[2]) // if too many arguments
+		ft_printf("minishell: exit: too many arguments.\n");
+	status = (unsigned char)ft_atoi(arg[1]);
+	exit(status);
+}
+
+
+
+/*
 export TEST --> no change
 export TEST --> TEST=
 export TEST=WHATEVER --> TEST=WHATEVER
 export TEST=YES,MINIHELL --> TEST=YES,MINIHELL
 export TEST=YES MINIHELL --> TEST=YES
 */
+
+/*
+** create export function with no optios
+** update or create?
+*/
+
 void	my_export(char **arg, t_list *env)
 {
 	int i;
 	int j;
 	int len;
-	t_env	*env_content;
 	t_list	*node;
+	char** env_content;
 
 	i = 1;
 	len = 0;
+
+	if (!arg[i])
+		my_export_no_aguments(env);
+
+
+	if (!arg[i])
+		my_export_no_aguments(env);
+
 	while (arg[i])
 	{
 		j = 0;
 		while (arg[i][j])
 		{
-			if (arg[i][j] == '=')
-				len++;
-			j++;
+			len = 0;
+			if (arg[i][j] != '=')
+			{
+				while (arg[i][j] && arg[i][j] != '=' && ++len)
+				{
+					j++;
+				}
+				env_content = malloc(sizeof(char*) * 3);
+				if (!env_content)
+					error("malloc fail.\n", 1);
+				env_content[0]=ft_substr(arg[i], j-len, len);
+				env_content[1]=ft_substr(arg[i], len+1, ft_strlen(arg[i]));
+				env_content[2] = NULL;
+				//ft_printf("env[0]=%s, env[1]=%s, env[3]=%s\n", env_content[0], env_content[1], env_content[2]);
+				break;
+			}
+			else
+				j++;
+			len = 0;
+			if (arg[i][j] != '=')
+			{
+				while (arg[i][j] && arg[i][j] != '=' && ++len)
+				{
+					j++;
+				}
+				env_content = malloc(sizeof(char*) * 3);
+				if (!env_content)
+					error("malloc fail.\n", 1);
+				env_content[0]=ft_substr(arg[i], j-len, len);
+				env_content[1]=ft_substr(arg[i], len+1, ft_strlen(arg[i]));
+				env_content[2] = NULL;
+				//ft_printf("env[0]=%s, env[1]=%s, env[3]=%s\n", env_content[0], env_content[1], env_content[2]);
+				break;
+			}
+			else
+				j++;
 		}
-
-
 		i++;
 	}
+	//loop throught the env, 0 means not found
+	if (env_find_and_replace(env, env_content[0], env_content[1]) == 0)
+	{
+		node = ft_lstnew(env_content);
+		if (!node)
+			error("cann't create a new node.\n", 1);
+		ft_lstadd_back(&env, node);
+	}
+}
 
+void my_export_no_aguments(t_list *env)
+{
+	t_list *tmp;
+	char **env_content;
 
-
-
-	node = ft_lstnew(env_content);
-	if (!node)
-		error("cann't create a new node.\n", 1);
-	ft_lstadd_back(&env, node);
+	tmp = env;
+	while (tmp)
+	{
+		env_content = (char**)tmp->content;
+		ft_printf("declare -x %s=\"%s\"\n", env_content[0], env_content[1]);
+		tmp = tmp->next;
+	}
 }
 
 void	my_unset(char **arg, t_list *env)
 {
 	t_list	*current;
 	t_list	*previous;
-	t_env	*env_content;
+	char** env_content;
 
 	current = env;
 	previous = NULL;
 	while (current)
 	{
-		env_content = (t_env *)current->content;
-		if (ft_strncmp(arg[1], env_content->env_name, ft_strlen(arg[1])) == 0)
+		env_content = (char**)current->content;
+		if (ft_strncmp(arg[1], env_content[0], ft_strlen(arg[1])) == 0)
+		env_content = (char**)current->content;
+		if (ft_strncmp(arg[1], env_content[0], ft_strlen(arg[1])) == 0)
 			break ;
 		previous = current;
 		current = current->next;
@@ -148,31 +257,53 @@ void	my_unset(char **arg, t_list *env)
 		env = current->next;
 	else
 		previous->next = current->next;
-	free(env_content->env_name);
-	free(env_content->env_value);
+	free(env_content[0]);
+	free(env_content[1]);
+	free(env_content[0]);
+	free(env_content[1]);
 	free(current);
 }
 
-void	my_exit(int status)
-{
-	kill(getpid(), SIGTERM);
-	exit(status);
-}
+/*
+** create echo with option -n
+*/
 
 int my_echo(char **arg, t_list *env)
 {
 	int i;
 	int ret;
 
-	if (arg)
+	//ft_printf("arg[0]=%s, arg[[1]=%s\n", arg[0], arg[1]);
+	if (!arg[1])
+	{
+		ft_printf("\n");
 		return (0);
+	}
 	ret = check_n(arg);
+	//ft_printf("ret is %d\n", ret);
 	if (ret == 0)
-		printf("%s\n", arg[0]);
+	{
+		i = 1;
+		while (arg[i])
+		{
+			ft_printf("%s", arg[i]);
+			if (arg[i+1])
+				ft_printf(" ");
+			i++;
+		}
+		ft_printf("\n");
+	}
+
 	else
 	{
-		arg[0] = arg[0] + ret;
-		printf("%s", arg[0]);
+		i = 2;
+		while (arg[i])
+		{
+			ft_printf("%s", arg[i]);
+			if (arg[i+1])
+				ft_printf(" ");
+			i++;
+		}
 	}
 	return(0);
 }
@@ -182,13 +313,13 @@ int check_n(char** arg)
 	int i;
 
 	i = 2;
-	if (arg[0][0] && arg[0][0] == '-' && arg[0][1] && arg[0][1] == 'n')
+	if (arg[1][0] && arg[1][0] == '-' && arg[1][1] && arg[1][1] == 'n')
 	{
-		while (arg[0][i] != '\0')
+		while (arg[1][i] != '\0')
 		{
-			if (arg[0][i] == ' ')
+			if (arg[1][i] == ' ')
 				break;
-			if (arg[0][i] != 'n')
+			if (arg[1][i] != 'n')
 				return(0);//does not satify -n condition
 			i++;
 		}
@@ -202,17 +333,23 @@ int check_n(char** arg)
 //	char **arg;
 
 //	arg = ft_split("", '*');
-//	echo(arg);
+//	my_echo(arg);
+//	my_echo(arg);
 //	arg = ft_split("-n -m hello", '*');
-//	echo(arg);
+//	my_echo(arg);
+//	my_echo(arg);
 //	arg = ft_split("-nnn 123 4 56 abcd", '*');
-//	echo(arg);
+//	my_echo(arg);
+//	my_echo(arg);
 //	arg = ft_split("-nnn 123 4 56 abcd", '*');
-//	echo(arg);
+//	my_echo(arg);
+//	my_echo(arg);
 //	arg = ft_split("-nnm123 4 56 abcd", '*');
-//	echo(arg);
+//	my_echo(arg);
+//	my_echo(arg);
 //	arg = ft_split("-nnnnnnnnnnk-- 123 4 56 abcd", '*');
-//	echo(arg);
+//	my_echo(arg);
+//	my_echo(arg);
 //	return(0);
 //}
 

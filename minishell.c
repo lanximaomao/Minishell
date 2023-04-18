@@ -146,7 +146,7 @@ int	readline_prompt(t_mini *mini)
 			ft_printf("\n");
 			break ;
 		}
-		if (ft_strncmp(line, "exit", 4) == 0)
+		if (ft_strncmp(line, "exit", ft_strlen(line)) == 0)
 		{
 			free(line);
 			break ;
