@@ -1,17 +1,28 @@
 
-#include "minishell.h"
+// #include "minishell.h"
+# include <readline/history.h>
+# include <readline/readline.h>
+# include <stdlib.h> // malloc
+#include <stdio.h> //printf
+#include <unistd.h> // write
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h> // open
+#include <signal.h>
+#include <string.h>
+#include <errno.h>
+#include <stdarg.h>
+#include <dirent.h>
 
-typedef struct s_struct
+void ft_error(char* msg, int error_code)
 {
-	char	*cmd;
-}	t_struct;
-
+	perror(msg);
+	exit(error_code);
+}
 int main(int argc, char **argv) {
-	t_struct *token = NULL;
 
-	token = ft_calloc(sizeof(t_struct), 2);
-	token->cmd = ft_strdup("test\n");
-	printf("%s\n", token->cmd);
+	ft_error("test", -1);
 	return 0;
 }
 

@@ -12,7 +12,7 @@ int cmd(t_mini *mini, char* line)
 		return(1);
 	cmd_args = ft_split(line, ' ');
 	if (!cmd_args)
-		error("split function returns null.\n", 1);
+		ft_error("split function returns null.\n", 1);
 	if (access(cmd_args[0], X_OK) == 0)
 		execve(cmd_args[0], cmd_args, env_convert(mini->env));
 	else
@@ -37,7 +37,7 @@ char* get_path_cmd(char* str, t_list *env)
 	{
 		path_cmd = ft_strjoin(path_env[i], str);
 		if (!path_cmd)
-			error("string join failed. \n", 1);
+			ft_error("string join failed. \n", 1);
 		if (access(path_cmd, X_OK) == 0)
 			break;
 		if (path_cmd)
@@ -69,7 +69,7 @@ char **get_path_env(t_list *env)
 	}
 	path_env = ft_split(env_content[1], ':');
 	if (!path_env)
-		error("Malloc fail or PATH is NULL.\n", 1);
+		ft_error("Malloc fail or PATH is NULL.\n", 1);
 	return(path_env);
 }
 

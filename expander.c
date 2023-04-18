@@ -46,14 +46,14 @@ char *handle_expand(t_list *line_lst, t_env *env)
 						if (!tmp_substr)
 						{
 							perror("Malloc error.\n");
-							free_p2p(tmp_exp);
+							free_char(tmp_exp);
 							return (NULL);
 						}
 						exp_line = ft_strjoin(env->env_value[j], tmp_substr);
 						if (!exp_line)
 						{
 							perror("Malloc error.\n");
-							free_p2p(tmp_exp, i);
+							free_char(tmp_exp);
 							return (NULL);
 						}
 						free(tmp_substr);
@@ -82,14 +82,14 @@ char *handle_expand(t_list *line_lst, t_env *env)
 				if (!((t_input *)line_lst->content)->temp_line)
 				{
 					perror("Malloc error.\n");
-					free_p2p(tmp_exp, j);
+					free_char(tmp_exp);
 					return (NULL);
 				}
 				free(tmp);
 				tmp = NULL;
 				i++;
 			}
-			free_p2p(tmp_exp, i);
+			free_char(tmp_exp);
 		}
 		line_lst = line_lst->next;
 	}

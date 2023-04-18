@@ -20,10 +20,10 @@ int env_init(t_mini *mini, char **env)
 	{
 		env_content = ft_split(env[i], '=');
 		if (!env_content)
-			error("malloc fail or null input?\n", 1);
+			ft_error("malloc fail or null input?\n", 1);
 			node = ft_lstnew(env_content);
 			if (!node)
-				error("fail to init a node\n", 1);
+				ft_error("fail to init a node\n", 1);
 			ft_lstadd_back(&mini->env, node);
 		i++;
 	}
@@ -76,17 +76,17 @@ char** env_convert(t_list* env)
 	size = ft_lstsize(env);
 	ret = (char**)malloc(sizeof(char*) * (size + 1)); // to be freed
 	if (!ret)
-		error("malloc fail.\n", 1);
+		ft_error("malloc fail.\n", 1);
 	ret[size] = NULL;
 	while (i <  size)
 	{
 		env_content = (char**)tmp->content;
 		ret_tmp1 = ft_strjoin(env_content[0], "=");
 		if (!ret_tmp1)
-			error("malloc fail.\n", 1);
+			ft_error("malloc fail.\n", 1);
 		ret[i] = ft_strjoin(ret_tmp1, env_content[1]); // to be freed
 		if (!ret[i])
-			error("malloc fail.\n", 1);
+			ft_error("malloc fail.\n", 1);
 		//printf("%s", ret[i]);
 		free(ret_tmp1);
 		tmp = tmp->next;
