@@ -23,6 +23,16 @@ int handle_char(char *line, int i, int *len)
 	*len += count;
 	return (i);
 }
+
+// lexer.c
+void init_input(t_input *input)
+{
+	input->temp_line = NULL;
+	input->quote_type = 0;
+	input->pipe_sign = 0;
+	input->redir_sign = 0;
+}
+
 // after split, trim the quotes in input->temp_line
 char *trim_quote(char *temp_line, char quote)
 {
