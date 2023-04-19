@@ -85,6 +85,10 @@ int			env_init(t_mini *mini, char **env);
 char**		env_convert(t_list* env);
 char*		env_handler(t_list *env, char* str);
 
+// parser.c
+t_list *parse_cmds(t_list *line_lst);
+
+
 // minishell.c
 
 
