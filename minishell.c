@@ -55,32 +55,32 @@ void ascii_art_pattern()
 // build-ins
 // pipes
 
-void minishell(t_mini *mini, char *line)
-{
-	int pid1;
-	int status;
-	char** cmd_args;
-	t_list *line_lst = NULL;
-	t_list *cmd_lst = NULL;
+//void minishell(t_mini *mini, char *line)
+//{
+//	int pid1;
+//	int status;
+//	char** cmd_args;
+//	t_list *line_lst = NULL;
+//	t_list *cmd_lst = NULL;
 
 
-	// check for single buildin call
-	if (*line == '\0')
-		return;
-	cmd_args = ft_split(line, ' ');
-	if (!cmd_args)
-		ft_error("split function returns null.\n", 1);
-	if (is_buildin(cmd_args, mini->env) == 1)
-		return;
-	// if not a buildin, start to fork....
-	pid1 = fork();
-	if (pid1 == -1)
-		ft_error("fork failed.\n", 1);
-	else if (pid1 == 0)
-		cmd(mini, line); //children process
-	waitpid(pid1, &status, 0);
-	//save the exit status to env variable, but how about for buildins?
-}
+//	// check for single buildin call
+//	if (*line == '\0')
+//		return;
+//	cmd_args = ft_split(line, ' ');
+//	if (!cmd_args)
+//		ft_error("split function returns null.\n", 1);
+//	if (is_buildin(cmd_args, mini->env) == 1)
+//		return;
+//	// if not a buildin, start to fork....
+//	pid1 = fork();
+//	if (pid1 == -1)
+//		ft_error("fork failed.\n", 1);
+//	else if (pid1 == 0)
+//		cmd(mini, line); //children process
+//	waitpid(pid1, &status, 0);
+//	//save the exit status to env variable, but how about for buildins?
+//}
 
 int	readline_prompt(t_mini *mini)
 {

@@ -64,6 +64,8 @@ typedef struct s_token
 	int		num_args;
 	int		num_infile;
 	int		num_outfile_type;
+	int		fd_in; // add by Lin
+	int		fd_out; // add by Lin
 	// int		num_errfile;
 
 }			t_token;
