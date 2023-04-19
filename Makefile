@@ -12,7 +12,7 @@ WHITE		=	\033[0;97m
 
 ECHO		= echo
 
-SRCS = minishell.c mini_utils.c buildin.c pipe.c env.c
+SRCS = minishell.c mini_utils.c buildin.c pipe.c env.c test_lin.c
 OBJS = $(SRCS:.c=.o)
 
 

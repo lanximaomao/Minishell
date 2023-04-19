@@ -37,6 +37,11 @@
 
 */
 
+//typedef struct s_list
+//{
+//	void			*content;
+//	struct s_list	*next;
+//}					t_list;
 
 typedef struct s_input
 {
@@ -84,7 +89,8 @@ void		minishell(t_mini *mini, char *line);
 int			env_init(t_mini *mini, char **env);
 char**		env_convert(t_list* env);
 char*		env_handler(t_list *env, char* str);
-
+int env_find_and_replace(t_list *env, char* to_find, char* to_replace);
+void test_env_functions(t_mini *mini);
 // minishell.c
 
 

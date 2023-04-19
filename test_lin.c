@@ -1,21 +1,22 @@
 #include "minishell.h"
+#include "buidin.h"
 
 void test_env_functions(t_mini *mini)
 {
 	//test env_handler
-	printf("\nenv handler: %s\n", env_handler(mini->env, "HOME"));
-	printf("\nenv handler: %s\n", env_handler(mini->env, "NONE"));
+	//printf("\nenv handler: %s\n", env_handler(mini->env, "HOME"));
+	//printf("\nenv handler: %s\n", env_handler(mini->env, "NONE"));
 	// test env_converter
-	char** test = env_convert(mini->env);
-	printf("\n%s\n%s\n%s\n%s\n", test[0], test[1], test[2], test[3]);
+	//char** test = env_convert(mini->env);
+	//printf("\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n", test[0], test[1], test[2], test[3], test[4], test[5], test[6], test[7]);
 
-	ft_printf("\nbefore\n\n");
-	my_env(mini->env);
+	//ft_printf("\nbefore\n\n");
+	//my_env(mini->env);
 
 	// test env_find_and_replace
-	env_find_and_replace(mini->env, "KEY", "abcde");
-	ft_printf("\n\nafter\n\n");
-	my_env(mini->env);
+	//env_find_and_replace(mini->env, "KEY", "abcde");
+	//ft_printf("\n\nafter\n\n");
+	//my_env(mini->env);
 	//char *str[1024] = {"KEY=12345", NULL};
 	//my_export(str);
 	//ft_printf("\nafter\n");
