@@ -15,29 +15,29 @@
 #include <stdarg.h>
 #include <dirent.h>
 
+void handle_exitcode(int status, char *str) // test$?-test => test0-test
+{
+	char *str_status = NULL; // itoa(status)
+	char *res = NULL;
+
+	str_status = ft_itoa(status);
+	res = ft_strjoin(str_status, str + 1); // 去掉'?'
+	free(str_status);
+	str_status = NULL;
+	free(str);
+	str = NULL;
+	str = res;
+	// return (res);
+}
 
 int main(int argc, char **argv) {
 
-	char *res = NULL;
-	char *tmp = NULL;
+	char *str = NULL;
 
-	char **tmp_exp = ft_split("test$TES$HOME", '$');
-	res = ft_strdup("");
-	free(tmp_exp[1]);
-	tmp_exp[1] = NULL;
-	tmp_exp[1] = ft_strdup("");
-	int i = 0;
-	while(i < 3)
-	{
-		tmp = res;
-		res = ft_strjoin(tmp, tmp_exp[i]);
-		free(tmp);
-		tmp = NULL;
-		i++;
-	}
-	free_char(tmp_exp);
-	printf("%s\n", res);
-	free(res);
+	str = ft_strdup("?test$HOME");
+	printf("%s\n", str);
+	handle_exitcode(0, str);
+	printf("%s\n", str);
 }
 
 

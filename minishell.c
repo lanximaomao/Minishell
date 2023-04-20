@@ -70,6 +70,9 @@ void minishell(t_mini *mini, char *line)
 	cmd_args = ft_split(line, ' ');
 	if (!cmd_args)
 		ft_error("split function returns null.\n", 1);
+
+
+
 	if (is_buildin(cmd_args, mini->env) == 1)
 		return;
 	// if not a buildin, start to fork....

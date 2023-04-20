@@ -1,3 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expander.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lliu <lliu@student.42.fr>                  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/04/20 12:13:31 by lliu              #+#    #+#             */
+/*   Updated: 2023/04/20 20:58:23 by lliu             ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+
+
 #include "minishell.h"
 
 // call this function between lexer and parser
@@ -9,13 +23,14 @@
 // 5. exp_line = ft_strjoin(env_value[j], tmp_substr);
 // 6. free(temp_line); temp_line = NULL; temp_line = exp_line;
 
+
 // handle $?, use the waitpid() status of process, tips: WEXITSTATUS(), WIFEXITED(), WIFSIGNALED()
-char *handle_exitcode(int status, char *str) // test$?-test => test0-test
+char *handle_exitcode(int exitcode, char *str) // test$?-test => test0-test
 {
 	char *str_status = NULL; // itoa(status)
 	char *res = NULL;
 
-	str_status = ft_itoa(status);
+	str_status = ft_itoa(exitcode);
 	res = ft_strjoin(str_status, str + 1); // 去掉'?'
 	free(str_status);
 	str_status = NULL;
@@ -24,95 +39,98 @@ char *handle_exitcode(int status, char *str) // test$?-test => test0-test
 	return (res);
 }
 
-// replace the env_name with env_value, expand the args
-void handle_expand(t_list *line_lst, t_list *env_lst, int status) // status is the exitcode of the previous process
+// find the env_name and replace it with env_value
+char *replace_env(char *tmp_exp, t_list *env_lst, char *tmp_substr, int len_envp) // tmp_substr, 找到环境变量之后，去除env_name的子串
+{
+	while (((char **)env_lst->content)[0]) // iterate the all the env names
+	{
+		len_envp = ft_strlen(((char **)env_lst->content)[0]);
+		if (ft_strnstr(tmp_exp, ((char **)env_lst->content)[0], len_envp)
+			 && !ft_isalnum(tmp_exp[len_envp])) // 判断下一个是否是特殊字符（！数字！字母）
+		{
+			if (!(tmp_substr = ft_substr(tmp_exp, len_envp, ft_strlen(tmp_exp))))
+				ft_error("Malloc failed", MALLOC);
+			free_str(tmp_exp);
+			if (!(tmp_exp = ft_strdup(ft_strjoin(((char **)env_lst->content)[1], tmp_substr))))
+				ft_error("Malloc failed", MALLOC);
+			free_str(tmp_substr);
+			len_envp = -1; // 复用， for norm
+			break;
+		}
+		env_lst = env_lst->next;
+	}
+	if (len_envp != -1)
+	{
+		free_str(tmp_exp);
+		tmp_exp = ft_strdup("");
+	}
+	return (tmp_exp);
+}
+
+// 展开后的tmp_exp，又重新连接起来，形成新的temp_line后续parser使用，并且free原来的temp_line
+char *ft_mulstrjoin(char **tmp_exp, int len) // len is the length of tmp_exp
 {
 	int i;
-	int j;
-	int isExpand = 0;
-	int len_envp = 0;
-	char **tmp_exp = NULL; // $ split每个temp_line
-	char *tmp_substr = NULL; // 找到环境变量之后，去除env_name的子串
-	char *exp_line = NULL; // 组合成一个扩展之后的字符串
-	char *tmp_join = NULL; // for free， strjoin的第一个参数
+	char *tmp_join;
+	char *res;
 
+	i = 0;
+	tmp_join = NULL; // for free， strjoin的第一个参数
+	res = NULL;
+	if (!(res = ft_strdup("")))
+		ft_error("Malloc failed", MALLOC);
+	while (i < len)
+	{
+		tmp_join = res;
+		res = ft_strjoin(tmp_join, tmp_exp[i]);
+		if (!res)
+			ft_error("Malloc failed", MALLOC);
+		free_str(tmp_join);
+		i++;
+	}
+	return res;
+}
+
+// split, replace, joint, return
+// for reuse this function in heredoc
+char *replace_env_expand(char *temp_line, t_list *env_lst, int exitcode)
+{
+	int i;
+	char **tmp_exp; // $ split每个temp_line
+
+	i = -1;
+	tmp_exp = NULL;
+	tmp_exp = ft_split(temp_line, '$');
+	if (!tmp_exp)
+		ft_error("Malloc failed", MALLOC);
+	if (temp_line[0] != '$')
+		i = 0; // the first arg no need to handle
+	free(temp_line);
+	temp_line = NULL;
+	while (tmp_exp[++i])
+	{
+		if (tmp_exp[i][0] == '?')
+			tmp_exp[i] = handle_exitcode(exitcode, tmp_exp[i]);
+		else
+			tmp_exp[i] = replace_env(tmp_exp[i], env_lst, NULL, 0);
+	}
+	temp_line = ft_mulstrjoin(tmp_exp, i);
+	free_char(tmp_exp);
+
+	return temp_line;
+}
+
+void handle_args_expand(t_list *line_lst, t_list *env_lst, int exitcode) // status is the exitcode of the previous process
+{
 	while (line_lst)
 	{
-		if (((t_input *)line_lst->content)->quote_type != 1 && ft_strchr(((t_input *)line_lst->content)->temp_line, '$'))
-		{
-			tmp_exp = ft_split(((t_input *)line_lst->content)->temp_line, '$');
-			if (!tmp_exp)
-				ft_error("Malloc failed", MALLOC);
-			if (((t_input *)line_lst->content)->temp_line[0] == '$')
-				i = 0; // the first arg need to handle $
-			else
-			 	i = 1; // the first arg no need to handle
-
-			while (tmp_exp[i])
-			{
-				if (tmp_exp[i][0] != '?')
-				{
-					while (((char **)env_lst->content)[0]) // iterate the all the env names
-					{
-						len_envp = ft_strlen(((char **)env_lst->content)[0]);
-						if (ft_strnstr(tmp_exp[i], ((char **)env_lst->content)[0], len_envp) && !ft_isalnum(tmp_exp[i][len_envp])) // 判断下一个是否是特殊字符（！数字！字母）
-						{
-							tmp_substr = ft_substr(tmp_exp[i], len_envp, ft_strlen(tmp_exp[i])); // 内部已经free了tmp_exp
-							if (!tmp_substr)
-								ft_error("Syntax error", SYNTAX);
-							free(tmp_exp[i]);
-							tmp_exp[i] = NULL;
-
-							exp_line = ft_strjoin(((char **)env_lst->content)[1], tmp_substr);
-							if (!exp_line)
-								ft_error("Syntax error", SYNTAX);
-							free(tmp_substr);
-							tmp_substr = NULL;
-							tmp_exp[i] = ft_strdup(exp_line);
-							free(exp_line);
-							exp_line = NULL;
-							isExpand = 1;
-							break;
-						}
-						env_lst = env_lst->next;
-					}
-					// replace the invalid envp to null
-					if (!isExpand)
-					{
-						free(tmp_exp[i]);
-						tmp_exp[i] = NULL;
-						tmp_exp[i] = ft_strdup("");
-					}
-				}
-				else
-					tmp_exp[i] = handle_exitcode(status, tmp_exp[i]);
-				i++;
-			}
-			j = i; // 复用一下
-			i = 0;
-			// 展开后的tmp_exp，又重新连接起来，形成新的temp_line后续parser使用，并且free原来的temp_line
-			free(((t_input *)line_lst->content)->temp_line);
-			((t_input *)line_lst->content)->temp_line = NULL;
-			((t_input *)line_lst->content)->temp_line = ft_strdup("");
-			if (!(((t_input *)line_lst->content)->temp_line))
-				ft_error("Malloc failed", MALLOC);
-			while (i < j)
-			{
-				tmp_join = ((t_input *)line_lst->content)->temp_line;
-				((t_input *)line_lst->content)->temp_line = ft_strjoin(tmp_join, tmp_exp[i]);
-				if (!(((t_input *)line_lst->content)->temp_line))
-					ft_error("Malloc failed", MALLOC);
-				free(tmp_join);
-				tmp_join = NULL;
-				i++;
-			}
-			free_char(tmp_exp);
-		}
+		if (((t_input *)line_lst->content)->quote_type != 1
+			 && ft_strchr(((t_input *)line_lst->content)->temp_line, '$'))
+			((t_input *)line_lst->content)->temp_line = replace_env_expand(((t_input *)line_lst->content)->temp_line, env_lst, exitcode);
 		line_lst = line_lst->next;
 	}
-	return ;
 }
-/*
+
 int	env_init(t_mini *mini, char **env)
 {
 	int		i;
@@ -154,8 +172,8 @@ int main(int argc, char **argv, char **env)
 	while (1)
 	{
 		line = readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ");
-		if (!line)
-			ft_error("Readline failed.\n", 4);
+		if (!line && (access("tmp_file_name", F_OK) == -1)) // heredoc 直接EOF就会报错，因为未分配mem
+			ft_error("Readline failed.123\n", 4);
 		if (ft_strncmp(line, "q", 2) == 0)
 		{
 			free(line);
@@ -163,10 +181,13 @@ int main(int argc, char **argv, char **env)
 		}
 		add_history(line);
 
-		line_lst = get_linelst(line);
-		handle_expand(line_lst, mini->env, exitcode);
-		cmd_lst = parse_cmds(line_lst);
+		line_lst = get_linelst(line, line_lst, -1);
+		free(line);
+		line = NULL;
+		handle_args_expand(line_lst, mini->env, exitcode);
+		cmd_lst = parse_cmds(line_lst, 0); // exitcode
 		ft_lstfree(line_lst);
+		line_lst = NULL;
 		while (cmd_lst)
 		{
 			printf("cmd: %s\n", ((t_token *)cmd_lst->content)->cmd);
@@ -186,12 +207,10 @@ int main(int argc, char **argv, char **env)
 			if (cmd_lst)
 				printf("\n****************the next cmd*****************\n");
 		}
-		free(line);
-		line = NULL;
 	}
 	clear_history();
 	return (0);
-} */
+}
 
 // <<"EOF" <infile 'ls' "-l" | grep "test" >outfile >>'out2' test$?test 42$PWD-hive
 // < infile 'ls' "-l" |wc -l > outfile

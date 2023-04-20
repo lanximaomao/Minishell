@@ -22,30 +22,36 @@ void init_tokens(t_token *tokens)
 // return: -1 means error and handle this, no more free in this function
 // after call: 	delete the tmp_heredoc_file after this cmd_node, and strongly recommend to use different file_name for 1st argument
 // 				<< heredoc 需要将每行都要执行参数扩展、命令替换以及算术扩展
-void handle_heredoc(char *tmp_file_name, char *eof)
+void handle_heredoc(char *tmp_file_name, char *eof, int exitcode)
 {
 	int fd = 0; // for tmp_file, store the heredoc
-	char *heredoc = NULL;
-	char *line = NULL;
+	char *heredoc;
+	char *line;
 
+	heredoc = NULL;
+	line = NULL;
 	while(1)
 	{
 		if (!(line = readline("heredoc >> ")))
-			ft_error("Readline error", FUNC);
-		if (ft_strncmp(line, eof, ft_strlen(line)) == 0)
-		{
-			free(line);
-			break;
-		}
+			line = ft_strdup(""); // can't output readline error here
+		// expand the $(...)
+		// if (ft_strchr(line, '$'))
+
+
 		if (!(heredoc = ft_strjoin(line, "\n"))) // line no need free
 			ft_error("Malloc failed", MALLOC);
-
 		if (!fd && (fd = open(tmp_file_name, O_WRONLY | O_CREAT | O_TRUNC, 0644)) < 0) // 读写/读/读
 			ft_error("Open tmp_file failed", FILE_OP);
 		if (write(fd, heredoc, ft_strlen(heredoc)) == -1)
 			ft_error("Open tmp_file failed", FILE_OP);
 		free(heredoc);
 		heredoc = NULL;
+		if (!ft_strncmp(line, eof, ft_strlen(line))
+			&& !ft_strncmp(line, eof, ft_strlen(eof)))
+		{
+			free(line);
+			break;
+		}
 	}
 	close(fd);
 	return ;
@@ -55,7 +61,7 @@ void handle_heredoc(char *tmp_file_name, char *eof)
 // return: null means error and handle this;
 // leaks: handled the error free
 // after call: free the cmd_lst, free the line_lst from the get_linelst() in lexer.c
-t_list *parse_cmds(t_list *line_lst)
+t_list *parse_cmds(t_list *line_lst, int exitcode)
 {
 	int i;
 	int j;
@@ -65,9 +71,6 @@ t_list *parse_cmds(t_list *line_lst)
 	t_list *node = NULL;
 	t_token *cmd_tokens; // the single cmd split from line input
 
-	if (!line_lst)
-		return (NULL);
-
 	while (line_lst)
 	{
 		i = 0; // for num_infile
@@ -75,7 +78,7 @@ t_list *parse_cmds(t_list *line_lst)
 		k = 1; // for num_args, k = 0 for cmd in front of args
 		cmd_tokens = (t_token *)ft_calloc(sizeof(t_token), 1);
 		if (!cmd_tokens)
-			return (NULL);
+			ft_error("Malloc failed", MALLOC);
 		init_tokens(cmd_tokens);
 		while (line_lst && ((t_input *)line_lst->content)->pipe_sign != 1)
 		{ // no handle the <>/<>>/></><</<<>/<<>>/>></>><</>>>/>>>>, should be syntax error or
@@ -106,7 +109,7 @@ t_list *parse_cmds(t_list *line_lst)
 					// delete the heredoc tmp_file after used
 					if (line_lst->next == NULL)
 						ft_error("Syntax error", SYNTAX);
-					handle_heredoc("tmp_file_name", ((t_input *)line_lst->next->content)->temp_line);
+					handle_heredoc("tmp_file_name", ((t_input *)line_lst->next->content)->temp_line, exitcode);
 					cmd_tokens->infile = (char **)ft_realloc(cmd_tokens->infile, sizeof(char *) * (i + 1), sizeof(char *) * (i + 2));
 					cmd_tokens->infile[i] = ft_strdup("tmp_file_name");
 					if (!cmd_tokens->infile[i])

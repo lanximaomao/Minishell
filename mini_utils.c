@@ -6,6 +6,12 @@ void ft_error(char* msg, int error_code)
 	perror(msg);
 	exit(error_code);
 }
+// free char *
+void free_str(char *str)
+{
+	free(str);
+	str = NULL;
+}
 
 // free char **
 void free_char(char **str)

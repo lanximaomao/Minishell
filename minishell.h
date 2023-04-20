@@ -72,12 +72,13 @@ typedef struct s_mini
 
 // mini_utils.c
 void ft_error(char* msg, int error_code);
+void free_str(char *str);
 void free_char(char **str);
 void free_input(t_input *input);
 void free_tokens(t_token *token, int num_args, int num_infile, int num_outfile_type);
 
 // lexer.c
-t_list *get_linelst(char *line);
+t_list *get_linelst(char *line, t_list *line_lst, int i);
 
 
 void		minishell(t_mini *mini, char *line);
@@ -86,7 +87,7 @@ char**		env_convert(t_list* env);
 char*		env_handler(t_list *env, char* str);
 
 // parser.c
-t_list *parse_cmds(t_list *line_lst);
+t_list *parse_cmds(t_list *line_lst, int exitcode);
 
 
 // minishell.c
