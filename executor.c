@@ -5,10 +5,6 @@
 
 void minishell(t_mini *mini, char *line)
 {
-	int pid1;
-	int status;
-	int size;
-
 	if (*line == '\0')
 		return;
 	//lexer parser and expander, and heredoc is also handelled here
@@ -23,19 +19,32 @@ void minishell(t_mini *mini, char *line)
 
 int run_run_run(t_mini *mini)
 {
-	size = ft_lstsize(mini->cmd_lst);
+	int i;
+	int *pid;
+	int *status;
+	int size;
 
+	i = 0;
+	size = ft_lstsize(mini->cmd_lst);
+	pid = malloc(sizeof(int) * size);
+	if (!pid)
+		ft_error("malloc fail.\n", 1);
+	status = malloc(sizeof(int) * size);
+	if (!status)
+		ft_error("malloc fail.\n", 1);
 	tmp = mini->cmd_lst;
 	while (mini->cmd_lst)
 	{
-		pid1 = fork();
-		if (pid1 == -1)
+		pid[i] = fork();
+		if (pid[i] == -1)
 			ft_error("fork failed.\n", 4);
-		else if (pid == 0)
-			cmd(mini, line);
-		waitpid(pid1, &status, 0);
+		else if (pid[i] == 0)
+			cmd(mini->cmd_lst, line); //node
 		tmp = tmp->next;
 	}
+	i = 0;
+	while(i++ < size)
+		waitpid(pid1, &status[i], 0);
 }
 
 int cmd(t_mini *mini, char* line)
