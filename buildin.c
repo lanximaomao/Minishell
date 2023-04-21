@@ -1,11 +1,9 @@
 /*
-cd, pwd, env, export, unset, exit
-cd and export need to redo
+!! update unset
 */
 
 #include "minishell.h"
 #include "buidin.h"
-#include "env.h"
 
 int is_buildin(char** cmd_args, t_list *env)
 {
@@ -61,7 +59,10 @@ int	my_cd(char **arg, t_list *env)
 		arg[1] = ft_strdup(home);//to be freed
 	//printf("%s\n", arg[1]);
 	if (chdir(arg[1]) != 0)
-		ft_error("chdir error", 1);
+	{
+		ft_printf("No such file or directory.\n");
+		return (2);
+	}
 	if (getcwd(buf, sizeof(buf)) != NULL)
 		env_find_and_replace(env, "PWD", buf);
 	return (1);
@@ -159,35 +160,15 @@ void	my_export(char **arg, t_list *env)
 	len = 0;
 
 	if (!arg[i])
+	{
 		my_export_no_aguments(env);
-
-
-	if (!arg[i])
-		my_export_no_aguments(env);
-
+		return;
+	}
 	while (arg[i])
 	{
 		j = 0;
 		while (arg[i][j])
 		{
-			len = 0;
-			if (arg[i][j] != '=')
-			{
-				while (arg[i][j] && arg[i][j] != '=' && ++len)
-				{
-					j++;
-				}
-				env_content = malloc(sizeof(char*) * 3);
-				if (!env_content)
-					ft_error("malloc fail.\n", 1);
-				env_content[0]=ft_substr(arg[i], j-len, len);
-				env_content[1]=ft_substr(arg[i], len+1, ft_strlen(arg[i]));
-				env_content[2] = NULL;
-				//ft_printf("env[0]=%s, env[1]=%s, env[3]=%s\n", env_content[0], env_content[1], env_content[2]);
-				break;
-			}
-			else
-				j++;
 			len = 0;
 			if (arg[i][j] != '=')
 			{

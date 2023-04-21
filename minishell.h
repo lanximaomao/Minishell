@@ -25,18 +25,6 @@
 # define SYNTAX 3
 # define FUNC 4
 
-/*
- 1. Malloc failed.
- 2. File operation failed. // open, read, close, write
- 4. Syntax error. *****.
- 3. Readline error.
- 5. Chdir error.
- 6. Fork erroe.
- 7. Pipe error.
- 8. Getcwd error.
-
-*/
-
 
 typedef struct s_input
 {
@@ -59,6 +47,8 @@ typedef struct s_token
 	int		num_args;
 	int		num_infile;
 	int		num_outfile_type;
+	int		fd_in; // add by Lin
+	int		fd_out; // add by Lin
 	// int		num_errfile;
 
 }			t_token;
@@ -92,7 +82,8 @@ t_list *parse_cmds(t_list *line_lst, t_list *env_lst, int exitcode);
 // expander.c
 char *replace_env_expand(char *temp_line, t_list *env_lst, int exitcode);
 
-
+int env_find_and_replace(t_list *env, char* to_find, char* to_replace);
+void test_env_functions(t_mini *mini);
 // minishell.c
 
 
