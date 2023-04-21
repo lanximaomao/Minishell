@@ -6,7 +6,7 @@
 /*   By: srall <srall@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/20 12:13:31 by lliu              #+#    #+#             */
-/*   Updated: 2023/04/21 13:45:22 by srall            ###   ########.fr       */
+/*   Updated: 2023/04/21 16:20:08 by srall            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,87 +130,3 @@ void handle_args_expand(t_list *line_lst, t_list *env_lst, int exitcode) // stat
 	}
 }
 
-int	env_init(t_mini *mini, char **env)
-{
-	int		i;
-	char	**env_content;
-	t_list	*node;
-
-	i = 0;
-	mini->env = NULL;
-	while (env[i])
-	{
-		env_content = ft_split(env[i], '=');
-		if (!env_content)
-			ft_error("malloc fail or null input?\n", 1);
-		node = ft_lstnew((char **)env_content);
-		if (!node)
-			ft_error("fail to init a node\n", 1);
-		ft_lstadd_back(&mini->env, node);
-		i++;
-	}
-	//test_env_functions(mini);
-	return (1);
-}
-
-int main(int argc, char **argv, char **env)
-{
-	t_list *line_lst = NULL;
-	t_input *input;
-	char *line;
-	t_list *cmd_lst = NULL;
-	t_mini *mini;
-	int exitcode = 0; // parent process get the child process exitcode
-	int i = -1;
-
-	mini = malloc(sizeof(t_mini) * 1);
-	if (!mini)
-		ft_error("Malloc fail.\n", 1);
-	if (env_init(mini, env) != 1)
-		ft_error("fail to init env variables.", 3);
-	while (1)
-	{
-		line = readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ");
-		if (!line) // heredoc 直接EOF就会报错，因为未分配mem
-			ft_error("Readline failed\n", FUNC);
-		if (ft_strncmp(line, "q", 2) == 0)
-		{
-			free(line);
-			break ;
-		}
-		add_history(line);
-
-		line_lst = get_linelst(line, line_lst, -1);
-		free(line);
-		line = NULL;
-		handle_args_expand(line_lst, mini->env, exitcode);
-		cmd_lst = parse_cmds(line_lst, mini->env, 0); // exitcode
-		ft_lstfree(line_lst);
-		line_lst = NULL;
-
-		// while (cmd_lst)
-		// {
-		// 	printf("cmd: %s\n", ((t_token *)cmd_lst->content)->cmd);
-		// 	i = 0;
-		// 	while (i < ((t_token *)cmd_lst->content)->num_args)
-		// 		printf("args: %s\n", ((t_token *)cmd_lst->content)->args[i++]);
-		// 	i = 0;
-		// 	while (i < ((t_token *)cmd_lst->content)->num_infile)
-		// 		printf("infile: %s\n", ((t_token *)cmd_lst->content)->infile[i++]);
-		// 	i = 0;
-		// 	while (i < ((t_token *)cmd_lst->content)->num_outfile_type)
-		// 	{
-		// 		printf("outfile: %s\n", ((t_token *)cmd_lst->content)->outfile[i]);
-		// 		printf("output_type: %d\n", ((t_token *)cmd_lst->content)->output_type[i++]);
-		// 	}
-		// 	cmd_lst = cmd_lst->next;
-		// 	if (cmd_lst)
-		// 		printf("\n****************the next cmd*****************\n");
-		// }
-	}
-	clear_history();
-	return (0);
-}
-
-// <<"EOF" <infile 'ls' "-l" | grep "test" >outfile >>'out2' test$?test 42$PWD-hive
-// < infile 'ls' "-l" |wc -l > outfile
