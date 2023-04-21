@@ -72,7 +72,7 @@ int cmd(t_mini *mini, int** fd_pipe, int size, int which_pipe)
 		ft_error("file cannot be closed.\n", 4);
 
 	// check if it is a buildin function, if yes, run and return.
-	if (is_buildin(token->args, mini->env) == 1)
+	if (is_buildin(mini->cmd_lst, mini->env) == 1)
 		return (0);
 	// not a buildin, check if full path the already available, if yes, run and return.
 	if (access(token->args[0], X_OK) == 0)
@@ -114,7 +114,7 @@ int handel_file(t_token* token, int** fd_pipe, int which_pipe, int size)
 	// if no infile is given,
 	// by default it should take stdin if it is the first cmd
 	// or reading from the connected pipes
-	if (token->infile[0] == NULL) // or token->infile == NULL?
+	if (token->infile == NULL) // or token->infile == NULL?
 	{
 		if (which_pipe == 0)
 			token->fd_in = 0;

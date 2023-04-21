@@ -12,14 +12,13 @@ WHITE		=	\033[0;97m
 
 ECHO		= echo
 
-SRCS = minishell.c mini_utils.c buildin.c pipe.c env.c test_lin.c
+SRCS = minishell.c mini_utils.c buildin.c env.c test_lin.c
 OBJS = $(SRCS:.c=.o)
 
 
 SRCS_TEST =		main.c minishell.c mini_utils.c			\
 				lexer.c expander.c parser.c				\
 				buildin.c env.c	executor.c # test_lliu.c #
-				buildin.c pipe.c env.c # executor.c		# test_lliu.c #
 
 NAME = minishell
 CC = cc

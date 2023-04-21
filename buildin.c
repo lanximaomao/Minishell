@@ -5,40 +5,45 @@
 #include "minishell.h"
 #include "buidin.h"
 
-int is_buildin(char** cmd_args, t_list *env)
+int is_buildin(t_list* cmd_lst, t_list *env)
 {
 	int len;
+	t_token *token;
 
-	len = ft_strlen(cmd_args[0]);
-	if (len == 2 && ft_strncmp(cmd_args[0], "cd", len) == 0)
+	printf("here\n");
+	token = (t_token*)(cmd_lst->content);
+	len = ft_strlen(token->args[0]);
+	printf("len = %d, arg = %s\n", len, token->args[0]);
+
+	if (len == 2 && ft_strncmp(token->args[0], "cd", len) == 0)
 	{
-		my_cd(cmd_args, env);
+		my_cd(token->args, env);
 		return(1);
 	}
-	else if (len == 3 && ft_strncmp(cmd_args[0], "pwd", len) == 0)
+	else if (len == 3 && ft_strncmp(token->args[0], "pwd", len) == 0)
 	{
 		my_pwd(env);
 		return(1);
 	}
-	else if (len == 4 && ft_strncmp(cmd_args[0], "exit", len) == 0)
+	else if (len == 4 && ft_strncmp(token->args[0], "exit", len) == 0)
 	{
-		my_exit(cmd_args, env);
+		my_exit(token->args, env);
 		return(1);
 	}
-	else if (len == 4 && ft_strncmp(cmd_args[0], "echo", len) == 0)
+	else if (len == 4 && ft_strncmp(token->args[0], "echo", len) == 0)
 	{
-		my_echo(cmd_args, env);
+		my_echo(token->args, env);
 		return (1);
 	}
-	else if (len == 5 && ft_strncmp(cmd_args[0], "unset", len) == 0)
+	else if (len == 5 && ft_strncmp(token->args[0], "unset", len) == 0)
 	{
-		my_unset(cmd_args, env);
+		my_unset(token->args, env);
 		return (1);
 
 	}
-	else if (len == 6 && ft_strncmp(cmd_args[0], "export", len) == 0)
+	else if (len == 6 && ft_strncmp(token->args[0], "export", len) == 0)
 	{
-		my_export(cmd_args, env);
+		my_export(token->args, env);
 		return(1);
 	}
 	return (0);
