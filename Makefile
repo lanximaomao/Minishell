@@ -26,10 +26,9 @@ CFLAGS = -I./libft_42/inc
 LDFLAGS = -L./libft_42 -lft -lreadline
 FSANITIZE	= -fsanitize=address -g3
 
-# NAME_BONUS = minishell_bonus
 
-
-# OBJS = $(SRCS:.c=.o) This line of code is automatically linked through CFLAGS, which is equivalent to the following line of code.
+# This line of code is automatically linked through CFLAGS, which is equivalent to the following line of code.
+# OBJS = $(SRCS:.c=.o)
 # $(OBJ_DIR)/%.o: %.c
 # 	@$(CC) $(CFLAGS) -c $< -o $@
 

@@ -1,9 +1,19 @@
 #include "minishell.h"
 
 // combine this error function
+// exit(error_code)
+// # define MALLOC 1
+// # define FILE_OP 2
+// # define SYNTAX 3
+// # define FUNC 4
+// error_code: <= 2 for system perror(malloc, file_err...)
+			// others for the mini_error(syntax, parse_err)
 void ft_error(char* msg, int error_code)
 {
-	perror(msg);
+	if (error_code <= 2)
+		perror(msg);
+	else
+		printf("%s\n", msg);
 	exit(error_code);
 }
 // free char *

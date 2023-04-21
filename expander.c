@@ -1,28 +1,5 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   expander.c                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: srall <srall@student.42.fr>                +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/20 12:13:31 by lliu              #+#    #+#             */
-/*   Updated: 2023/04/21 17:35:37 by srall            ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-
 
 #include "minishell.h"
-
-// call this function between lexer and parser
-// 把带有$标识的环境变量替换成相应的变量值；
-// 1. char **tmp_exp = ft_split (temp_line, $)
-// 2. 除了第一项，全部进行替换；
-// 3. 查找ft_strnstr(tmp_exp[i], env_name[j], ft_strlen(env_name[j]))，只检测开头与env_name一致的值
-// 4. 找到之后，tmp_substr = ft_substr(tmp_exp[i], ft_strlen(env_name[j]), ft_strlen(tmp_exp[i]))
-// 5. exp_line = ft_strjoin(env_value[j], tmp_substr);
-// 6. free(temp_line); temp_line = NULL; temp_line = exp_line;
-
 
 // handle $?, use the waitpid() status of process, tips: WEXITSTATUS(), WIFEXITED(), WIFSIGNALED()
 char *handle_exitcode(int exitcode, char *str) // test$?-test => test0-test
@@ -123,9 +100,15 @@ void handle_args_expand(t_list *line_lst, t_list *env_lst, int exitcode) // stat
 {
 	while (line_lst)
 	{
+		if (!ft_strncmp(((t_input *)line_lst->content)->temp_line, "", 1)) // handle error: parse error, '| |', '< >', '> <<'
+		{
+			if (line_lst->next && !ft_strncmp(((t_input *)line_lst->content)->temp_line, "", 1))
+				ft_error("Syntax error: parse error.", SYNTAX);
+		}
 		if (((t_input *)line_lst->content)->quote_type != 1
 			 && ft_strchr(((t_input *)line_lst->content)->temp_line, '$'))
 			((t_input *)line_lst->content)->temp_line = replace_env_expand(((t_input *)line_lst->content)->temp_line, env_lst, exitcode);
+
 		line_lst = line_lst->next;
 	}
 }
