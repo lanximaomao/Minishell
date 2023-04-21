@@ -106,35 +106,3 @@ t_list *get_linelst(char *line, t_list *line_lst, int i) // i = -1
 	return (line_lst);
 }
 
-// ***** remember to free input after parsing *****
-
-// int main(int argc, char **argv)
-// {
-// 	t_list *line_lst = NULL;
-// 	t_input *input;
-// 	char *line;
-
-// 	while (1)
-// 	{
-// 		line = readline("minishell\033[31m$\033[0;39m ");
-// 		add_history(line);
-
-// 		line_lst = get_linelst(line);
-// 		while (line_lst)
-// 		{
-// 			printf("%s\n", ((t_input *)line_lst->content)->temp_line);
-// 			// printf("%d\n", ((t_input *)line_lst->content)->redir_sign);
-// 			printf("%d\n", ((t_input *)line_lst->content)->pipe_sign);
-// 			printf("%d\n", ((t_input *)line_lst->content)->quote_type);
-// 			line_lst = line_lst->next;
-// 		}
-// 		if (ft_strncmp(line, "exit", 4) == 0)
-// 		{
-// 			free(line);
-// 			break ;
-// 		}
-// 	}
-// 	return (0);
-// }
-
-

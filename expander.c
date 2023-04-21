@@ -6,7 +6,7 @@
 /*   By: srall <srall@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/20 12:13:31 by lliu              #+#    #+#             */
-/*   Updated: 2023/04/21 16:20:08 by srall            ###   ########.fr       */
+/*   Updated: 2023/04/21 17:35:37 by srall            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,4 +129,3 @@ void handle_args_expand(t_list *line_lst, t_list *env_lst, int exitcode) // stat
 		line_lst = line_lst->next;
 	}
 }
-
