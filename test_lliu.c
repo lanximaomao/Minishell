@@ -34,10 +34,9 @@ int main(int argc, char **argv) {
 
 	char *str = NULL;
 
-	str = ft_strdup("?test$HOME");
-	printf("%s\n", str);
-	handle_exitcode(0, str);
-	printf("%s\n", str);
+	str = ft_strdup("");
+	ft_strncmp(str, "exit", 4);
+	printf("%zu\n", ft_strlen(str));
 }
 
 

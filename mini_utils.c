@@ -7,10 +7,11 @@ void ft_error(char* msg, int error_code)
 	exit(error_code);
 }
 // free char *
-void free_str(char *str)
+int free_str(char *str)
 {
 	free(str);
 	str = NULL;
+	return (1);
 }
 
 // free char **

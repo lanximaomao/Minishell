@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lliu <lliu@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: srall <srall@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/20 12:13:31 by lliu              #+#    #+#             */
-/*   Updated: 2023/04/20 20:58:23 by lliu             ###   ########.fr       */
+/*   Updated: 2023/04/21 02:44:44 by srall            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,6 @@ char *replace_env_expand(char *temp_line, t_list *env_lst, int exitcode)
 	}
 	temp_line = ft_mulstrjoin(tmp_exp, i);
 	free_char(tmp_exp);
-
 	return temp_line;
 }
 
@@ -172,8 +171,8 @@ int main(int argc, char **argv, char **env)
 	while (1)
 	{
 		line = readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ");
-		if (!line && (access("tmp_file_name", F_OK) == -1)) // heredoc 直接EOF就会报错，因为未分配mem
-			ft_error("Readline failed.123\n", 4);
+		if (!line) // heredoc 直接EOF就会报错，因为未分配mem
+			ft_error("Readline failed.123\n", FUNC);
 		if (ft_strncmp(line, "q", 2) == 0)
 		{
 			free(line);
@@ -185,7 +184,7 @@ int main(int argc, char **argv, char **env)
 		free(line);
 		line = NULL;
 		handle_args_expand(line_lst, mini->env, exitcode);
-		cmd_lst = parse_cmds(line_lst, 0); // exitcode
+		cmd_lst = parse_cmds(line_lst, mini->env, 0); // exitcode
 		ft_lstfree(line_lst);
 		line_lst = NULL;
 		while (cmd_lst)
