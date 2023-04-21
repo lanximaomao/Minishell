@@ -15,29 +15,53 @@
 #include <stdarg.h>
 #include <dirent.h>
 
-void handle_exitcode(int status, char *str) // test$?-test => test0-test
+
+void handle_sig(int sig) {
+	if (sig == SIGINT)
+	{
+		printf("Caught signal %d (SIGINT) ctrl C \n", sig);
+		exit(0);
+	}
+	else if (sig == SIGQUIT)
+	{
+		printf("Caught signal %d (SIGQUIT) ctrl \\ \n", sig);
+		exit(0);
+	}
+	else if (sig == SIGTERM)
+	{
+		printf("test\n");
+		printf("Caught signal %d (SIGTERM) ctrl D \n", sig);
+		exit(0);
+	}
+}
+int main()
 {
-	char *str_status = NULL; // itoa(status)
-	char *res = NULL;
+	char buffer[256];
 
-	str_status = ft_itoa(status);
-	res = ft_strjoin(str_status, str + 1); // 去掉'?'
-	free(str_status);
-	str_status = NULL;
-	free(str);
-	str = NULL;
-	str = res;
-	// return (res);
+	// if (signal(SIGINT, handle_sig) == SIG_ERR) // ctrl C 2
+	// {
+	// 	printf("Error registering SIGINT handler\n");
+	// 	exit(1);
+	// }
+	// if (signal(SIGQUIT, handle_sig) == SIG_ERR) // ctrl \ 3
+	// {
+	// 	printf("Error registering SIGQUIT handler\n");
+	// 	exit(1);
+	// }
+	// if (signal(SIGTERM, sigterm_handler) == SIG_ERR) // ctrl D 15
+	// {
+	// 	printf("Error registering SIGTERM handler\n");
+	// 	exit(1);
+	// }
+	while (fgets(buffer, 256, stdin)) {
+		printf("You entered: %s", buffer);
+	}
+	signal(SIGINT, handle_sig);
+	printf("%d\n", SIGTERM);
+
+	return 0;
 }
 
-int main(int argc, char **argv) {
-
-	char *str = NULL;
-
-	str = ft_strdup("");
-	ft_strncmp(str, "exit", 4);
-	printf("%zu\n", ft_strlen(str));
-}
 
 
 /* int main(int argc, char **argv) {

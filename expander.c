@@ -6,7 +6,7 @@
 /*   By: srall <srall@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/20 12:13:31 by lliu              #+#    #+#             */
-/*   Updated: 2023/04/21 02:44:44 by srall            ###   ########.fr       */
+/*   Updated: 2023/04/21 13:45:22 by srall            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,7 +172,7 @@ int main(int argc, char **argv, char **env)
 	{
 		line = readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ");
 		if (!line) // heredoc 直接EOF就会报错，因为未分配mem
-			ft_error("Readline failed.123\n", FUNC);
+			ft_error("Readline failed\n", FUNC);
 		if (ft_strncmp(line, "q", 2) == 0)
 		{
 			free(line);
@@ -187,25 +187,26 @@ int main(int argc, char **argv, char **env)
 		cmd_lst = parse_cmds(line_lst, mini->env, 0); // exitcode
 		ft_lstfree(line_lst);
 		line_lst = NULL;
-		while (cmd_lst)
-		{
-			printf("cmd: %s\n", ((t_token *)cmd_lst->content)->cmd);
-			i = 0;
-			while (i < ((t_token *)cmd_lst->content)->num_args)
-				printf("args: %s\n", ((t_token *)cmd_lst->content)->args[i++]);
-			i = 0;
-			while (i < ((t_token *)cmd_lst->content)->num_infile)
-				printf("infile: %s\n", ((t_token *)cmd_lst->content)->infile[i++]);
-			i = 0;
-			while (i < ((t_token *)cmd_lst->content)->num_outfile_type)
-			{
-				printf("outfile: %s\n", ((t_token *)cmd_lst->content)->outfile[i]);
-				printf("output_type: %d\n", ((t_token *)cmd_lst->content)->output_type[i++]);
-			}
-			cmd_lst = cmd_lst->next;
-			if (cmd_lst)
-				printf("\n****************the next cmd*****************\n");
-		}
+
+		// while (cmd_lst)
+		// {
+		// 	printf("cmd: %s\n", ((t_token *)cmd_lst->content)->cmd);
+		// 	i = 0;
+		// 	while (i < ((t_token *)cmd_lst->content)->num_args)
+		// 		printf("args: %s\n", ((t_token *)cmd_lst->content)->args[i++]);
+		// 	i = 0;
+		// 	while (i < ((t_token *)cmd_lst->content)->num_infile)
+		// 		printf("infile: %s\n", ((t_token *)cmd_lst->content)->infile[i++]);
+		// 	i = 0;
+		// 	while (i < ((t_token *)cmd_lst->content)->num_outfile_type)
+		// 	{
+		// 		printf("outfile: %s\n", ((t_token *)cmd_lst->content)->outfile[i]);
+		// 		printf("output_type: %d\n", ((t_token *)cmd_lst->content)->output_type[i++]);
+		// 	}
+		// 	cmd_lst = cmd_lst->next;
+		// 	if (cmd_lst)
+		// 		printf("\n****************the next cmd*****************\n");
+		// }
 	}
 	clear_history();
 	return (0);

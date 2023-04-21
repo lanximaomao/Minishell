@@ -71,7 +71,7 @@ void free_tokens(t_token *token, int num_args, int num_infile, int num_outfile_t
 t_list *get_linelst(char *line, t_list *line_lst, int i);
 
 
-void		minishell(t_mini *mini, char *line);
+void		minishell(t_mini *mini, char *line, int exitcode);
 int			env_init(t_mini *mini, char **env);
 char**		env_convert(t_list* env);
 char*		env_handler(t_list *env, char* str);
@@ -81,13 +81,15 @@ t_list *parse_cmds(t_list *line_lst, t_list *env_lst, int exitcode);
 
 // expander.c
 char *replace_env_expand(char *temp_line, t_list *env_lst, int exitcode);
+void handle_args_expand(t_list *line_lst, t_list *env_lst, int exitcode); // status is the exitcode of the previous process
 
 int env_find_and_replace(t_list *env, char* to_find, char* to_replace);
 void test_env_functions(t_mini *mini);
 // minishell.c
 
 
-
+// executor.c
+int executor(t_mini *mini);
 
 
 #endif

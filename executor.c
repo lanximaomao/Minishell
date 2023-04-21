@@ -17,7 +17,7 @@ int executor(t_mini *mini)
 	pid = malloc(sizeof(int) * size);
 	if (!pid)
 		ft_error("malloc fail.\n", 1);
-	// why would I need status?
+	// why would I need status? 
 	status = malloc(sizeof(int) * size);
 	if (!status)
 		ft_error("malloc fail.\n", 1);
