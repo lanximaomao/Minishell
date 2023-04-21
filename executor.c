@@ -1,29 +1,16 @@
+#include "minishell.h"
 #include "pipe.h"
 #include "buidin.h"
-#include "minishell.h"
 
 
-void minishell(t_mini *mini, char *line)
-{
-	if (*line == '\0')
-		return;
-	//lexer parser and expander, and heredoc is also handelled here
-	//check for parsing error
-	// check for single buildin, if yes, just function call and return
-	if (ft_lstsize(t_mini->cmd_lst) == 1 && is_buildin(cmd_args, mini->env) == 1)
-		return;
-
-	// if not a buildin or there is more than one buidin, start to fork....
-	run_run_run(mini);
-}
-
-int run_run_run(t_mini *mini)
+int executor(t_mini *mini)
 {
 	int i;
 	int *pid;
 	int *status;
 	int size;
 	int **fd_pipe;
+	t_list *tmp;
 
 	i = 0;
 	size = ft_lstsize(mini->cmd_lst);
@@ -35,7 +22,7 @@ int run_run_run(t_mini *mini)
 	if (!status)
 		ft_error("malloc fail.\n", 1);
 	//init fd for creating pipes
-	fd_pipe = malloc(sizeof(int*) * (size - 1));
+	fd_pipe = (int**)malloc(sizeof(int*) * (size - 1));
 	if (!fd_pipe)
 		ft_error("malloc fail.\n", 1);
 	while (i < size - 1)
@@ -45,10 +32,11 @@ int run_run_run(t_mini *mini)
 			ft_error("malloc fail.\n", 1);
 		i++;
 	}
-	//create size - 1 pipes
+	//create (size - 1) pipes
 	handel_pipe_create(fd_pipe, size);
 	tmp = mini->cmd_lst;
-	while (mini->cmd_lst && i < size)
+	i = 0;
+	while (tmp && i < size)
 	{
 		pid[i] = fork();
 		if (pid[i] == -1)
@@ -60,7 +48,8 @@ int run_run_run(t_mini *mini)
 	}
 	i = 0;
 	while(i++ < size)
-		waitpid(pid1, &status[i], 0);
+		waitpid(pid[i], &status[i], 0);
+	return(status[i]);
 }
 
 int cmd(t_token* token, int** fd_pipe, int size, int which_pipe)
@@ -70,8 +59,8 @@ int cmd(t_token* token, int** fd_pipe, int size, int which_pipe)
 	//handel input and output
 	handel_file(token, fd_pipe, size, which_pipe);
 	// handel in and out
-	//dup2(token->fd_in, 0);
-	//dup2(token->fd_out, 1);
+	dup2(token->fd_in, 0);
+	dup2(token->fd_out, 1);
 	//close other fd, should I close fd_in when it is 0 and fd_out when it is 1???
 	if (close(token->fd_in) == -1 || close(token->fd_out) == -1)
 		ft_error("file cannot be closed.\n", 4);
@@ -111,7 +100,7 @@ int handel_file(t_token* token, int** fd_pipe, int which_pipe, int size)
 		token->fd_in = open(token->infile[i], O_RDONLY);
 		if (token->fd_in == -1)
 		{
-			perror("Fail to open infile"); // cannot exit, so that next file could be able to checked out.
+			perror("Fail to open infile"); // cannot exit, so that next commannd can be processed.
 			return (1);
 		}
 		if (token->infile[i + 1] != NULL)
@@ -121,7 +110,7 @@ int handel_file(t_token* token, int** fd_pipe, int which_pipe, int size)
 	// if no infile is given,
 	// by default it should take stdin if it is the first cmd
 	// or reading from the connected pipes
-	if (token->infile[0] == NULL)
+	if (token->infile[0] == NULL) // or token->infile == NULL?
 	{
 		if (which_pipe == 0)
 			token->fd_in = 0;
@@ -147,7 +136,7 @@ int handel_file(t_token* token, int** fd_pipe, int which_pipe, int size)
 	// if no outfile is given,
 	// by default it should be stdout if it's the last cmd
 	// otherwise, it should redirect to the connected pipe
-	if (token->outfile[0] == NULL)
+	if (token->outfile[0] == NULL) // or token->outfile == NULL?
 	{
 		if (which_pipe == size - 1 - 1)
 			token->fd_out = 1;

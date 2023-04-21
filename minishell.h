@@ -25,23 +25,6 @@
 # define SYNTAX 3
 # define FUNC 4
 
-/*
- 1. Malloc failed.
- 2. File operation failed. // open, read, close, write
- 4. Syntax error. *****.
- 3. Readline error.
- 5. Chdir error.
- 6. Fork erroe.
- 7. Pipe error.
- 8. Getcwd error.
-
-*/
-
-//typedef struct s_list
-//{
-//	void			*content;
-//	struct s_list	*next;
-//}					t_list;
 
 typedef struct s_input
 {

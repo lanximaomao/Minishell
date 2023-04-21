@@ -1,6 +1,5 @@
 /*
-cd, pwd, env, export, unset, exit
-cd and export need to redo
+!! update unset
 */
 
 #include "minishell.h"
