@@ -1,7 +1,6 @@
 #include "minishell.h"
-#include "pipe.h"
 #include "buidin.h"
-
+#include "executor.h"
 
 int executor(t_mini *mini)
 {
@@ -17,7 +16,7 @@ int executor(t_mini *mini)
 	pid = malloc(sizeof(int) * size);
 	if (!pid)
 		ft_error("malloc fail.\n", 1);
-	// why would I need status? 
+	// why would I need status?
 	status = malloc(sizeof(int) * size);
 	if (!status)
 		ft_error("malloc fail.\n", 1);
@@ -28,7 +27,7 @@ int executor(t_mini *mini)
 	while (i < size - 1)
 	{
 		fd_pipe[i] = malloc(sizeof(int) * 2);
-		if (!fd[pipe[i]])
+		if (!fd_pipe[i])
 			ft_error("malloc fail.\n", 1);
 		i++;
 	}
@@ -42,7 +41,7 @@ int executor(t_mini *mini)
 		if (pid[i] == -1)
 			ft_error("fork failed.\n", 4);
 		else if (pid[i] == 0)
-			cmd((t_token*)mini->cmd_lst->content, fd_pipe, size, i);
+			cmd(mini, fd_pipe, size, i);
 		tmp = tmp->next;
 		i++;
 	}
@@ -52,8 +51,13 @@ int executor(t_mini *mini)
 	return(status[i]);
 }
 
-int cmd(t_token* token, int** fd_pipe, int size, int which_pipe)
+int cmd(t_mini *mini, int** fd_pipe, int size, int which_pipe)
 {
+	t_token* token;
+	char* tmp;
+	char* path_cmd;
+
+	token = (t_token*)mini->cmd_lst->content;
 	// close unused pipes
 	handel_pipe_close(fd_pipe, size, which_pipe);
 	//handel input and output
@@ -64,12 +68,12 @@ int cmd(t_token* token, int** fd_pipe, int size, int which_pipe)
 	//close other fd, should I close fd_in when it is 0 and fd_out when it is 1???
 	if (close(token->fd_in) == -1 || close(token->fd_out) == -1)
 		ft_error("file cannot be closed.\n", 4);
-	if (close(fd_pipe[i][0]) == -1 || close(fd_pipe[i][1]) == -1)
+	if (close(fd_pipe[which_pipe][0]) == -1 || close(fd_pipe[which_pipe][1]) == -1)
 		ft_error("file cannot be closed.\n", 4);
 
 	// check if it is a buildin function, if yes, run and return.
 	if (is_buildin(token->args, mini->env) == 1)
-		return;
+		return (0);
 	// not a buildin, check if full path the already available, if yes, run and return.
 	if (access(token->args[0], X_OK) == 0)
 	{
@@ -81,10 +85,10 @@ int cmd(t_token* token, int** fd_pipe, int size, int which_pipe)
 		tmp = ft_strjoin("/", token->args[0]);//to be freed
 		path_cmd = get_path_cmd(tmp, mini->env);
 		free(tmp);
-		if (execve(path_cmd, cmd_args, env_convert(mini->env)) == -1)
+		if (execve(path_cmd, token->args, env_convert(mini->env)) == -1)
 			ft_error("Cannot execute command.\n", 4); // !error return
 	}
-	return(0);
+	return(1);
 }
 
 /* in order to save the fd_in and fd_out, add definition at s_token struct*/
@@ -115,7 +119,7 @@ int handel_file(t_token* token, int** fd_pipe, int which_pipe, int size)
 		if (which_pipe == 0)
 			token->fd_in = 0;
 		else
-			token->fd_in = fd[i][0];
+			token->fd_in = fd_pipe[i][0];
 	}
 	i = 0;
 	while (token->outfile[i])
@@ -149,7 +153,6 @@ int handel_file(t_token* token, int** fd_pipe, int which_pipe, int size)
 void handel_pipe_create(int** fd_pipe, int size)
 {
 	int i;
-	int ** fd_pipe;
 
 	//set up pipe
 	i = 0;
@@ -172,13 +175,14 @@ int handel_pipe_close(int **fd_pipe, int size, int which_pipe)
 	{
 		if ( i != which_pipe)
 		{
-			if (fd[i][0] > 0 && close(fd[i][0]) == -1)
+			if (fd_pipe[i][0] > 0 && close(fd_pipe[i][0]) == -1)
 				ft_error("file cannot be closed.", 4);
-			if (fd[i][1] > 0 && close(fd[i][1]) == -1)
+			if (fd_pipe[i][1] > 0 && close(fd_pipe[i][1]) == -1)
 				ft_error("file cannot be closed.", 4);
 		}
 		i++;
 	}
+	return(0);
 }
 
 char* get_path_cmd(char* str, t_list *env)

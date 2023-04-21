@@ -1,6 +1,5 @@
 #include "minishell.h"
 #include "buidin.h"
-#include "pipe.h"
 
 void minishell(t_mini *mini, char *line, int exitcode)
 {
@@ -25,32 +24,32 @@ void minishell(t_mini *mini, char *line, int exitcode)
 	ft_lstfree(line_lst);
 	line_lst = NULL;
 
-	// test the result of cmd_lst without executor
-	// while (cmd_lst)
-	// {
-	// 	printf("cmd: %s\n", ((t_token *)cmd_lst->content)->cmd);
-	// 	i = 0;
-	// 	while (i < ((t_token *)cmd_lst->content)->num_args)
-	// 		printf("args: %s\n", ((t_token *)cmd_lst->content)->args[i++]);
-	// 	i = 0;
-	// 	while (i < ((t_token *)cmd_lst->content)->num_infile)
-	// 		printf("infile: %s\n", ((t_token *)cmd_lst->content)->infile[i++]);
-	// 	i = 0;
-	// 	while (i < ((t_token *)cmd_lst->content)->num_outfile_type)
-	// 	{
-	// 		printf("outfile: %s\n", ((t_token *)cmd_lst->content)->outfile[i]);
-	// 		printf("output_type: %d\n", ((t_token *)cmd_lst->content)->output_type[i++]);
-	// 	}
-	// 	cmd_lst = cmd_lst->next;
-	// 	if (cmd_lst)
-	// 		printf("\n****************the next cmd*****************\n");
-	// }
+	 //test the result of cmd_lst without executor
+	 while (cmd_lst)
+	 {
+	 	printf("cmd: %s\n", ((t_token *)cmd_lst->content)->cmd);
+	 	i = 0;
+	 	while (i < ((t_token *)cmd_lst->content)->num_args)
+	 		printf("args: %s\n", ((t_token *)cmd_lst->content)->args[i++]);
+	 	i = 0;
+	 	while (i < ((t_token *)cmd_lst->content)->num_infile)
+	 		printf("infile: %s\n", ((t_token *)cmd_lst->content)->infile[i++]);
+	 	i = 0;
+	 	while (i < ((t_token *)cmd_lst->content)->num_outfile_type)
+	 	{
+	 		printf("outfile: %s\n", ((t_token *)cmd_lst->content)->outfile[i]);
+	 		printf("output_type: %d\n", ((t_token *)cmd_lst->content)->output_type[i++]);
+	 	}
+	 	cmd_lst = cmd_lst->next;
+	 	if (cmd_lst)
+	 		printf("\n****************the next cmd*****************\n");
+	 }
 
 	// check for single buildin, if yes, just function call and return
 	if (ft_lstsize(cmd_lst) == 1 && is_buildin(cmd_tokens->args, mini->env) == 1)
 		return;
 	// if not a buildin or there is more than one buidin, start to fork....
-	executor(mini); // find at executor.c
+	//executor(mini); // find at executor.c
 }
 
 

@@ -1,6 +1,5 @@
 #include "buidin.h"
 #include "minishell.h"
-#include "pipe.h"
 
 /*
 ** this function create a linked list
