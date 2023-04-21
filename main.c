@@ -16,7 +16,7 @@ int	readline_prompt(t_mini *mini)
 		printf("\033[0;94m%s\033[0;39m\n", buf);
 		if (!(line = readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ")))
 			ft_error("Readline error", FUNC);
-		if (ft_strlen(line) == 4 && !ft_strncmp(line, "exit", ft_strlen(line)))
+		if (!ft_strncmp(line, "exit", 5))
 		{
 			free(line);
 			break ;
@@ -25,6 +25,7 @@ int	readline_prompt(t_mini *mini)
 		add_history(line);
 		// execute all the input cmd, while loop for signal processing
 		minishell(mini, line, 0); // exitcode is 0, handle in later
+
 
 	}
 	clear_history(); // ! why rl_clear_history does not work?
