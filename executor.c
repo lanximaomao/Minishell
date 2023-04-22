@@ -11,24 +11,31 @@ int executor(t_mini *mini)
 	int **fd_pipe;
 	t_list *tmp;
 
+	//printf("\n**************** executor *****************\n");
+
 	i = 0;
 	size = ft_lstsize(mini->cmd_lst);
+	if (size == 1)
+	{
+		cmd_single(mini);
+		return (0);
+	}
 	pid = malloc(sizeof(int) * size);
 	if (!pid)
-		ft_error("malloc fail.\n", 1);
+		ft_error("pid malloc fail", 1);
 	// why would I need status?
 	status = malloc(sizeof(int) * size);
 	if (!status)
-		ft_error("malloc fail.\n", 1);
+		ft_error("status malloc fail", 1);
 	//init fd for creating pipes
 	fd_pipe = (int**)malloc(sizeof(int*) * (size - 1));
 	if (!fd_pipe)
-		ft_error("malloc fail.\n", 1);
+		ft_error("fd_pipe malloc fail", 1);
 	while (i < size - 1)
 	{
 		fd_pipe[i] = malloc(sizeof(int) * 2);
 		if (!fd_pipe[i])
-			ft_error("malloc fail.\n", 1);
+			ft_error("malloc fail", 1);
 		i++;
 	}
 	//create (size - 1) pipes
@@ -39,19 +46,50 @@ int executor(t_mini *mini)
 	{
 		pid[i] = fork();
 		if (pid[i] == -1)
-			ft_error("fork failed.\n", 4);
+			ft_error("fork failed", 4);
 		else if (pid[i] == 0)
-			cmd(mini, fd_pipe, size, i);
+			cmd_pipe(mini, fd_pipe, size, i);
 		tmp = tmp->next;
 		i++;
 	}
 	i = 0;
 	while(i++ < size)
 		waitpid(pid[i], &status[i], 0);
+
+	ft_printf("hello from minishell.\n");
 	return(status[i]);
 }
 
-int cmd(t_mini *mini, int** fd_pipe, int size, int which_pipe)
+int cmd_single(t_mini *mini)
+{
+	int pid;
+	char* path_cmd;
+	char* tmp;
+	int status;
+	t_token *token;
+
+	token = (t_token*)(mini->cmd_lst->content);
+
+	pid=fork();
+	if (pid == -1)
+		ft_error("fork failed.\n", 4);
+	else if (pid == 0)
+	{
+		if (access(token->cmd, X_OK) == 0)
+			execve(token->cmd, token->args, env_convert(mini->env));
+		else
+		{
+			tmp = ft_strjoin("/", token->cmd);//to be freed
+			path_cmd = get_path_cmd(tmp, mini->env);
+			free(tmp);
+			execve(path_cmd, token->args, env_convert(mini->env));
+		}
+	}
+	waitpid(pid, &status, 0);
+	return(0);
+}
+
+int cmd_pipe(t_mini *mini, int** fd_pipe, int size, int which_pipe)
 {
 	t_token* token;
 	char* tmp;
@@ -99,6 +137,7 @@ int handel_file(t_token* token, int** fd_pipe, int which_pipe, int size)
 
 	i = 0;
 	// loop through each infile
+	ft_printf("handel files.\n");
 	while (token->infile[i])
 	{
 		token->fd_in = open(token->infile[i], O_RDONLY);
@@ -154,6 +193,7 @@ void handel_pipe_create(int** fd_pipe, int size)
 {
 	int i;
 
+	ft_printf("creating %d pipes.\n", size - 1);
 	//set up pipe
 	i = 0;
 	while (i < size - 1)
