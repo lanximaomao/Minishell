@@ -21,10 +21,11 @@ void minishell(t_mini *mini, char *line, int exitcode)
 	line_lst = NULL;
 
 	// test the result of cmd_lst without executor
+	// iterate the tokens, use the nums_***. otherwise segfault
 	while (cmd_lst)
 	{
 		printf("cmd: %s\n", ((t_token *)cmd_lst->content)->cmd);
-		i = 1; // ignore the first arg which is cmd
+		i = 0; // ignore the first arg which is cmd
 		while (i < ((t_token *)cmd_lst->content)->num_args)
 			printf("args: %s\n", ((t_token *)cmd_lst->content)->args[i++]);
 		i = 0;
