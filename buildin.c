@@ -10,38 +10,41 @@ int is_buildin(t_list* cmd_lst, t_list *env)
 	int len;
 	t_token *token;
 
-	printf("here\n");
+	//printf("\n**************** buildin *****************\n");
 	token = (t_token*)(cmd_lst->content);
-	len = ft_strlen(token->args[0]);
-	printf("len = %d, arg = %s\n", len, token->args[0]);
 
-	if (len == 2 && ft_strncmp(token->args[0], "cd", len) == 0)
+	//printf("args: %s\n", token->args[0]);
+	//printf("args: %s\n", token->args[1]);
+
+	len = ft_strlen(token->cmd);
+
+	if (len == 2 && ft_strncmp(token->cmd, "cd", len) == 0)
 	{
 		my_cd(token->args, env);
 		return(1);
 	}
-	else if (len == 3 && ft_strncmp(token->args[0], "pwd", len) == 0)
+	else if (len == 3 && ft_strncmp(token->cmd, "pwd", len) == 0)
 	{
 		my_pwd(env);
 		return(1);
 	}
-	else if (len == 4 && ft_strncmp(token->args[0], "exit", len) == 0)
+	else if (len == 4 && ft_strncmp(token->cmd, "exit", len) == 0)
 	{
 		my_exit(token->args, env);
 		return(1);
 	}
-	else if (len == 4 && ft_strncmp(token->args[0], "echo", len) == 0)
+	else if (len == 4 && ft_strncmp(token->cmd, "echo", len) == 0)
 	{
 		my_echo(token->args, env);
 		return (1);
 	}
-	else if (len == 5 && ft_strncmp(token->args[0], "unset", len) == 0)
+	else if (len == 5 && ft_strncmp(token->cmd, "unset", len) == 0)
 	{
 		my_unset(token->args, env);
 		return (1);
 
 	}
-	else if (len == 6 && ft_strncmp(token->args[0], "export", len) == 0)
+	else if (len == 6 && ft_strncmp(token->cmd, "export", len) == 0)
 	{
 		my_export(token->args, env);
 		return(1);
@@ -99,6 +102,7 @@ void	my_env(t_list *env)
 	t_list	*tmp;
 	char**	env_content;
 
+	printf("calling my env functions.\n");
 	tmp = env;
 	while (tmp)
 	{
@@ -219,33 +223,43 @@ void my_export_no_aguments(t_list *env)
 	}
 }
 
+/* TO BE UPDATED */
 void	my_unset(char **arg, t_list *env)
 {
+	int i;
 	t_list	*current;
 	t_list	*previous;
 	char** env_content;
 
-	current = env;
-	previous = NULL;
-	while (current)
+	i = 0;
+	while (arg[i])
 	{
-		env_content = (char**)current->content;
-		if (ft_strncmp(arg[1], env_content[0], ft_strlen(arg[1])) == 0)
-		env_content = (char**)current->content;
-		if (ft_strncmp(arg[1], env_content[0], ft_strlen(arg[1])) == 0)
-			break ;
-		previous = current;
-		current = current->next;
+		current = env;
+		previous = NULL;
+		while (current)
+		{
+			env_content = (char**)current->content;
+			if (ft_strncmp(arg[1], env_content[0], ft_strlen(arg[1])) == 0)
+			env_content = (char**)current->content;
+			if (ft_strncmp(arg[1], env_content[0], ft_strlen(arg[1])) == 0)
+			{
+				if (current == NULL) //node not found, just return (return);
+					return;
+				if (previous == NULL) //remove the head node
+					env = current->next;
+				else
+					previous->next = current->next;
+				free(env_content[0]);
+				free(env_content[1]);
+				free(current);
+				break ;
+			}
+			previous = current;
+			current = current->next;
+		}
+
+		i++;
 	}
-	if (current == NULL) //node not found, just return (return);
-		return;
-	if (previous == NULL) //remove the head node
-		env = current->next;
-	else
-		previous->next = current->next;
-	free(env_content[0]);
-	free(env_content[1]);
-	free(current);
 }
 
 /*
@@ -257,7 +271,7 @@ int my_echo(char **arg, t_list *env)
 	int i;
 	int ret;
 
-	//ft_printf("arg[0]=%s, arg[[1]=%s\n", arg[0], arg[1]);
+	//ft_printf("arg[0]=%s, arg[[1]=%s, arg[2]=%s\n", arg[0], arg[1], arg[2]);
 	if (!arg[1])
 	{
 		ft_printf("\n");

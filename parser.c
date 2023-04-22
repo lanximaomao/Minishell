@@ -6,7 +6,7 @@
 /*   By: lsun <lsun@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 00:45:46 by srall             #+#    #+#             */
-/*   Updated: 2023/04/21 17:55:41 by lsun             ###   ########.fr       */
+/*   Updated: 2023/04/22 17:56:43 by lsun             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,22 +121,21 @@ void parse_cmd_args(t_token *cmd_tokens, t_input *input, int *k)
 		if (!(cmd_tokens->cmd = ft_strdup(input->temp_line)))
 			ft_error("Malloc failed", MALLOC);
 	}
-	else // args
+
+	if (!cmd_tokens->args)
 	{
-		if (!cmd_tokens->args)
-		{
-			if (!(cmd_tokens->args = (char **)ft_calloc(sizeof(char *), 2)))
-				ft_error("Malloc failed", MALLOC);
-			if (!(cmd_tokens->args[0] = ft_strdup(cmd_tokens->cmd))) // add the cmd in front of args
-				ft_error("Malloc failed", MALLOC);
-		}
-		else
-			cmd_tokens->args = (char **)ft_realloc(cmd_tokens->args, sizeof(char *) * (*k + 1), sizeof(char *) * (*k + 2));
-		cmd_tokens->args[*k] = ft_strdup(input->temp_line);
-		if (!cmd_tokens->args[*k])
+		if (!(cmd_tokens->args = (char **)ft_calloc(sizeof(char *), 2)))
 			ft_error("Malloc failed", MALLOC);
-		*k += 1;
+		if (!(cmd_tokens->args[0] = ft_strdup(cmd_tokens->cmd))) // add the cmd in front of args
+			ft_error("Malloc failed", MALLOC);
 	}
+	else
+		cmd_tokens->args = (char **)ft_realloc(cmd_tokens->args, sizeof(char *) * (*k + 1), sizeof(char *) * (*k + 2));
+	cmd_tokens->args[*k] = ft_strdup(input->temp_line);
+	if (!cmd_tokens->args[*k])
+		ft_error("Malloc failed", MALLOC);
+	*k += 1;
+
 	cmd_tokens->num_args = *k;
 }
 
@@ -185,7 +184,7 @@ t_list *parse_cmds(t_list *line_lst, t_list *env_lst, int exitcode)
 	cmd_tokens = NULL;
 	while (line_lst)
 	{
-		k = 1; // for num_args, k = 0 for cmd in front of args
+		k = 0; // for num_args, k = 0 for cmd in front of args
 		if (!(cmd_tokens = (t_token *)ft_calloc(sizeof(t_token), 1)))
 			ft_error("Malloc failed", MALLOC);
 		init_tokens(cmd_tokens);

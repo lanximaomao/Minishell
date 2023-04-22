@@ -8,27 +8,38 @@ int executor(t_mini *mini)
 	int *pid;
 	int *status;
 	int size;
-	int **fd_pipe;
+	int fd_pipe[2];
 	t_list *tmp;
 
 	i = 0;
 	size = ft_lstsize(mini->cmd_lst);
+	if (size == 0)
+		return(0);
+
+	if (size == 1)
+	{
+		cmd_single(mini);
+		return (0);
+	}
 	pid = malloc(sizeof(int) * size);
 	if (!pid)
-		ft_error("malloc fail.\n", 1);
+		ft_error("pid malloc fail", 1);
 	// why would I need status?
 	status = malloc(sizeof(int) * size);
 	if (!status)
-		ft_error("malloc fail.\n", 1);
+		ft_error("status malloc fail", 1);
 	//init fd for creating pipes
+
+	ft_printf("size = %d\n", size);
+
 	fd_pipe = (int**)malloc(sizeof(int*) * (size - 1));
 	if (!fd_pipe)
-		ft_error("malloc fail.\n", 1);
+		ft_error("fd_pipe malloc fail", 1);
 	while (i < size - 1)
 	{
 		fd_pipe[i] = malloc(sizeof(int) * 2);
 		if (!fd_pipe[i])
-			ft_error("malloc fail.\n", 1);
+			ft_error("malloc fail", 1);
 		i++;
 	}
 	//create (size - 1) pipes
@@ -39,19 +50,53 @@ int executor(t_mini *mini)
 	{
 		pid[i] = fork();
 		if (pid[i] == -1)
-			ft_error("fork failed.\n", 4);
+			ft_error("fork failed", 4);
 		else if (pid[i] == 0)
-			cmd(mini, fd_pipe, size, i);
+			cmd_pipe(mini, fd_pipe, size, i);
 		tmp = tmp->next;
 		i++;
 	}
 	i = 0;
 	while(i++ < size)
 		waitpid(pid[i], &status[i], 0);
+
+	//ft_printf("hello from minishell.\n");
 	return(status[i]);
 }
 
-int cmd(t_mini *mini, int** fd_pipe, int size, int which_pipe)
+// handel files !!
+int cmd_single(t_mini *mini)
+{
+	int pid;
+	char* path_cmd;
+	char* tmp;
+	int status;
+	t_token *token;
+
+	token = (t_token*)(mini->cmd_lst->content);
+
+	pid=fork();
+	if (pid == -1)
+		ft_error("fork failed.\n", 4);
+	else if (pid == 0)
+	{
+		if (handel_file_single(token) == 1)
+			exit(1);
+		if (access(token->cmd, X_OK) == 0)
+			execve(token->cmd, token->args, env_convert(mini->env));
+		else
+		{
+			tmp = ft_strjoin("/", token->cmd);//to be freed
+			path_cmd = get_path_cmd(tmp, mini->env);
+			free(tmp);
+			execve(path_cmd, token->args, env_convert(mini->env));
+		}
+	}
+	waitpid(pid, &status, 0);
+	return(0);
+}
+
+int cmd_pipe(t_mini *mini, int** fd_pipe, int size, int which_pipe)
 {
 	t_token* token;
 	char* tmp;
@@ -91,38 +136,34 @@ int cmd(t_mini *mini, int** fd_pipe, int size, int which_pipe)
 	return(1);
 }
 
-/* in order to save the fd_in and fd_out, add definition at s_token struct*/
-// should use dup2 instead of open and close!!
-int handel_file(t_token* token, int** fd_pipe, int which_pipe, int size)
+
+// loop through number of files
+
+int handel_file_single(t_token* token)
 {
 	int i;
 
 	i = 0;
-	// loop through each infile
-	while (token->infile[i])
+
+	if (token->num_infile == 0)
+		token->fd_in = 0;
+
+	while ( i < token->num_infile)
 	{
 		token->fd_in = open(token->infile[i], O_RDONLY);
 		if (token->fd_in == -1)
 		{
-			perror("Fail to open infile"); // cannot exit, so that next commannd can be processed.
+			ft_printf("Fail to open infile.\n");
 			return (1);
 		}
-		if (token->infile[i + 1] != NULL)
+		if (i + 1 < token->num_infile)
 			close(token->fd_in);
 		i++;
 	}
-	// if no infile is given,
-	// by default it should take stdin if it is the first cmd
-	// or reading from the connected pipes
-	if (token->infile == NULL) // or token->infile == NULL?
-	{
-		if (which_pipe == 0)
-			token->fd_in = 0;
-		else
-			token->fd_in = fd_pipe[i][0];
-	}
 	i = 0;
-	while (token->outfile[i])
+	if (token->num_outfile_type == 0)
+		token->fd_out = 1;
+	while (i < token->num_outfile_type)
 	{
 		if (token->output_type[i] == 2) // append mode
 			token->fd_out = open(token->outfile[i], O_WRONLY | O_CREAT|O_APPEND, 0644);
@@ -133,19 +174,73 @@ int handel_file(t_token* token, int** fd_pipe, int which_pipe, int size)
 			perror("Fail to create or open outfile");//exit or not?
 			return(2);
 		}
-		if (token->outfile[i + 1] != NULL)
+		if (i + 1 < token->num_outfile_type)
 			close(token->fd_out);
 		i++;
 	}
+	return(0);
+}
+
+
+/* in order to save the fd_in and fd_out, add definition at s_token struct*/
+// should use dup2 instead of open and close!!
+int handel_file(t_token* token, int** fd_pipe, int which_pipe, int size)
+{
+	int i;
+
+	i = 0;
+	// loop through each infile
+	ft_printf("handel files %s.\n", token->infile[0]);
+	while ( i < token->num_infile)
+	{
+		token->fd_in = open(token->infile[i], O_RDONLY);
+		if (token->fd_in == -1)
+		{
+			ft_printf("Fail to open infile.\n");
+			return (1);
+		}
+		if (i + 1 < token->num_infile)
+			close(token->fd_in);
+		i++;
+	}
+	// if no infile is given,
+	// by default it should take stdin if it is the first cmd
+	// or reading from the connected pipes
+	if (token->num_infile == 0) // or token->infile == NULL?
+	{
+		if (which_pipe == 0)
+			token->fd_in = 0;
+		else
+			token->fd_in = fd_pipe[which_pipe][0];
+	}
+	i = 0;
+
+	while (i < token->num_outfile_type)
+	{
+		if (token->output_type[i] == 2) // append mode
+			token->fd_out = open(token->outfile[i], O_WRONLY | O_CREAT|O_APPEND, 0644);
+		else
+			token->fd_out = open(token->outfile[i], O_WRONLY | O_CREAT|O_TRUNC, 0644);
+		if (token->fd_out == -1)
+		{
+			perror("Fail to create or open outfile");//exit or not?
+			return(2);
+		}
+		if (i + 1 < token->num_outfile_type)
+			close(token->fd_out);
+		i++;
+	}
+
+
 	// if no outfile is given,
 	// by default it should be stdout if it's the last cmd
 	// otherwise, it should redirect to the connected pipe
-	if (token->outfile[0] == NULL) // or token->outfile == NULL?
+	if (token->num_outfile_type == 0) // or token->outfile == NULL?
 	{
 		if (which_pipe == size - 1 - 1)
 			token->fd_out = 1;
 		else
-			token->fd_out = fd_pipe[i][1];
+			token->fd_out = fd_pipe[which_pipe][1];
 	}
 	return(0);
 }
@@ -154,6 +249,7 @@ void handel_pipe_create(int** fd_pipe, int size)
 {
 	int i;
 
+	ft_printf("creating %d pipes.\n", size - 1);
 	//set up pipe
 	i = 0;
 	while (i < size - 1)
