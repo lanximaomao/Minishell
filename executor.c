@@ -11,6 +11,8 @@ int executor(t_mini *mini)
 	int fd_pipe[2];
 	t_list *tmp;
 
+	//printf("\n**************** executor *****************\n");
+
 	i = 0;
 	size = ft_lstsize(mini->cmd_lst);
 	if (size == 0)
@@ -24,9 +26,11 @@ int executor(t_mini *mini)
 	pid = malloc(sizeof(int) * size);
 	if (!pid)
 		ft_error("pid malloc fail", 1);
+		ft_error("pid malloc fail", 1);
 	// why would I need status?
 	status = malloc(sizeof(int) * size);
 	if (!status)
+		ft_error("status malloc fail", 1);
 		ft_error("status malloc fail", 1);
 	//init fd for creating pipes
 
@@ -40,6 +44,7 @@ int executor(t_mini *mini)
 		fd_pipe[i] = malloc(sizeof(int) * 2);
 		if (!fd_pipe[i])
 			ft_error("malloc fail", 1);
+			ft_error("malloc fail", 1);
 		i++;
 	}
 	//create (size - 1) pipes
@@ -51,7 +56,9 @@ int executor(t_mini *mini)
 		pid[i] = fork();
 		if (pid[i] == -1)
 			ft_error("fork failed", 4);
+			ft_error("fork failed", 4);
 		else if (pid[i] == 0)
+			cmd_pipe(mini, fd_pipe, size, i);
 			cmd_pipe(mini, fd_pipe, size, i);
 		tmp = tmp->next;
 		i++;
@@ -249,6 +256,7 @@ void handel_pipe_create(int** fd_pipe, int size)
 {
 	int i;
 
+	ft_printf("creating %d pipes.\n", size - 1);
 	ft_printf("creating %d pipes.\n", size - 1);
 	//set up pipe
 	i = 0;
