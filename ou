@@ -17,12 +17,10 @@ mini_utils.o
 minishell.c
 minishell.h
 minishell.o
-oooo
-out
+ou
 out1
 out2
-out3
-outfile
+outtt
 parser.c
 pipe.o
 play_parsing.c
