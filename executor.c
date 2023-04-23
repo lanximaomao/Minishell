@@ -37,6 +37,11 @@ int executor(t_mini *mini)
 		i++;
 	}
 	i = 0;
+	if (size > 1)
+	{
+		close(fd_pipe[0]);
+		close(fd_pipe[1]);
+	}
 	while(i < size)
 	{
 		waitpid(pid[i], &status[i], 0);
@@ -47,7 +52,7 @@ int executor(t_mini *mini)
 
 void close_all(int fd_in, int fd_out)
 {
-	printf("i am now closing %d and %d\n", fd_in, fd_out);
+	//printf("i am now closing %d and %d\n", fd_in, fd_out);
 	if ((fd_in > 0 && close(fd_in) == -1)|| (fd_out > 1 && close(fd_out) == -1))
 	{
 		perror("close fail");
@@ -70,9 +75,9 @@ int cmd_pipe(t_list *cmd_lst, int* fd_pipe, int size, int cmd_order, t_mini* min
 		token->fd_in = fd_pipe[0];
 	if (size > 1 && cmd_order != size - 1)
 		token->fd_out = fd_pipe[1];
-	printf("before %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
+	//printf("before %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
 	handel_file(token);
-	printf("after %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
+	//printf("after %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
 	dup2(token->fd_in, 0);
 	dup2(token->fd_out, 1);
 
