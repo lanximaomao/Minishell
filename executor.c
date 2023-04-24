@@ -23,45 +23,34 @@ int executor(t_mini *mini)
 	if (!status)
 		ft_error("status malloc fail", 1);
 	//create (size - 1) pipes
-	if (size > 1 && pipe(fd_pipe) == -1)
-		ft_error("error in creating pipes.\n", 4);
+
 	tmp = mini->cmd_lst;
 	while (tmp && i < size)
 	{
+		if (size > 1 && pipe(fd_pipe) == -1)
+			ft_error("error in creating pipes.\n", 4);
 		pid[i] = fork();
 		if (pid[i] == -1)
 			ft_error("fork failed", 4);
 		else if (pid[i] == 0)
 			cmd_pipe(tmp, fd_pipe, size, i, mini);
+
+		if (size > 1)
+		{
+			close(fd_pipe[0]);
+			//close(fd_pipe[1]);
+		}
 		tmp = tmp->next;
 		i++;
 	}
 	i = 0;
-	if (size > 1)
-	{
-		close(fd_pipe[0]);
-		close(fd_pipe[1]);
-	}
+
 	while(i < size)
 	{
 		waitpid(pid[i], &status[i], 0);
 		i++;
 	}
 	return(status[i]);
-}
-
-void close_all(int fd_in, int fd_out)
-{
-	//printf("i am now closing %d and %d\n", fd_in, fd_out);
-	if ((fd_in > 0 && close(fd_in) == -1)|| (fd_out > 1 && close(fd_out) == -1))
-	{
-		perror("close fail");
-		return;
-	}
-	//if (close(token->fd_in) == -1 || close(token->fd_out) == -1)
-	//	ft_error("file cannot be closed.\n", 4);
-	//if (close(fd_pipe[0]) == -1 || close(fd_pipe[1]) == -1)
-	//	ft_error("file cannot be closed.\n", 4);
 }
 
 int cmd_pipe(t_list *cmd_lst, int* fd_pipe, int size, int cmd_order, t_mini* mini)
@@ -80,7 +69,6 @@ int cmd_pipe(t_list *cmd_lst, int* fd_pipe, int size, int cmd_order, t_mini* min
 	//printf("after %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
 	dup2(token->fd_in, 0);
 	dup2(token->fd_out, 1);
-
 	//close(token->fd_in);
 	//close(token->fd_out);
 	if (size > 1)
