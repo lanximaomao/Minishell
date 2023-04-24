@@ -1,0 +1,17 @@
+#!/bin/bash
+
+env > out1 | ls > out2 | pwd > out3
+
+# error msg: 231Readline error: Inappropriate ioctl for device
+
+#run:
+env | grep Apple
+env | grep Apple env | grep Apple > out3 | grep > out5
+env | grep Apple > out3 | ls > out4
+
+#cannot run:
+
+
+env | grep Apple | grep Apple > out3
+
+# out5 is created

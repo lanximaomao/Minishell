@@ -16,7 +16,7 @@ int	readline_prompt(t_mini *mini)
 		//	ft_error("Getcwd error", FUNC);
 		//printf("\033[0;94m%s\033[0;39m\n", buf);
 		if (!(line = readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ")))
-			ft_error("Readline error", FUNC);
+			ft_error("231Readline error", FUNC);
 		if (!ft_strncmp(line, "exit", 5))
 		{
 			free(line);
