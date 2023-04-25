@@ -2,10 +2,7 @@
 # define MINISHELL_H
 
 # include "libft.h"
-# include "ft_printf.h"
-# include "get_next_line_bonus.h"
-# include <readline/history.h>
-# include <readline/readline.h>
+// # include "ft_printf.h"
 # include <stdlib.h> // malloc
 #include <stdio.h> //printf
 #include <unistd.h> // write
@@ -18,6 +15,8 @@
 #include <errno.h>
 #include <stdarg.h>
 #include <dirent.h>
+# include <readline/readline.h>
+# include <readline/history.h>
 
 // exit(error_code)
 # define MALLOC 1

@@ -22,8 +22,8 @@ SRCS_TEST =		main.c minishell.c mini_utils.c			\
 
 NAME = minishell
 CC = cc
-CFLAGS = -I./libft_42/inc
-LDFLAGS = -L./libft_42 -lft -lreadline
+CFLAGS = -I./libft_42/inc #-I/usr/local/opt/readline//include
+LDFLAGS = -L./libft_42 -lft -lreadline -lhistory -L /usr/local/opt/readline/lib
 FSANITIZE	= -fsanitize=address -g3
 
 
