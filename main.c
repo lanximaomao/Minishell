@@ -14,7 +14,8 @@ int	readline_prompt(t_mini *mini)
 		if (!getcwd(buf, sizeof(buf))) // getcwd get the pwd show frond of the input
 			ft_error("Getcwd error.", FUNC);
 		printf("\033[0;94m%s\033[0;39m\n", buf);
-		if (!(line = readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m "))) // **************ctrl D会报错，加&&*********
+		line = readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ");
+		if (!line && errno)
 			ft_error("Readline error: minishell.", FUNC);
 		if (!ft_strncmp(line, "exit", 5))
 		{
@@ -36,6 +37,8 @@ int	main(int argc, char **argv, char **env)
 {
 	t_mini *mini;
 
+	if (argc != 1 || argv[1])
+		ft_error("Wrong input!", FUNC);
 	mini = malloc(sizeof(t_mini) * 1);
 	if (!mini)
 		ft_error("malloc fail.\n", 1);
