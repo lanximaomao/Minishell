@@ -92,4 +92,9 @@ void test_env_functions(t_mini *mini);
 int executor(t_mini *mini);
 
 
+
+// test_lliu.c
+void shell(void);
+void handle_sig(int sig);
+
 #endif
