@@ -2,7 +2,7 @@
 # define MINISHELL_H
 
 # include "libft.h"
-// # include "ft_printf.h"
+# include "ft_printf.h"
 # include <stdlib.h> // malloc
 #include <stdio.h> //printf
 #include <unistd.h> // write
@@ -24,6 +24,7 @@
 # define SYNTAX 3
 # define FUNC 4
 
+extern int g_exitcode;
 
 typedef struct s_input
 {

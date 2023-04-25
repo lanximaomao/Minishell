@@ -19,7 +19,7 @@ char *handle_exitcode(int exitcode, char *str) // test$?-test => test0-test
 // find the env_name and replace it with env_value
 char *replace_env(char *tmp_exp, t_list *env_lst, char *tmp_substr, int len_envp) // tmp_substr, 找到环境变量之后，去除env_name的子串
 {
-	while (((char **)env_lst->content)[0]) // iterate the all the env names
+	while (env_lst) // iterate the all the env names
 	{
 		len_envp = ft_strlen(((char **)env_lst->content)[0]);
 		if (ft_strnstr(tmp_exp, ((char **)env_lst->content)[0], len_envp)
@@ -89,7 +89,7 @@ char *replace_env_expand(char *temp_line, t_list *env_lst, int exitcode)
 		if (tmp_exp[i][0] == '?')
 			tmp_exp[i] = handle_exitcode(exitcode, tmp_exp[i]);
 		else
-			tmp_exp[i] = replace_env(tmp_exp[i], env_lst, NULL, 0);
+			tmp_exp[i] = replace_env(tmp_exp[i], env_lst, NULL, -1);
 	}
 	temp_line = ft_mulstrjoin(tmp_exp, i);
 	free_char(tmp_exp);

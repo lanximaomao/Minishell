@@ -9,9 +9,8 @@ int main(void)
 // ◦ ctrl-C displays a new prompt on a new line.
 // ◦ ctrl-D exits the shell.
 // ◦ ctrl-\ does nothing
-
-
-void shell(void)
+/*
+void	shell(void)
 {
 	char *line;
 	char *heredoc;
@@ -36,24 +35,35 @@ void shell(void)
 	free(line);
 	line = NULL;
 	return ;
-}
+}*/
 
-void handle_sig(int sig) {
+int g_exitcode = 0;
+
+void	handle_sig(int sig, siginfo_t *info, void *context)
+{
 	if (sig == SIGINT)
 	{
-		printf("Caught signal %d (SIGINT) ^C \n", sig);
-		shell();
+		printf("\n");
+		rl_on_new_line(); // readline移动到新行，保留输入，否则会直接清空当前输入
+		rl_replace_line("", 0); // 替换为空字符，需要在display之前
+		rl_redisplay(); // 重新显示当前命令行prompt + replace_line函数所替换的rl_line_buffer，需要在display之前
+		(void) sig;
+		g_exitcode = 130;
+		return ;
 	}
-	else if (sig == SIGQUIT)
-		printf("Caught signal %d (SIGQUIT) ^\\ \n", sig);
+	else if (sig == SIGQUIT) // parent process ignore and quit in child process
+	{
+		printf("Quit: %d\n", sig);
+		g_exitcode = 131;
+
+	}
 	else if (sig == SIGTERM)
 	{
-		printf("Caught signal %d (SIGTERM) ^D \n", sig);
+		g_exitcode = 0;
 		exit(0);
 	}
 }
-
-int main()
+int	main(void)
 {
 	char **pp;
 	int i = 0;
@@ -67,59 +77,27 @@ int main()
 			exit(1);
 		}
 		// 与bash中的ctrl \行为一致，退出当前进程，返回minishell，记录exitcode = 131
-		// if (sigaction(SIGQUIT, &sa, NULL) == -1) // ctrl \ 3
-		// {
-		// 	printf("Error registering SIGQUIT handler\n");
-		// 	exit(1);
-		// }
-		// // 输入结束，关闭stdin，返回minishell，记录exitcode = 0
-		// if (sigaction(SIGTERM, &sa, NULL) == -1) // ctrl D 15
-		// {
-		// 	printf("Error registering SIGTERM handler\n");
-		// 	exit(1);
-		// }
-		// shell();
-		line = readline("> ");
-		if (line && !strncmp(line, "q", 2))
-		exit(0);
-		// printf("your entered: %s\n", line);
-		free(line);
-		line = NULL;
-	}
-	return (0);
-} */
-
-void	handle_sig(int sig, siginfo_t *info, void *context)
-{
-	if (sig == SIGINT)
-	{
-		// rl_on_new_line(); // 光标移动开头
-		rl_replace_line("", 0); // 替换为空字符
-		rl_redisplay(); // 重新显示当前命令行，光标移动开头
-		(void) sig;
-		// printf("Caught signal %d (SIGINT) ^C \n", sig);
-		return ;
-	}
-}
-int	main(void)
-{
-	char	*line;
-	struct sigaction sa;
-
-	while (1)
-	{
-		ft_memset(&sa, 0, sizeof(sa));
-		sa.sa_sigaction = handle_sig; // handler function
-		sa.sa_flags = SA_SIGINFO; //
-		sigemptyset(&sa.sa_mask); // 阻塞其他信号
-		// 与bash中的ctrl C行为一致，中断当前进程，返回minishell，记录exitcode = 130
-		sigaction(SIGINT, &sa, NULL);
-		line = readline("> ");
+		if (sigaction(SIGQUIT, &sa, NULL) == -1) // ctrl \ 3
+		{
+			printf("Error registering SIGQUIT handler\n");
+			exit(1);
+		}
+		// 输入结束，关闭stdin，返回minishell，记录exitcode = 0
+		if (sigaction(SIGTERM, &sa, NULL) == -1) // ctrl D 15
+		{
+			printf("Error registering SIGTERM handler\n");
+			exit(1);
+		}
+		line = readline("minishell $ ");
+		// printf("test: %s\n", rl_line_buffer);
 		if (line && !strncmp(line, "q", 2))
 			exit(0);
+		add_history(line);
+		printf("%d\n", g_exitcode);
 		free(line);
 		line = NULL;
 	}
 	return 0;
 
 }
+
