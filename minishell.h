@@ -89,7 +89,7 @@ void test_env_functions(t_mini *mini);
 
 
 // executor.c
-int executor(t_mini *mini);
-
+int executor_single(t_mini *mini);
+int executor(t_mini *mini, int size);
 
 #endif

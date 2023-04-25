@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: linlinsun <linlinsun@student.42.fr>        +#+  +:+       +#+        */
+/*   By: lsun <lsun@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 00:45:46 by srall             #+#    #+#             */
-/*   Updated: 2023/04/22 23:57:17 by linlinsun        ###   ########.fr       */
+/*   Updated: 2023/04/25 14:49:35 by lsun             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,10 @@ void init_tokens(t_token *tokens)
 	tokens->num_args = 0;
 	tokens->num_infile = 0;
 	tokens->num_outfile_type = 0;
-	tokens->fd_in = 0;
-	tokens->fd_out = 1;
+	//tokens->fd_in = 0;
+	//tokens->fd_out = 1;
+	tokens->fd_in = dup(0);
+	tokens->fd_out = dup(1);
 }
 
 // function: store the heredoc into a tem_heredoc_file(1st argument) line by line followed a newline

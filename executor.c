@@ -1,22 +1,39 @@
-#include "minishell.h"
 #include "buidin.h"
 #include "executor.h"
 
-int executor(t_mini *mini)
+
+int executor_single(t_mini *mini)
+{
+	int pid;
+	int status;
+	t_token* token;
+
+	token = (t_token*)mini->cmd_lst->content;
+	if (handel_file(token))
+		return(1);
+	pid = fork();
+	if (pid == -1)
+		ft_error("fork failed", 4);
+	else if (pid == 0)
+		cmd_execution_in_children_one(token, 1, mini);
+	close(token->fd_in);
+	close(token->fd_out);
+	waitpid(pid, &status, 0);
+	return(status);
+}
+
+int executor(t_mini *mini, int size)
 {
 	int i;
 	int *pid;
 	int *status;
-	int size;
 	int fd_pipe[2];
 	t_list *tmp;
 	t_token* token;
 
 	i = 0;
-	size = ft_lstsize(mini->cmd_lst);
 	tmp = mini->cmd_lst;
-	if (size == 0)
-		return(0);
+
 	pid = malloc(sizeof(int) * size);
 	if (!pid)
 		ft_error("pid malloc fail", 1);
@@ -26,19 +43,15 @@ int executor(t_mini *mini)
 	while (tmp && i < size)
 	{
 		token = (t_token*) tmp->content;
-		handel_io(token, fd_pipe, i, size);
+		if (handel_io(token, fd_pipe, i, size) == 1)
+			return(1);
 		pid[i] = fork();
 		if (pid[i] == -1)
 			ft_error("fork failed", 4);
 		else if (pid[i] == 0)
-			cmd_pipe(token, fd_pipe, size, mini);
+			cmd_execution_in_children_more(token, fd_pipe, size, mini);
 		close(token->fd_in);
 		close(token->fd_out);
-		if (size > 1)
-		{
-			close(fd_pipe[0]);
-			close(fd_pipe[1]);
-		}
 		tmp = tmp->next;
 		i++;
 	}
@@ -51,20 +64,35 @@ int executor(t_mini *mini)
 	return(status[i]);
 }
 
-/* still happening in main processor*/
+///* still happening in main processor*/
 int handel_io(t_token* token, int* fd_pipe, int cmd_order, int size)
 {
-	printf("before %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
-	// create pipe when there is more than one cmd
-	if (size > 1 && pipe(fd_pipe) == -1)
+	//printf("before %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
+	// no need to create any pipe while reaching the last cmd
+	//if (cmd_order != 0 && size > 1)
+	//	token->fd_in = fd_pipe[0];
+	if (cmd_order != 0)
+	{
+		dup2(fd_pipe[0], token->fd_in);
+		close(fd_pipe[0]);
+		close(fd_pipe[1]);
+	}
+	if (cmd_order != size - 1 && pipe(fd_pipe) == -1)//
 		ft_error("error in creating pipes.\n", 4);
 	// io from pipe
-	if (size > 1 && cmd_order != 0)
-		token->fd_in = fd_pipe[0];
-	if (size > 1 && cmd_order != size - 1)
+	if (cmd_order == 0) // first cmd
+	{
+		token->fd_in = dup(0);
 		token->fd_out = fd_pipe[1];
-	handel_file(token);
-	printf("after %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
+	}
+	else if (cmd_order == size - 1) // last cmd, token->fd_in shoud be from a previous comd output
+		token->fd_out = dup(1);//no need
+	else if (cmd_order > 0 && cmd_order < size - 1) // middle cmd, token->fd_in shoud be from a previous comd output
+		token->fd_out = fd_pipe[1];
+
+	//printf("after %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
+	if (handel_file(token) == 1)
+		return (1);
 	return (0);
 }
 
@@ -78,7 +106,11 @@ int handel_file(t_token* token)
 	{
 		token->fd_in = open(token->infile[i], O_RDONLY);
 		if (token->fd_in == -1)
-			ft_error("minishell: infile", 4);
+		{
+			perror("minishell: infile");
+			return(1);
+		}
+
 		if (i + 1 < token->num_infile)
 			close(token->fd_in);
 		i++;
@@ -102,7 +134,7 @@ int handel_file(t_token* token)
 	return(0);
 }
 
-int cmd_pipe(t_token* token, int *fd_pipe, int size, t_mini *mini)
+int cmd_execution_in_children_one(t_token* token, int size, t_mini *mini)
 {
 	char* tmp;
 	char* path_cmd;
@@ -111,11 +143,6 @@ int cmd_pipe(t_token* token, int *fd_pipe, int size, t_mini *mini)
 	close(token->fd_in);
 	dup2(token->fd_out, 1);
 	close(token->fd_out);
-	if (size > 1)
-	{
-		close(fd_pipe[0]);
-		close(fd_pipe[1]);
-	}
 	if (is_buildin(token, mini->env) == 1)
 		return (0);
 	if (access(token->cmd, X_OK) == 0)
@@ -131,6 +158,13 @@ int cmd_pipe(t_token* token, int *fd_pipe, int size, t_mini *mini)
 		if (execve(path_cmd, token->args, env_convert(mini->env)) == -1)
 			ft_error("Cannot execute command.\n", 4); // !error return
 	}
+	return(1);
+}
+
+int cmd_execution_in_children_more(t_token* token, int* fd_pipe, int size, t_mini *mini)
+{
+	cmd_execution_in_children_one(token, size, mini);
+	close(fd_pipe[1]);
 	return(1);
 }
 
