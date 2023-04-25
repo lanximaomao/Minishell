@@ -5,13 +5,11 @@
 #include "minishell.h"
 #include "buidin.h"
 
-int is_buildin(t_list* cmd_lst, t_list *env)
+int is_buildin(t_token* token, t_list *env)
 {
 	int len;
-	t_token *token;
 
 	//printf("\n**************** buildin *****************\n");
-	token = (t_token*)(cmd_lst->content);
 
 	//printf("args: %s\n", token->args[0]);
 	//printf("args: %s\n", token->args[1]);

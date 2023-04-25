@@ -4,7 +4,7 @@
 #include "minishell.h"
 # include <signal.h>
 
-int is_buildin(t_list* cmd_lst, t_list *env);
+int is_buildin(t_token* token, t_list *env);
 int		my_cd(char **arg, t_list *env);
 int		my_pwd(t_list *env);
 void	my_env(t_list *env);

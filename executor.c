@@ -10,41 +10,39 @@ int executor(t_mini *mini)
 	int size;
 	int fd_pipe[2];
 	t_list *tmp;
+	t_token* token;
 
 	i = 0;
 	size = ft_lstsize(mini->cmd_lst);
+	tmp = mini->cmd_lst;
 	if (size == 0)
 		return(0);
 	pid = malloc(sizeof(int) * size);
 	if (!pid)
 		ft_error("pid malloc fail", 1);
-	// why would I need status?
 	status = malloc(sizeof(int) * size);
 	if (!status)
 		ft_error("status malloc fail", 1);
-	//create (size - 1) pipes
-
-	tmp = mini->cmd_lst;
 	while (tmp && i < size)
 	{
-		if (size > 1 && pipe(fd_pipe) == -1)
-			ft_error("error in creating pipes.\n", 4);
+		token = (t_token*) tmp->content;
+		handel_io(token, fd_pipe, i, size);
 		pid[i] = fork();
 		if (pid[i] == -1)
 			ft_error("fork failed", 4);
 		else if (pid[i] == 0)
-			cmd_pipe(tmp, fd_pipe, size, i, mini);
-
+			cmd_pipe(token, fd_pipe, size, mini);
+		close(token->fd_in);
+		close(token->fd_out);
 		if (size > 1)
 		{
 			close(fd_pipe[0]);
-			//close(fd_pipe[1]);
+			close(fd_pipe[1]);
 		}
 		tmp = tmp->next;
 		i++;
 	}
 	i = 0;
-
 	while(i < size)
 	{
 		waitpid(pid[i], &status[i], 0);
@@ -53,46 +51,21 @@ int executor(t_mini *mini)
 	return(status[i]);
 }
 
-int cmd_pipe(t_list *cmd_lst, int* fd_pipe, int size, int cmd_order, t_mini* mini)
+/* still happening in main processor*/
+int handel_io(t_token* token, int* fd_pipe, int cmd_order, int size)
 {
-	t_token* token;
-	char* tmp;
-	char* path_cmd;
-
-	token = (t_token*)cmd_lst->content;
+	printf("before %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
+	// create pipe when there is more than one cmd
+	if (size > 1 && pipe(fd_pipe) == -1)
+		ft_error("error in creating pipes.\n", 4);
+	// io from pipe
 	if (size > 1 && cmd_order != 0)
 		token->fd_in = fd_pipe[0];
 	if (size > 1 && cmd_order != size - 1)
 		token->fd_out = fd_pipe[1];
-	//printf("before %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
 	handel_file(token);
-	//printf("after %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
-	dup2(token->fd_in, 0);
-	dup2(token->fd_out, 1);
-	//close(token->fd_in);
-	//close(token->fd_out);
-	if (size > 1)
-	{
-		close(fd_pipe[0]);
-		close(fd_pipe[1]);
-	}
-	if (is_buildin(cmd_lst, mini->env) == 1)
-		return (0);
-	if (access(token->cmd, X_OK) == 0)
-	{
-		if (execve(token->cmd, token->args, env_convert(mini->env)) == -1)
-			ft_error("Cannot execute command.\n", 4); // !error return
-	}
-	else
-	{
-		tmp = ft_strjoin("/", token->cmd);//to be freed
-		path_cmd = get_path_cmd(tmp, mini->env);
-		free(tmp);
-		if (execve(path_cmd, token->args, env_convert(mini->env)) == -1)
-			ft_error("Cannot execute command.\n", 4); // !error return
-	}
-
-	return(1);
+	printf("after %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
+	return (0);
 }
 
 // loop through number of files
@@ -101,9 +74,6 @@ int handel_file(t_token* token)
 	int i;
 
 	i = 0;
-	//if (token->num_infile == 0)
-	//	token->fd_in = 0;
-	//printf("before handeling file fd_in=%d, fd_out=%d, num_file=%d, num_outfile=%d\n", token->fd_in, token->fd_out, token->num_infile, token->num_outfile_type);
 	while ( i < token->num_infile)
 	{
 		token->fd_in = open(token->infile[i], O_RDONLY);
@@ -114,8 +84,6 @@ int handel_file(t_token* token)
 		i++;
 	}
 	i = 0;
-	//if (token->num_outfile_type == 0)
-	//	token->fd_out = 1;
 	while (i < token->num_outfile_type)
 	{
 		if (token->output_type[i] == 2) // append mode
@@ -131,8 +99,39 @@ int handel_file(t_token* token)
 			close(token->fd_out);
 		i++;
 	}
-	//printf("after handeling file fd_in=%d, fd_out=%d, num_file=%d, num_outfile=%d\n", token->fd_in, token->fd_out, token->num_infile, token->num_outfile_type);
 	return(0);
+}
+
+int cmd_pipe(t_token* token, int *fd_pipe, int size, t_mini *mini)
+{
+	char* tmp;
+	char* path_cmd;
+
+	dup2(token->fd_in, 0);
+	close(token->fd_in);
+	dup2(token->fd_out, 1);
+	close(token->fd_out);
+	if (size > 1)
+	{
+		close(fd_pipe[0]);
+		close(fd_pipe[1]);
+	}
+	if (is_buildin(token, mini->env) == 1)
+		return (0);
+	if (access(token->cmd, X_OK) == 0)
+	{
+		if (execve(token->cmd, token->args, env_convert(mini->env)) == -1)
+			ft_error("Cannot execute command.\n", 4); // !error return
+	}
+	else
+	{
+		tmp = ft_strjoin("/", token->cmd);//to be freed
+		path_cmd = get_path_cmd(tmp, mini->env);
+		free(tmp);
+		if (execve(path_cmd, token->args, env_convert(mini->env)) == -1)
+			ft_error("Cannot execute command.\n", 4); // !error return
+	}
+	return(1);
 }
 
 char* get_path_cmd(char* str, t_list *env)
