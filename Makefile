@@ -18,13 +18,16 @@ OBJS = $(SRCS:.c=.o)
 
 SRCS_TEST =		main.c minishell.c mini_utils.c			\
 				lexer.c expander.c parser.c				\
-				buildin.c env.c	executor.c # test_lliu.c #
+				buildin.c env.c	executor.c signal.c# test_lliu.c #
 
 NAME = minishell
 CC = cc
 CFLAGS = -I./libft_42/inc
 LDFLAGS = -L./libft_42 -lft -lreadline
 FSANITIZE	= -fsanitize=address -g3
+
+RL_L = -lreadline -L ~/.brew/opt/readline/lib
+RL_I = -I ~/.brew/opt/readline/include
 
 # NAME_BONUS = minishell_bonus
 
