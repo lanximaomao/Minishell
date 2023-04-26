@@ -33,9 +33,49 @@ int	readline_prompt(t_mini *mini)
 	return (0);
 }
 
+/* ctrl + \ = SIGQUIT, does nothing */
+//! by two times ctrl + \ we got an readline error
+void sa_handel_sigquit(int sig)
+{
+	printf("I am calling CTRL + \\");
+	//fflush(stdout);
+	return;
+}
+
+/* ctrl + D = EOF, exits the shell */
+// ! Readline error: interrupted system call.
+void sa_handel_sigeof(int sig)
+{
+	printf("I am calling CTRL + D");
+	//fflush(stdout);
+	return;
+}
+
+/* ctrl + c should dispays a new prompt on a new line */
+//! by two times ctrl + c we got an readline error
+void sa_handel_sigint(int sig)
+{
+	int fd;
+	dup2(fd, 0);
+	printf("\n");
+	//printf("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ");
+	return;
+}
+
 int	main(int argc, char **argv, char **env)
 {
 	t_mini *mini;
+
+	struct sigaction sa_int; //ctrl + c
+	struct sigaction sa_eof; //ctrl + d
+	struct sigaction sa_quit; //ctrl + \
+
+	sa_int.sa_handler = &sa_handel_sigint;
+	sa_eof.sa_handler = &sa_handel_sigeof;
+	sa_quit.sa_handler = &sa_handel_sigquit;
+	sigaction(SIGINT, &sa_int, NULL);
+	sigaction(SIGUSR1, &sa_eof, NULL);
+	sigaction(SIGQUIT, &sa_quit, NULL);
 
 	mini = malloc(sizeof(t_mini) * 1);
 	if (!mini)

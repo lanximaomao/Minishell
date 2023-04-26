@@ -148,7 +148,7 @@ int cmd_execution_in_children_one(t_token* token, int size, t_mini *mini)
 	if (access(token->cmd, X_OK) == 0)
 	{
 		if (execve(token->cmd, token->args, env_convert(mini->env)) == -1)
-			ft_error("Cannot execute command.\n", 4); // !error return
+			ft_error("Cannot execute command", 4); // !error return
 	}
 	else
 	{
@@ -156,7 +156,7 @@ int cmd_execution_in_children_one(t_token* token, int size, t_mini *mini)
 		path_cmd = get_path_cmd(tmp, mini->env);
 		free(tmp);
 		if (execve(path_cmd, token->args, env_convert(mini->env)) == -1)
-			ft_error("Cannot execute command.\n", 4); // !error return
+			ft_error("Cannot execute command", 4); // !error return
 	}
 	return(1);
 }

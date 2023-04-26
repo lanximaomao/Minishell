@@ -1,6 +1,0 @@
--rwxr-xr-x   1 lsun  2020  38836 Apr 25 19:04 test
-drwxr-xr-x   3 lsun  2020    102 Apr 21 16:27 test.dSYM
--rw-r--r--   1 lsun  2020    300 Apr 24 20:09 test_case
--rw-r--r--   1 lsun  2020    918 Apr 21 13:36 test_lin.c
--rw-r--r--   1 lsun  2020    632 Apr 25 19:01 test_lin.o
--rw-r--r--   1 lsun  2020   1765 Apr 21 16:22 test_lliu.c
