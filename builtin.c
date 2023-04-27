@@ -6,11 +6,56 @@
 #include "minishell.h"
 #include "builtin.h"
 
-int is_buildin(t_token* token, t_list *env)
+int is_builtin_no_run(t_token* token, t_list *env)
 {
 	int len;
 
-	//printf("\n**************** buildin *****************\n");
+	//printf("\n**************** builtin *****************\n");
+
+	//printf("args: %s\n", token->args[0]);
+	//printf("args: %s\n", token->args[1]);
+
+	len = ft_strlen(token->cmd);
+
+	if (len == 2 && ft_strncmp(token->cmd, "cd", len) == 0)
+	{
+		//my_cd(token->args, env);
+		return(1);
+	}
+	else if (len == 3 && ft_strncmp(token->cmd, "pwd", len) == 0)
+	{
+		//my_pwd(env);
+		return(1);
+	}
+	else if (len == 4 && ft_strncmp(token->cmd, "exit", len) == 0)
+	{
+		//my_exit(token->args, env);
+		return(1);
+	}
+	else if (len == 4 && ft_strncmp(token->cmd, "echo", len) == 0)
+	{
+		//my_echo(token->args, env);
+		return (1);
+	}
+	else if (len == 5 && ft_strncmp(token->cmd, "unset", len) == 0)
+	{
+		//my_unset(token->args, env);
+		return (1);
+
+	}
+	else if (len == 6 && ft_strncmp(token->cmd, "export", len) == 0)
+	{
+		//my_export(token->args, env);
+		return(1);
+	}
+	return (0);
+}
+
+int is_builtin(t_token* token, t_list *env)
+{
+	int len;
+
+	//printf("\n**************** builtin *****************\n");
 
 	//printf("args: %s\n", token->args[0]);
 	//printf("args: %s\n", token->args[1]);

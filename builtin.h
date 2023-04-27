@@ -1,10 +1,11 @@
-#ifndef BUILDIN_H
-# define BUILDIN_H
+#ifndef builtIN_H
+# define builtIN_H
 
 #include "minishell.h"
 # include <signal.h>
 
-int is_buildin(t_token* token, t_list *env);
+int is_builtin(t_token* token, t_list *env);
+int is_builtin_no_run(t_token* token, t_list *env);
 int		my_cd(char **arg, t_list *env);
 int		my_pwd(t_list *env);
 void	my_env(t_list *env);

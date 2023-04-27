@@ -1,4 +1,4 @@
-#include "buidin.h"
+#include "builtin.h"
 #include "executor.h"
 #include "signal.h"
 
@@ -13,6 +13,13 @@ int executor_single(t_mini *mini)
 	token = (t_token*)mini->cmd_lst->content;
 	if (handle_file(token))
 		return(1);
+	// if it is buitin
+	if (is_builtin_no_run(token, mini->env) == 1)
+	{
+		cmd_execution_in_children_one(token, 1, mini);
+		return(0);
+	}
+
 	pid = fork();
 	if (pid == -1)
 		ft_error("fork failed", 4);
@@ -77,7 +84,7 @@ int handle_io(t_token* token, int* fd_pipe, int cmd_order, int size)
 	{
 		dup2(fd_pipe[0], token->fd_in);
 		close(fd_pipe[0]);
-		close(fd_pipe[1]);
+		//close(fd_pipe[1]);
 	}
 	if (cmd_order != size - 1 && pipe(fd_pipe) == -1)//
 		ft_error("error in creating pipes.\n", 4);
@@ -145,7 +152,7 @@ int cmd_execution_in_children_one(t_token* token, int size, t_mini *mini)
 	close(token->fd_in);
 	dup2(token->fd_out, 1);
 	close(token->fd_out);
-	if (is_buildin(token, mini->env) == 1)
+	if (is_builtin(token, mini->env) == 1)
 		return (0);
 	if (access(token->cmd, X_OK) == 0)
 	{

@@ -1,5 +1,5 @@
 #include "minishell.h"
-#include "buidin.h"
+#include "builtin.h"
 
 void test_env_functions(t_mini *mini)
 {

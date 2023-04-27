@@ -1,5 +1,5 @@
 #include "minishell.h"
-#include "buidin.h"
+#include "builtin.h"
 #include "executor.h"
 
 void minishell(t_mini *mini, char *line, int exitcode)
@@ -45,12 +45,16 @@ void minishell(t_mini *mini, char *line, int exitcode)
 	//	if (tmp)
 	//		printf("\n****************the next cmd*****************\n");
 	//}
-	// check for single buildin, if yes, just function call and return
+	// check for single builtin, if yes, just function call and return
 	size = ft_lstsize(mini->cmd_lst);
 	if (size == 0)
 		return;
 	if (size == 1)
+	{
+		// if it is builtin, run in main processor?
 		executor_single(mini);
+	}
+
 	else
 		executor(mini, size);
 }

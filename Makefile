@@ -14,13 +14,13 @@ ECHO		= echo
 
 SRCS = 		main.c minishell.c mini_utils.c			\
 				lexer.c expander.c parser.c				\
-				buildin.c env.c	executor.c signal.c# test_lliu.c #
+				builtin.c env.c	executor.c signal.c# test_lliu.c #
 OBJS = $(SRCS:.c=.o)
 
 
 SRCS_TEST =		main.c minishell.c mini_utils.c			\
 				lexer.c expander.c parser.c				\
-				buildin.c env.c	executor.c signal.c# test_lliu.c #
+				builtin.c env.c	executor.c signal.c# test_lliu.c #
 
 NAME = minishell
 CC = cc

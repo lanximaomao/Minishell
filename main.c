@@ -1,5 +1,5 @@
 #include "minishell.h"
-#include "buidin.h"
+#include "builtin.h"
 #include "signal.h"
 
 int	readline_prompt(t_mini *mini)
