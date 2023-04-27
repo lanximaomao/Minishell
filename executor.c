@@ -1,5 +1,6 @@
 #include "buidin.h"
 #include "executor.h"
+#include "signal.h"
 
 
 int executor_single(t_mini *mini)
@@ -8,8 +9,9 @@ int executor_single(t_mini *mini)
 	int status;
 	t_token* token;
 
+	signal_handler_children();
 	token = (t_token*)mini->cmd_lst->content;
-	if (handel_file(token))
+	if (handle_file(token))
 		return(1);
 	pid = fork();
 	if (pid == -1)
@@ -33,7 +35,7 @@ int executor(t_mini *mini, int size)
 
 	i = 0;
 	tmp = mini->cmd_lst;
-
+	signal_handler_children();
 	pid = malloc(sizeof(int) * size);
 	if (!pid)
 		ft_error("pid malloc fail", 1);
@@ -43,7 +45,7 @@ int executor(t_mini *mini, int size)
 	while (tmp && i < size)
 	{
 		token = (t_token*) tmp->content;
-		if (handel_io(token, fd_pipe, i, size) == 1)
+		if (handle_io(token, fd_pipe, i, size) == 1)
 			return(1);
 		pid[i] = fork();
 		if (pid[i] == -1)
@@ -65,7 +67,7 @@ int executor(t_mini *mini, int size)
 }
 
 ///* still happening in main processor*/
-int handel_io(t_token* token, int* fd_pipe, int cmd_order, int size)
+int handle_io(t_token* token, int* fd_pipe, int cmd_order, int size)
 {
 	//printf("before %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
 	// no need to create any pipe while reaching the last cmd
@@ -91,13 +93,13 @@ int handel_io(t_token* token, int* fd_pipe, int cmd_order, int size)
 		token->fd_out = fd_pipe[1];
 
 	//printf("after %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
-	if (handel_file(token) == 1)
+	if (handle_file(token) == 1)
 		return (1);
 	return (0);
 }
 
 // loop through number of files
-int handel_file(t_token* token)
+int handle_file(t_token* token)
 {
 	int i;
 

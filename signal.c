@@ -1,31 +1,33 @@
 #include "minishell.h"
 #include "signal.h"
 
+ void rl_replace_line (const char *, int);
 
 /* ctrl + \ = SIGQUIT, does nothing */
-//! by two times ctrl + \ we got an readline error
-void sa_handel_nothing(int sig)
+
+void sa_handle_nothing(int sig)
 {
-	//printf("I am calling CTRL + \\");
-	//fflush(stdout);
+	rl_on_new_line();
+	rl_replace_line("  ", 1); // 1 means to clear this line's history
+	rl_redisplay();
 	return;
 }
 
 /* ctrl + D = EOF, exits the shell */
 // ! Readline error: interrupted system call.
-void sa_handel_ctrl_d(int sig)
+void sa_handle_ctrl_d(int sig)
 {
-	exit(1);
+	return;
 }
 
 /* ctrl + c should dispays a new prompt on a new line */
 //! by two times ctrl + c we got an readline error
-void sa_handel_ctrl_c(int sig)
+void sa_handle_ctrl_c(int sig)
 {
-	printf("I am calling CTRL + C");
 	(void) sig;
+	write(1, "\n", 1);
 	rl_on_new_line();
-	rl_replace_line("", 1);
+	rl_replace_line("", 1); // 1 means to clear this line's history
 	rl_redisplay();
 	return;
 }
@@ -36,11 +38,25 @@ void signal_handler()
 	struct sigaction sa_d; //ctrl + d
 	struct sigaction sa_nothing; //ctrl + \
 
-	sa_c.sa_handler = &sa_handel_ctrl_c;
-	sa_d.sa_handler = &sa_handel_ctrl_d;
-	sa_nothing.sa_handler = &sa_handel_nothing;
+	sa_c.sa_handler = &sa_handle_ctrl_c;
+	sa_d.sa_handler = &sa_handle_ctrl_d;
+	sa_nothing.sa_handler = &sa_handle_nothing;
+
 	sigaction(SIGINT, &sa_c, NULL);
 	sigaction(SIGUSR1, &sa_d, NULL);
 	sigaction(SIGQUIT, &sa_nothing, NULL);
 }
 
+void signal_handler_children()
+{
+	struct sigaction sa_nothing; //ctrl + \
+
+	sa_nothing.sa_handler = &sa_children_exit;
+	sigaction(SIGQUIT, &sa_nothing, NULL);
+}
+
+/* ctrl + \ = SIGQUIT, quit in children */
+void sa_children_exit(int sig)
+{
+	return;
+}

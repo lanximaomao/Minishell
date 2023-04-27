@@ -12,7 +12,9 @@ WHITE		=	\033[0;97m
 
 ECHO		= echo
 
-SRCS = minishell.c mini_utils.c buildin.c env.c test_lin.c
+SRCS = 		main.c minishell.c mini_utils.c			\
+				lexer.c expander.c parser.c				\
+				buildin.c env.c	executor.c signal.c# test_lliu.c #
 OBJS = $(SRCS:.c=.o)
 
 
@@ -23,11 +25,11 @@ SRCS_TEST =		main.c minishell.c mini_utils.c			\
 NAME = minishell
 CC = cc
 CFLAGS = -I./libft_42/inc
-LDFLAGS = -L./libft_42 -lft -lreadline
+LDFLAGS = -L./libft_42 -lft
 FSANITIZE	= -fsanitize=address -g3
 
 RL_L = -lreadline -L ~/.brew/opt/readline/lib
-RL_I = -I ~/.brew/opt/readline/include
+RL_I = -I ~/.brew/opt/readline/include/readline
 
 # NAME_BONUS = minishell_bonus
 
@@ -41,7 +43,7 @@ $(NAME): $(OBJS)
 	@git submodule update --init --recursive
 	@cd libft_42 && git pull origin main
 	@make -C libft_42
-	@$(CC) $(LDFLAGS) $(OBJS) -o $(NAME)
+	@$(CC) $(LDFLAGS) $(OBJS) -o $(NAME) $(RL_L) $(RL_I)
 	@$(ECHO) "$(YELLOW)[$(NAME)]:\t$(DEF_COLOR) $(GREEN) => Success!$(DEF_COLOR)"
 clean:
 	@make clean -C libft_42
@@ -60,7 +62,7 @@ debug:
 	@git submodule update --init --recursive
 	@cd libft_42 && git pull origin main
 	@make -C libft_42
-	$(CC)  -I./libft_42/inc $(LDFLAGS) $(SRCS_TEST) -g -o test
+	$(CC)  -I./libft_42/inc $(LDFLAGS)  $(RL_L) $(RL_I) $(SRCS_TEST) -g -o test
 
 .PHONY : all clean fclean re norm debug
 
