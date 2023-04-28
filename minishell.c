@@ -27,11 +27,13 @@ void minishell(t_mini *mini, char *line, int exitcode)
 	//while (tmp)
 	//{
 	//	printf("cmd: %s\n", ((t_token *)tmp->content)->cmd);
+	//	printf("num_args=%d\n", ((t_token *)tmp->content)->num_args);
 	//	printf("num_infile=%d\n", ((t_token *)tmp->content)->num_infile);
 	//	printf("num_outfile=%d\n", ((t_token *)tmp->content)->num_outfile_type);
-		//i = 0; // ignore the first arg which is cmd
-		//while (i < ((t_token *)tmp->content)->num_args)
-		//	printf("args: %s\n", ((t_token *)tmp->content)->args[i++]);
+	//	i = 0; // ignore the first arg which is cmd
+	//	while (i < ((t_token *)tmp->content)->num_args)
+	//		printf("args: %s\n", ((t_token *)tmp->content)->args[i++]);
+	//	printf("\n******************************************************\n\n");
 		//i = 0;
 		//while (i < ((t_token *)tmp->content)->num_infile)
 		//	printf("infile: %s\n", ((t_token *)tmp->content)->infile[i++]);
@@ -50,11 +52,7 @@ void minishell(t_mini *mini, char *line, int exitcode)
 	if (size == 0)
 		return;
 	if (size == 1)
-	{
-		// if it is builtin, run in main processor?
 		executor_single(mini);
-	}
-
 	else
 		executor(mini, size);
 }
