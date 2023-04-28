@@ -11,9 +11,7 @@ int	readline_prompt(t_mini *mini)
 	//ascii_art_pattern();
 	while (1)
 	{
-		//if (!getcwd(buf, sizeof(buf))) // getcwd get the pwd show frond of the input
-		//	ft_error("Getcwd error", FUNC);
-		//printf("\033[0;94m%s\033[0;39m\n", buf);
+		signal_handler();
 		if (!(line = readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ")))
 			return(1);
 			//ft_error("Readline error", FUNC);
@@ -37,7 +35,8 @@ int	main(int argc, char **argv, char **env)
 {
 	t_mini *mini;
 
-	signal_handler();
+	if (argc != 1 || argv[1])
+		ft_error("Wrong input!", FUNC);
 	mini = malloc(sizeof(t_mini) * 1);
 	if (!mini)
 		ft_error("malloc fail.\n", 1);

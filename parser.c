@@ -3,19 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lsun <lsun@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: lliu <lliu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 00:45:46 by srall             #+#    #+#             */
-/*   Updated: 2023/04/25 14:49:35 by lsun             ###   ########.fr       */
+/*   Updated: 2023/04/28 18:28:09 by lliu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-/* 1. 先检查当前cmd segment的redirection，存入对应in/out file后，删除node，方便后续cmd组合；
- * 2. 检查是否是builtin函数；
- * 3. 将cmd组合成char **作为execve的第二个参数
- * 4. 将cmd_tokens存入cmd_lst的node中 */
 
 void init_tokens(t_token *tokens)
 {
@@ -48,7 +43,7 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode)
 	while(1)
 	{
 		if (!(line = readline("heredoc >> ")))
-			ft_error("Readline failed", FUNC);
+			ft_error("Readline error: heredoc.", FUNC);
 		if (!ft_strncmp(line, input->temp_line, ft_strlen(input->temp_line))
 			&& ft_strlen(input->temp_line) == ft_strlen(line) && free_str(line))
 			break;
@@ -66,9 +61,10 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode)
 	close(fd);
 }
 
+// parse < << input redirection,
 void parse_redir12(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int i, int exitcode)
 {
-	if (((t_input *)line_lst->content)->redir_sign == 1)
+	if (((t_input *)line_lst->content)->redir_sign == 1) // <
 	{
 		if (!cmd_tokens->infile)
 		{
@@ -81,7 +77,7 @@ void parse_redir12(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int i
 		if (!cmd_tokens->infile[i])
 			ft_error("Malloc failed", MALLOC);
 	}
-	else if (((t_input *)line_lst->content)->redir_sign == 2)
+	else if (((t_input *)line_lst->content)->redir_sign == 2) // <<
 	{
 		handle_heredoc(env_lst, ((t_input *)line_lst->next->content), exitcode);
 		cmd_tokens->infile = (char **)ft_realloc(cmd_tokens->infile, sizeof(char *) * (i + 1), sizeof(char *) * (i + 2));
@@ -92,6 +88,7 @@ void parse_redir12(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int i
 	cmd_tokens->num_infile = ++i;
 }
 
+// parse > >> output redirection
 void parse_redir34(t_token *cmd_tokens, t_input *input, int redir_sign, int i)
 {
 	if (!cmd_tokens->outfile)
@@ -125,12 +122,9 @@ void parse_cmd_args(t_token *cmd_tokens, t_input *input, int *k)
 		if (!(cmd_tokens->cmd = ft_strdup(input->temp_line)))
 			ft_error("Malloc failed", MALLOC);
 	}
-
-	if (!cmd_tokens->args)
+	if (!cmd_tokens->args) // add the cmd in front of args
 	{
 		if (!(cmd_tokens->args = (char **)ft_calloc(sizeof(char *), 2)))
-			ft_error("Malloc failed", MALLOC);
-		if (!(cmd_tokens->args[0] = ft_strdup(cmd_tokens->cmd))) // add the cmd in front of args
 			ft_error("Malloc failed", MALLOC);
 	}
 	else
@@ -139,10 +133,10 @@ void parse_cmd_args(t_token *cmd_tokens, t_input *input, int *k)
 	if (!cmd_tokens->args[*k])
 		ft_error("Malloc failed", MALLOC);
 	*k += 1;
-
 	cmd_tokens->num_args = *k;
 }
 
+// each cmd is a cmd_lst node, iterate the line_lst until | as one cmd
 t_list *iterate_cmds(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int exitcode, int *k)
 {
 	int i;
@@ -154,8 +148,8 @@ t_list *iterate_cmds(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int
 	{ // no handle the <>/<>>/></><</<<>/<<>>/>></>><</>>>/>>>>, should be syntax error or
 		if (((t_input *)line_lst->content)->redir_sign != 0)
 		{
-			if (line_lst->next == NULL) // each redirection file cannot be empty, parse error
-				ft_error("Syntax error", SYNTAX);
+			if (line_lst->next == NULL) // handle error: each redirection file cannot be empty, parse error
+				ft_error("Syntax error: no redirection argument.", SYNTAX);
 			if (((t_input *)line_lst->content)->redir_sign == 1
 				|| ((t_input *)line_lst->content)->redir_sign == 2) // < >
 				parse_redir12(cmd_tokens, line_lst, env_lst, i++, exitcode);
@@ -170,7 +164,6 @@ t_list *iterate_cmds(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int
 	}
 	return line_lst;
 }
-
 
 // function: input line_lst return tokens, in here, one token is one complete cmd
 // return: null means error and handle this;
@@ -204,66 +197,4 @@ t_list *parse_cmds(t_list *line_lst, t_list *env_lst, int exitcode)
 	return (cmd_lst);
 }
 
-/* // test main function for parser
-int main(int argc, char **argv)
-{
-	t_list *line_lst = NULL;
-	t_input *input;
-	char *line;
-	t_list *cmd_lst = NULL;
-
-	while (1)
-	{
-		line = readline("minishell\033[31m$\033[0;39m ");
-		add_history(line);
-
-		line_lst = get_linelst(line);
-		// while (line_lst)
-		// {
-		// 	printf("%s\n", ((t_input *)line_lst->content)->temp_line);
-		// 	printf("%d\n", ((t_input *)line_lst->content)->redir_sign);
-		// 	printf("%d\n", ((t_input *)line_lst->content)->pipe_sign);
-		// 	printf("%d\n", ((t_input *)line_lst->content)->quote_type);
-		// 	line_lst = line_lst->next;
-		// }
-		if (!line_lst)
-			printf("test1\n");
-		cmd_lst = parse_cmds(line_lst);
-		if (!cmd_lst)
-			printf("test2\n");
-		ft_lstfree(line_lst);
-		while (cmd_lst)
-		{
-			printf("cmd: %s\n", ((t_token *)cmd_lst->content)->cmd);
-			// printf("%s\n", ((t_token *)cmd_lst->content)->args[0]);
-			// printf("%s\n", ((t_token *)cmd_lst->content)->infile[0]);
-			// printf("%s\n", ((t_token *)cmd_lst->content)->outfile[0]);
-			// printf("%d\n", ((t_token *)cmd_lst->content)->output_type[0]);
-			// printf("num_args: %d\n", ((t_token *)cmd_lst->content)->num_args);
-			// printf("num_infile: %d\n", ((t_token *)cmd_lst->content)->num_infile);
-			// printf("num_outfile_type: %d\n", ((t_token *)cmd_lst->content)->num_outfile_type);
-			// printf("expand_sign: %d\n", ((t_token *)cmd_lst->content)->expander_sign);
-			cmd_lst = cmd_lst->next;
-		}
-		if (ft_strncmp(line, "exit", 4) == 0)
-		{
-			free(line);
-			break ;
-		}
-	}
-	return (0);
-} */
-
-
-
-// < infile 'ls' "-l" |wc -l > outfile
-// <infile grep test | wc -l >outfile
-
-// malloc, free, write, close, fork, waitpid, signal, kill, exit, chdir, execve, dup, dup2, pipe, strcmp, strncmp
-// <<追加到outfile的时候，后面带有\n
-
-// 注意，在bash中和zsh的区别：
-// 1. <infile <<eof <outfile grep "bash" 只考虑最后一个input；
-// 2.  ls -l | grep 16 > infile >> outfile 只考虑最后一个output；但是<会覆盖前面的 outfile, <<不追加
-// 3.  ls -l | grep 16 2> infile 2>> outfile 只考虑最后一个output；但是<会覆盖前面的 outfile，<<不追加
 

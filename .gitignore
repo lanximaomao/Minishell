@@ -2,6 +2,9 @@
 .vscode
 .history
 minishell_tester
+test
+tmp_file_name
+minishell_test
 
 # Prerequisites
 *.d

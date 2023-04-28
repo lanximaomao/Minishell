@@ -17,7 +17,6 @@ SRCS = 		main.c minishell.c mini_utils.c			\
 				builtin.c env.c	executor.c signal.c# test_lliu.c #
 OBJS = $(SRCS:.c=.o)
 
-
 SRCS_TEST =		main.c minishell.c mini_utils.c			\
 				lexer.c expander.c parser.c				\
 				builtin.c env.c	executor.c signal.c# test_lliu.c #
@@ -31,12 +30,6 @@ FSANITIZE	= -fsanitize=address -g3
 RL_L = -lreadline -L ~/.brew/opt/readline/lib
 RL_I = -I ~/.brew/opt/readline/include/readline
 
-# NAME_BONUS = minishell_bonus
-
-
-# OBJS = $(SRCS:.c=.o) This line of code is automatically linked through CFLAGS, which is equivalent to the following line of code.
-# $(OBJ_DIR)/%.o: %.c
-# 	@$(CC) $(CFLAGS) -c $< -o $@
 
 all: $(NAME)
 $(NAME): $(OBJS)

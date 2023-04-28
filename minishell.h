@@ -3,9 +3,6 @@
 
 # include "libft.h"
 # include "ft_printf.h"
-# include "get_next_line_bonus.h"
-# include <readline/history.h>
-# include <readline/readline.h>
 # include <stdlib.h> // malloc
 #include <stdio.h> //printf
 #include <unistd.h> // write
@@ -18,6 +15,8 @@
 #include <errno.h>
 #include <stdarg.h>
 #include <dirent.h>
+# include <readline/readline.h>
+# include <readline/history.h>
 
 // exit(error_code)
 # define MALLOC 1
@@ -25,6 +24,7 @@
 # define SYNTAX 3
 # define FUNC 4
 
+extern int g_exitcode;
 
 typedef struct s_input
 {
@@ -91,5 +91,10 @@ void test_env_functions(t_mini *mini);
 // executor.c
 int executor_single(t_mini *mini);
 int executor(t_mini *mini, int size);
+
+
+// test_lliu.c
+void shell(void);
+void handle_sig(int sig);
 
 #endif

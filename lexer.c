@@ -45,7 +45,7 @@ int handle_token(t_input *input, char *line, int i, int *len)
 		}
 		else if (((line[i] == '\'' && (input->quote_type = 1))
 				|| (line[i] == '\"' && (input->quote_type = 2)))
-				&& ((i = handle_quote(line, i, len)) == -1))
+				&& ((i = handle_quote(line, i, len)) == -1)) // handle error: unclosed quote
 			ft_error("Syntax error: quote not closed.", SYNTAX);
 		i++;
 	}
