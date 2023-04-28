@@ -2,6 +2,8 @@
 #include "builtin.h"
 #include "signal.h"
 
+int g_exitcode = 0;
+
 int	readline_prompt(t_mini *mini)
 {
 	char	*line;
@@ -24,8 +26,6 @@ int	readline_prompt(t_mini *mini)
 		add_history(line);
 		// execute all the input cmd, while loop for signal processing
 		minishell(mini, line, 0); // exitcode is 0, handle in later
-
-
 	}
 	clear_history(); // ! why rl_clear_history does not work?
 	return (0);

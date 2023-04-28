@@ -147,6 +147,7 @@ int cmd_execution_in_children_one(t_token* token, int size, t_mini *mini)
 	char* tmp;
 	char* path_cmd;
 
+	//write(2, "here\n", 5);
 	dup2(token->fd_in, 0);
 	close(token->fd_in);
 	dup2(token->fd_out, 1);
@@ -156,7 +157,7 @@ int cmd_execution_in_children_one(t_token* token, int size, t_mini *mini)
 	if (access(token->cmd, X_OK) == 0)
 	{
 		if (execve(token->cmd, token->args, env_convert(mini->env)) == -1)
-			ft_error("Cannot execute command", 4); // !error return
+			ft_error("Cannot execute command", 2); // !error return
 	}
 	else
 	{
@@ -164,7 +165,7 @@ int cmd_execution_in_children_one(t_token* token, int size, t_mini *mini)
 		path_cmd = get_path_cmd(tmp, mini->env);
 		free(tmp);
 		if (execve(path_cmd, token->args, env_convert(mini->env)) == -1)
-			ft_error("Cannot execute command", 4); // !error return
+			ft_error("Cannot execute command", 2); // !error return
 	}
 	return(1);
 }
@@ -223,5 +224,3 @@ char **get_path_env(t_list *env)
 		ft_error("Malloc fail or PATH is NULL.\n", 1);
 	return(path_env);
 }
-
-

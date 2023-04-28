@@ -7,6 +7,7 @@ void sa_handle_ctrl_c(int sig);
 void sa_handle_ctrl_d(int sig);
 void sa_handle_nothing(int sig);
 void sa_children_exit(int sig);
-
+void sa_handle_ctrl_c_heredoc();
+void signal_handler_heredoc();
 
 #endif

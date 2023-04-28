@@ -100,11 +100,11 @@ void handle_args_expand(t_list *line_lst, t_list *env_lst, int exitcode) // stat
 {
 	while (line_lst)
 	{
-		//if (!ft_strncmp(((t_input *)line_lst->content)->temp_line, "", 1)) // handle error: parse error, '| |', '< >', '> <<'
-		//{
-		//	if (line_lst->next && !ft_strncmp(((t_input *)line_lst->next->content)->temp_line, "", 1))
-		//		ft_error("Syntax error: parse error.", SYNTAX);
-		//}
+		if (!ft_strncmp(((t_input *)line_lst->content)->temp_line, "", 1)) // handle error: parse error, '| |', '< >', '> <<'
+		{
+			if (line_lst->next && !ft_strncmp(((t_input *)line_lst->next->content)->temp_line, "", 1))
+				ft_error("Syntax error123: parse error.", SYNTAX);
+		}
 		if (((t_input *)line_lst->content)->quote_type != 1
 			 && ft_strchr(((t_input *)line_lst->content)->temp_line, '$'))
 			((t_input *)line_lst->content)->temp_line = replace_env_expand(((t_input *)line_lst->content)->temp_line, env_lst, exitcode);

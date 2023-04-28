@@ -60,3 +60,16 @@ void sa_children_exit(int sig)
 {
 	return;
 }
+
+void signal_handler_heredoc()
+{
+	struct sigaction sa_c; //ctrl + c
+
+	sa_c.sa_handler = &sa_handle_ctrl_c_heredoc;
+	sigaction(SIGINT, &sa_c, NULL);
+}
+
+void sa_handle_ctrl_c_heredoc()
+{
+	exit(131) ;
+}

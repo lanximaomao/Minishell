@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lliu <lliu@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: lsun <lsun@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 00:45:46 by srall             #+#    #+#             */
-/*   Updated: 2023/04/28 18:28:09 by lliu             ###   ########.fr       */
+/*   Updated: 2023/04/28 23:35:59 by lsun             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "signal.h"
 
 void init_tokens(t_token *tokens)
 {
@@ -42,6 +43,7 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode)
 		ft_error("Open tmp_file failed", FILE_OP);
 	while(1)
 	{
+		signal_handler_heredoc();
 		if (!(line = readline("heredoc >> ")))
 			ft_error("Readline error: heredoc.", FUNC);
 		if (!ft_strncmp(line, input->temp_line, ft_strlen(input->temp_line))
