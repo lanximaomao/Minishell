@@ -35,6 +35,7 @@ int	main(int argc, char **argv, char **env)
 {
 	t_mini *mini;
 
+	
 	if (argc != 1 || argv[1])
 		ft_error("Wrong input!", FUNC);
 	mini = malloc(sizeof(t_mini) * 1);
