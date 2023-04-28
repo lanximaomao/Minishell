@@ -50,11 +50,7 @@ void minishell(t_mini *mini, char *line, int exitcode)
 	if (size == 0)
 		return;
 	if (size == 1)
-	{
-		// if it is builtin, run in main processor?
 		executor_single(mini);
-	}
-
 	else
 		executor(mini, size);
 }

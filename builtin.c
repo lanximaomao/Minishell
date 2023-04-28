@@ -10,42 +10,11 @@ int is_builtin_no_run(t_token* token, t_list *env)
 {
 	int len;
 
-	//printf("\n**************** builtin *****************\n");
-
-	//printf("args: %s\n", token->args[0]);
-	//printf("args: %s\n", token->args[1]);
-
 	len = ft_strlen(token->cmd);
 
 	if (len == 2 && ft_strncmp(token->cmd, "cd", len) == 0)
 	{
 		//my_cd(token->args, env);
-		return(1);
-	}
-	else if (len == 3 && ft_strncmp(token->cmd, "pwd", len) == 0)
-	{
-		//my_pwd(env);
-		return(1);
-	}
-	else if (len == 4 && ft_strncmp(token->cmd, "exit", len) == 0)
-	{
-		//my_exit(token->args, env);
-		return(1);
-	}
-	else if (len == 4 && ft_strncmp(token->cmd, "echo", len) == 0)
-	{
-		//my_echo(token->args, env);
-		return (1);
-	}
-	else if (len == 5 && ft_strncmp(token->cmd, "unset", len) == 0)
-	{
-		//my_unset(token->args, env);
-		return (1);
-
-	}
-	else if (len == 6 && ft_strncmp(token->cmd, "export", len) == 0)
-	{
-		//my_export(token->args, env);
 		return(1);
 	}
 	return (0);
@@ -132,9 +101,9 @@ int	my_pwd(t_list *env)
 	if (getcwd(buf, sizeof(buf)) != NULL)
 	{
 		ft_printf("%s\n", buf);
-		return (1);
+		exit (0);
 	}
-	return (0);
+	exit (1);
 }
 
 /*
@@ -154,6 +123,7 @@ void	my_env(t_list *env)
 		ft_printf("%s=%s\n", env_content[0], env_content[1]);
 		tmp = tmp->next;
 	}
+	exit(0);
 }
 
 /* create exit function with no option */
@@ -215,7 +185,7 @@ void	my_export(char **arg, t_list *env)
 	if (!arg[i])
 	{
 		my_export_no_aguments(env);
-		return;
+		exit(0);
 	}
 	while (arg[i])
 	{
@@ -251,6 +221,7 @@ void	my_export(char **arg, t_list *env)
 			ft_error("cann't create a new node.\n", 1);
 		ft_lstadd_back(&env, node);
 	}
+	exit(0);
 }
 
 void my_export_no_aguments(t_list *env)
@@ -304,13 +275,14 @@ void	my_unset(char **arg, t_list *env)
 
 		i++;
 	}
+	exit(0);
 }
 
 /*
 ** create echo with option -n
 */
 
-int my_echo(char **arg, t_list *env)
+void my_echo(char **arg, t_list *env)
 {
 	int i;
 	int ret;
@@ -319,7 +291,8 @@ int my_echo(char **arg, t_list *env)
 	if (!arg[1])
 	{
 		ft_printf("\n");
-		return (0);
+		exit (0);
+		//return (0);
 	}
 	ret = check_n(arg);
 	//ft_printf("ret is %d\n", ret);
@@ -347,7 +320,7 @@ int my_echo(char **arg, t_list *env)
 			i++;
 		}
 	}
-	return(0);
+	exit(0);
 }
 
 int check_n(char** arg)

@@ -11,13 +11,12 @@ int executor_single(t_mini *mini)
 
 	signal_handler_children();
 	token = (t_token*)mini->cmd_lst->content;
-	if (handle_file(token))
+	if (handle_file(token) != 0)
 		return(1);
-	// if it is buitin
+
 	if (is_builtin_no_run(token, mini->env) == 1)
 	{
-		cmd_execution_in_children_one(token, 1, mini);
-		return(0);
+		return(my_cd(token->args, mini->env));
 	}
 
 	pid = fork();
