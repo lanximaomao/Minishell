@@ -1,39 +1,37 @@
 #!/bin/bash
 
-env > out1 | ls > out2 | pwd > out3
-
-# error msg: 231Readline error: Inappropriate ioctl for device
-
-#run:
-env | grep Apple
-env | grep Apple env | grep Apple > out3 | grep > out5
-env | grep Apple > out3 | ls > out4
-
-#cannot run:
-
-
-env | grep Apple | grep Apple > out3
-
-# out5 is created
-
-#segfault:
-
-echo "> >> < * ? [ ] | ; [ ] || && ( ) & # $  <<"
-
+#Bugs to fix
+#LLIU**************************************
+# argument parsing??
 
 # should print $ sign instead of nothing
 echo "$"
 echo $
 
+#***************************************
+
+
 
 #bash: export: `A-': not a valid identifier
-# why my export is not working??
+# Fix export
 export A-
 export =
 export HELLO-=123
 export 123
 export 123=KEY
 
-# EXIT function should also run in main?
-exit 100
-exit +100
+# in case of syntax error, return but not exit
+
+
+# OTHERS
+<<LMT 'grep test' "-l" |wc -l > outfile
+# if the content of the file is test1\n test2\n, ours write 2 into outfile, while bash write 1
+
+
+# exit 100 is not exiting
+# exit +100 show as syntax error
+
+#HEREDOC: signal part
+
+
+#EXITSTATUS
