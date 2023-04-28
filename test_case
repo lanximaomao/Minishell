@@ -15,3 +15,25 @@ env | grep Apple > out3 | ls > out4
 env | grep Apple | grep Apple > out3
 
 # out5 is created
+
+#segfault:
+
+echo "> >> < * ? [ ] | ; [ ] || && ( ) & # $  <<"
+
+
+# should print $ sign instead of nothing
+echo "$"
+echo $
+
+
+#bash: export: `A-': not a valid identifier
+# why my export is not working??
+export A-
+export =
+export HELLO-=123
+export 123
+export 123=KEY
+
+# EXIT function should also run in main?
+exit 100
+exit +100

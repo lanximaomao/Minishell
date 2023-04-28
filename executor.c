@@ -14,7 +14,7 @@ int executor_single(t_mini *mini)
 	if (handle_file(token) != 0)
 		return(1);
 
-	if (is_builtin_no_run(token, mini->env) == 1)
+	if (is_cd(token, mini->env) == 1)
 	{
 		return(my_cd(token->args, mini->env));
 	}

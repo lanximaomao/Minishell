@@ -5,7 +5,7 @@
 # include <signal.h>
 
 int is_builtin(t_token* token, t_list *env);
-int is_builtin_no_run(t_token* token, t_list *env);
+int is_cd(t_token* token, t_list *env);
 int		my_cd(char **arg, t_list *env);
 int		my_pwd(t_list *env);
 void	my_env(t_list *env);

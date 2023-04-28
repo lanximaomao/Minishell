@@ -6,7 +6,7 @@
 #include "minishell.h"
 #include "builtin.h"
 
-int is_builtin_no_run(t_token* token, t_list *env)
+int is_cd(t_token* token, t_list *env)
 {
 	int len;
 
