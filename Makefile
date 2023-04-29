@@ -19,16 +19,16 @@ OBJS = $(SRCS:.c=.o)
 
 SRCS_TEST =		main.c minishell.c mini_utils.c			\
 				lexer.c expander.c parser.c				\
-				builtin.c env.c	executor.c signal.c# test_lliu.c #
+				builtin.c env.c	executor.c # test_lliu.c #signal.c
 
 NAME = minishell
 CC = cc
 CFLAGS = -I./libft_42/inc
 LDFLAGS = -L./libft_42 -lft
 FSANITIZE	= -fsanitize=address -g3
-
-RL_L = -lreadline -L ~/.brew/opt/readline/lib
-RL_I = -I ~/.brew/opt/readline/include/readline
+READLINE_DIR = $(shell brew --prefix readline)
+RL_L = -lreadline -L $(READLINE_DIR)/lib
+RL_I = -I $(READLINE_DIR)/include/readline
 
 
 all: $(NAME)

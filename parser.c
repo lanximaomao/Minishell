@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lsun <lsun@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: srall <srall@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 00:45:46 by srall             #+#    #+#             */
-/*   Updated: 2023/04/28 23:35:59 by lsun             ###   ########.fr       */
+/*   Updated: 2023/04/29 16:30:42 by srall            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode)
 		ft_error("Open tmp_file failed", FILE_OP);
 	while(1)
 	{
-		signal_handler_heredoc();
+		// signal_handler_heredoc();
 		if (!(line = readline("heredoc >> ")))
 			ft_error("Readline error: heredoc.", FUNC);
 		if (!ft_strncmp(line, input->temp_line, ft_strlen(input->temp_line))
@@ -52,7 +52,7 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode)
 		else
 		{ // expand the $(...)
 			if (ft_strchr(line, '$') && !input->quote_type)
-				line = replace_env_expand(line, env_lst, exitcode);
+				line = replace_env_expand(line, env_lst);
 			if (!(heredoc = ft_strjoin(line, "\n"))) // line no need free
 				ft_error("Malloc failed", MALLOC);
 			if (write(fd, heredoc, ft_strlen(heredoc)) == -1)

@@ -13,7 +13,7 @@ int	readline_prompt(t_mini *mini)
 	//ascii_art_pattern();
 	while (1)
 	{
-		signal_handler();
+		// signal_handler();
 		if (!(line = readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ")))
 			return(1);
 			//ft_error("Readline error", FUNC);
@@ -35,7 +35,7 @@ int	main(int argc, char **argv, char **env)
 {
 	t_mini *mini;
 
-	
+
 	if (argc != 1 || argv[1])
 		ft_error("Wrong input!", FUNC);
 	mini = malloc(sizeof(t_mini) * 1);

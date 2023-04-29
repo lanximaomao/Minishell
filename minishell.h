@@ -80,8 +80,8 @@ char*		env_handler(t_list *env, char* str);
 t_list *parse_cmds(t_list *line_lst, t_list *env_lst, int exitcode);
 
 // expander.c
-char *replace_env_expand(char *temp_line, t_list *env_lst, int exitcode);
-void handle_args_expand(t_list *line_lst, t_list *env_lst, int exitcode); // status is the exitcode of the previous process
+char *replace_env_expand(char *temp_line, t_list *env_lst);
+void handle_args_expand(t_list *line_lst, t_list *env_lst); // status is the exitcode of the previous process
 
 int env_find_and_replace(t_list *env, char* to_find, char* to_replace);
 void test_env_functions(t_mini *mini);

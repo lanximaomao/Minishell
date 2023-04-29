@@ -1,7 +1,7 @@
 #include "minishell.h"
 #include "signal.h"
 
- void rl_replace_line (const char *, int);
+void rl_replace_line (const char *, int);
 
 /* ctrl + \ = SIGQUIT, does nothing */
 
