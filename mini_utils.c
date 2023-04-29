@@ -16,6 +16,16 @@ void ft_error(char* msg, int error_code)
 		printf("%s\n", msg);
 	exit(error_code);
 }
+// handle error in parent process
+void ft_error_minishell(char* msg, int error_code, int sig)
+{
+	if (error_code <= 2)
+		perror(msg);
+	else
+		printf("%s\n", msg);
+	// handle_signal_heredoc(sig); // modify this handler function by Lin
+}
+
 // free char *
 int free_str(char *str)
 {

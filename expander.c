@@ -26,10 +26,10 @@ static char *replace_env(char *tmp_exp, t_list *env_lst, char *tmp_substr, int l
 			 && !ft_isalnum(tmp_exp[len_envp])) // 判断下一个是否是特殊字符（！数字！字母）
 		{
 			if (!(tmp_substr = ft_substr(tmp_exp, len_envp, ft_strlen(tmp_exp))))
-				ft_error("Malloc failed", MALLOC);
+				ft_error_minishell("Malloc failed", MALLOC, 2);
 			free_str(tmp_exp);
 			if (!(tmp_exp = ft_strdup(ft_strjoin(((char **)env_lst->content)[1], tmp_substr))))
-				ft_error("Malloc failed", MALLOC);
+				ft_error_minishell("Malloc failed", MALLOC, 2);
 			free_str(tmp_substr);
 			len_envp = -1; // 复用， for norm
 			break;
@@ -55,13 +55,12 @@ static char *ft_mulstrjoin(char **tmp_exp, int len) // len is the length of tmp_
 	tmp_join = NULL; // for free， strjoin的第一个参数
 	res = NULL;
 	if (!(res = ft_strdup("")))
-		ft_error("Malloc failed", MALLOC);
+		ft_error_minishell("Malloc failed", MALLOC, 2);
 	while (i < len)
 	{
 		tmp_join = res;
-		res = ft_strjoin(tmp_join, tmp_exp[i]);
-		if (!res)
-			ft_error("Malloc failed", MALLOC);
+		if (!(res = ft_strjoin(tmp_join, tmp_exp[i])))
+			ft_error_minishell("Malloc failed", MALLOC, 2);
 		free_str(tmp_join);
 		i++;
 	}
@@ -77,9 +76,8 @@ char *replace_env_expand(char *temp_line, t_list *env_lst)
 	char *tmp_end; // split出来的最后一个字符串，用于连接$
 
 	i = -1;
-	tmp_exp = ft_split(temp_line, '$');
-	if (!tmp_exp)
-		ft_error("Malloc failed", MALLOC);
+	if (!(tmp_exp = ft_split(temp_line, '$')))
+		ft_error_minishell("Malloc failed", MALLOC, 2);
 	if (temp_line[0] != '$')
 		i = 0; // the first arg no need to handle
 	while (tmp_exp[++i])
@@ -114,10 +112,7 @@ void handle_args_expand(t_list *line_lst, t_list *env_lst)
 		if (!ft_strncmp(((t_input *)line_lst->content)->temp_line, "", 1)) // handle error: parse error, '| |', '< >', '> <<'
 		{
 			if (line_lst->next && !ft_strncmp(((t_input *)line_lst->next->content)->temp_line, "", 1))
-			{
-				printf("Syntax error: parse error.\n");
-				// handle_signal_heredoc(258); // modify this handler function by Lin
-			}
+				ft_error_minishell("Syntax error: parse error.", SYNTAX, 2);
 		}
 		if (((t_input *)line_lst->content)->quote_type != 1
 			 && ft_strchr(((t_input *)line_lst->content)->temp_line, '$'))

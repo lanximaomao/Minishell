@@ -46,7 +46,7 @@ int handle_token(t_input *input, char *line, int i, int *len)
 		else if (((line[i] == '\'' && (input->quote_type = 1))
 				|| (line[i] == '\"' && (input->quote_type = 2)))
 				&& ((i = handle_quote(line, i, len)) == -1)) // handle error: unclosed quote
-			ft_error("Syntax error: quote not closed.", SYNTAX);
+				ft_error_minishell("Syntax error: unclosed quote.", SYNTAX, 2);
 		i++;
 	}
 	return i;
@@ -66,7 +66,7 @@ char *trim_quote(char *temp_line, int quote_type)
 		quote = '\"';
 	trim_line = (char *)malloc(sizeof(char) * (ft_strlen(temp_line) - 1));
 	if (!trim_line)
-		ft_error("Malloc failed", MALLOC);
+		ft_error_minishell("Malloc failed", MALLOC, 2);
 	while (temp_line[++i])
 	{
 		if (temp_line[i] != quote)
@@ -88,18 +88,18 @@ t_list *get_linelst(char *line, t_list *line_lst, int i) // i = -1
 	{
 		if (!(line[i] == ' ' || (line[i] > 8 && line[i] < 14)))
 		{
-			if (!(input = (t_input *)malloc(sizeof(t_input))))
-				ft_error("Malloc failed", MALLOC);
+			if (!(input = (t_input *)ft_calloc(sizeof(t_input), 1)))
+				ft_error_minishell("Malloc failed", MALLOC, 2);
 			init_input(input);
 			i = handle_token(input, line, i, &len);
 			if (!(input->temp_line = ft_substr(line, i - len, len))) // Extract the substring and store it into the data structure of a lst node.
-				ft_error("Malloc failed", MALLOC);
+				ft_error_minishell("Malloc failed", MALLOC, 2);
 			if (input->quote_type)
 				input->temp_line = trim_quote(input->temp_line, input->quote_type); // trim the quote & dquote, free the 1st argument temp_line in this function.
 			if (input->redir_sign == 2 || input->redir_sign == 4)
 				i += 1; // skip two characters, the other++ in the condition of while loop
 			if (!(node = ft_lstnew((t_input *)input)))
-				ft_error("Malloc failed", MALLOC);
+				ft_error_minishell("Malloc failed", MALLOC, 2);
 			ft_lstadd_back(&line_lst, node);
 		}
 		if (!line[i])
