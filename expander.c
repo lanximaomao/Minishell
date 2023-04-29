@@ -2,12 +2,12 @@
 #include "minishell.h"
 
 // handle $?, use the waitpid() status of process, tips: WEXITSTATUS(), WIFEXITED(), WIFSIGNALED()
-char *handle_exitcode(int exitcode, char *str) // test$?-test => test0-test
+static char *handle_exitcode(char *str) // test$?-test => test0-test
 {
 	char *str_status = NULL; // itoa(status)
 	char *res = NULL;
 
-	str_status = ft_itoa(exitcode);
+	str_status = ft_itoa(g_exitcode);
 	res = ft_strjoin(str_status, str + 1); // 去掉'?'
 	free(str_status);
 	str_status = NULL;
@@ -17,7 +17,7 @@ char *handle_exitcode(int exitcode, char *str) // test$?-test => test0-test
 }
 
 // find the env_name and replace it with env_value
-char *replace_env(char *tmp_exp, t_list *env_lst, char *tmp_substr, int len_envp) // tmp_substr, 找到环境变量之后，去除env_name的子串
+static char *replace_env(char *tmp_exp, t_list *env_lst, char *tmp_substr, int len_envp) // tmp_substr, 找到环境变量之后，去除env_name的子串
 {
 	while (env_lst) // iterate the all the env names
 	{
@@ -45,7 +45,7 @@ char *replace_env(char *tmp_exp, t_list *env_lst, char *tmp_substr, int len_envp
 }
 
 // 展开后的tmp_exp，又重新连接起来，形成新的temp_line后续parser使用，并且free原来的temp_line
-char *ft_mulstrjoin(char **tmp_exp, int len) // len is the length of tmp_exp
+static char *ft_mulstrjoin(char **tmp_exp, int len) // len is the length of tmp_exp
 {
 	int i;
 	char *tmp_join;
@@ -70,44 +70,58 @@ char *ft_mulstrjoin(char **tmp_exp, int len) // len is the length of tmp_exp
 
 // split, replace, joint, return
 // for reuse this function in heredoc
-char *replace_env_expand(char *temp_line, t_list *env_lst, int exitcode)
+char *replace_env_expand(char *temp_line, t_list *env_lst)
 {
 	int i;
 	char **tmp_exp; // $ split每个temp_line
+	char *tmp_end; // split出来的最后一个字符串，用于连接$
 
 	i = -1;
-	tmp_exp = NULL;
 	tmp_exp = ft_split(temp_line, '$');
 	if (!tmp_exp)
 		ft_error("Malloc failed", MALLOC);
 	if (temp_line[0] != '$')
 		i = 0; // the first arg no need to handle
-	free(temp_line);
-	temp_line = NULL;
 	while (tmp_exp[++i])
 	{
 		if (tmp_exp[i][0] == '?')
-			tmp_exp[i] = handle_exitcode(exitcode, tmp_exp[i]);
+			tmp_exp[i] = handle_exitcode(tmp_exp[i]);
 		else
 			tmp_exp[i] = replace_env(tmp_exp[i], env_lst, NULL, -1);
 	}
-	temp_line = ft_mulstrjoin(tmp_exp, i);
+	// the last char is $
+	if (i && temp_line[ft_strlen(temp_line) - 1] == '$')
+	{
+		tmp_end = tmp_exp[i - 1];
+		tmp_exp[i - 1] = ft_strjoin(tmp_end, "$");
+		free(tmp_end);
+		tmp_end = NULL;
+	}
+	free_str(temp_line);
+	if (i == 0) // echo $
+		temp_line = ft_strdup("$");
+	else
+		temp_line = ft_mulstrjoin(tmp_exp, i);
 	free_char(tmp_exp);
 	return temp_line;
 }
 
-void handle_args_expand(t_list *line_lst, t_list *env_lst, int exitcode) // status is the exitcode of the previous process
+void handle_args_expand(t_list *line_lst, t_list *env_lst)
 {
 	while (line_lst)
 	{
+		// 连续两个node为空，报错newline with prompt
 		if (!ft_strncmp(((t_input *)line_lst->content)->temp_line, "", 1)) // handle error: parse error, '| |', '< >', '> <<'
 		{
 			if (line_lst->next && !ft_strncmp(((t_input *)line_lst->next->content)->temp_line, "", 1))
-				ft_error("Syntax error123: parse error.", SYNTAX);
+			{
+				printf("Syntax error: parse error.\n");
+				// handle_signal_heredoc(258); // modify this handler function by Lin
+			}
 		}
 		if (((t_input *)line_lst->content)->quote_type != 1
 			 && ft_strchr(((t_input *)line_lst->content)->temp_line, '$'))
-			((t_input *)line_lst->content)->temp_line = replace_env_expand(((t_input *)line_lst->content)->temp_line, env_lst, exitcode);
+			((t_input *)line_lst->content)->temp_line = replace_env_expand(((t_input *)line_lst->content)->temp_line, env_lst);
 
 		line_lst = line_lst->next;
 	}

@@ -15,7 +15,6 @@ void minishell(t_mini *mini, char *line, int exitcode)
 	line_lst = get_linelst(line, line_lst, -1);
 	free(line);
 	line = NULL;
-	// handle_error in here.
 	handle_args_expand(line_lst, mini->env, exitcode);
 	mini->cmd_lst = parse_cmds(line_lst, mini->env, 0);
 	ft_lstfree(line_lst);
