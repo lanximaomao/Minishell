@@ -15,5 +15,6 @@ void	my_exit(char **arg, t_list *env);
 void		my_echo(char **arg, t_list *env);
 int		check_n(char **arg);
 void	my_export_no_aguments(t_list *env);
+void my_export_arguments(t_list *env, char** env_content);
 
 #endif

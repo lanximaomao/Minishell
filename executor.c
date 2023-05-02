@@ -51,24 +51,29 @@ int executor_single(t_mini *mini)
 int executor(t_mini *mini, int size)
 {
 	int i;
-	int pid;
-	int status;
+	int *pid;
+	int *status;
 	int fd_pipe[2];
 	t_list *tmp;
 	t_token* token;
-
 	i = 0;
 	tmp = mini->cmd_lst;
-	// signal_handler_children();
+	//signal_handler_children();
+	pid = malloc(sizeof(int) * size);
+	if (!pid)
+		ft_error("pid malloc fail", 1);
+	status = malloc(sizeof(int) * size);
+	if (!status)
+		ft_error("status malloc fail", 1);
 	while (tmp && i < size)
 	{
 		token = (t_token*) tmp->content;
 		if (handle_io(token, fd_pipe, i, size) == 1)
 			return(1);
-		pid = fork();
-		if (pid == -1)
+		pid[i] = fork();
+		if (pid[i] == -1)
 			ft_error("fork failed", 4);
-		else if (pid == 0)
+		else if (pid[i] == 0)
 			cmd_execution_in_children(token, size, mini);
 		close(token->fd_in);
 		close(token->fd_out);
@@ -78,17 +83,17 @@ int executor(t_mini *mini, int size)
 	i = 0;
 	while(i < size)
 	{
-		waitpid(pid, &status, 0);
+		waitpid(pid[i], &status[i], 0);
 		i++;
 	}
-	//handel exit code
-	if (WIFEXITED(status))
-	{
-		g_exitcode = WEXITSTATUS(status);
-		printf("exit_code=%d\n", g_exitcode);
-	}
-	return(0);
+	//if (WIFEXITED(status))
+//	{
+//		g_exitcode = WEXITSTATUS(status);
+//		printf("exit_code=%d\n", g_exitcode);
+//	}
+	return(status[i]);
 }
+
 
 ///* still happening in main processor*/
 int handle_io(t_token* token, int* fd_pipe, int cmd_order, int size)

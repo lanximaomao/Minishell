@@ -25,49 +25,21 @@ int is_builtin_no_run(t_token* token, t_list *env)
 {
 	int len;
 
-	//printf("\n**************** builtin *****************\n");
-
-	//printf("args: %s\n", token->args[0]);
-	//printf("args: %s\n", token->args[1]);
-
 	len = ft_strlen(token->cmd);
-
 	if (len == 2 && ft_strncmp(token->cmd, "cd", len) == 0)
-	{
-		//my_cd(token->args, env);
 		return(1);
-	}
 	else if (len == 3 && ft_strncmp(token->cmd, "pwd", len) == 0)
-	{
-		//my_pwd(env);
 		return(1);
-	}
 	else if (len == 3 && ft_strncmp(token->cmd, "env", len) == 0)
-	{
-		//my_env(env);
 		return(1);
-	}
 	else if (len == 4 && ft_strncmp(token->cmd, "exit", len) == 0)
-	{
-		//my_exit(token->args, env);
 		return(1);
-	}
 	else if (len == 4 && ft_strncmp(token->cmd, "echo", len) == 0)
-	{
-		//my_echo(token->args, env);
 		return (1);
-	}
 	else if (len == 5 && ft_strncmp(token->cmd, "unset", len) == 0)
-	{
-		//my_unset(token->args, env);
 		return (1);
-
-	}
 	else if (len == 6 && ft_strncmp(token->cmd, "export", len) == 0)
-	{
-		//my_export(token->args, env);
 		return(1);
-	}
 	return (0);
 }
 
@@ -76,13 +48,7 @@ int is_builtin(t_token* token, t_list *env)
 {
 	int len;
 
-	//printf("\n**************** builtin *****************\n");
-
-	//printf("args: %s\n", token->args[0]);
-	//printf("args: %s\n", token->args[1]);
-
 	len = ft_strlen(token->cmd);
-
 	if (len == 2 && ft_strncmp(token->cmd, "cd", len) == 0)
 	{
 		my_cd(token->args, env);
@@ -237,7 +203,6 @@ void	my_export(char **arg, t_list *env)
 	int i;
 	int j;
 	int len;
-	t_list	*node;
 	char** env_content;
 
 	i = 1;
@@ -250,21 +215,21 @@ void	my_export(char **arg, t_list *env)
 	while (arg[i])
 	{
 		j = 0;
+		//is_valid_argument(arg, env, i)
 		while (arg[i][j])
 		{
 			len = 0;
 			if (arg[i][j] != '=')
 			{
 				while (arg[i][j] && arg[i][j] != '=' && ++len)
-				{
 					j++;
-				}
 				env_content = malloc(sizeof(char*) * 3);
 				if (!env_content)
 					ft_error("malloc fail.\n", 1);
 				env_content[0]=ft_substr(arg[i], j-len, len);
 				env_content[1]=ft_substr(arg[i], len+1, ft_strlen(arg[i]));
 				env_content[2] = NULL;
+				my_export_arguments(env, env_content);
 				break;
 			}
 			else
@@ -273,6 +238,27 @@ void	my_export(char **arg, t_list *env)
 		i++;
 	}
 	//loop throught the env, 0 means not found
+
+}
+
+//int is_valid_argument(char** arg, t_list *env, int i)
+//{
+//	int j;
+
+//	j = 0;
+//	while (arg[i][j])
+//	{
+//		/* code */
+//	}
+
+
+
+//}
+
+void my_export_arguments(t_list *env, char** env_content)
+{
+	t_list	*node;
+
 	if (env_find_and_replace(env, env_content[0], env_content[1]) == 0)
 	{
 		node = ft_lstnew(env_content);
@@ -282,7 +268,6 @@ void	my_export(char **arg, t_list *env)
 		ft_lstadd_back(&env, node);
 		//my_env(env);
 	}
-	//return(0); // cannot exit. because if exitted, the exported variable will be removed from env list.
 }
 
 // sorting?
