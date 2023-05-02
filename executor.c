@@ -35,11 +35,10 @@ int executor_single(t_mini *mini)
 	if (pid == -1)
 		ft_error("fork failed", 4);
 	else if (pid == 0)
-		cmd_execution_in_children_one(token, 1, mini);
+		cmd_execution_in_children(token, 1, mini);
 	close(token->fd_in);
 	close(token->fd_out);
 	waitpid(pid, &status, 0);
-
 	//exit code
 	if (WIFEXITED(status))
 	{
@@ -52,8 +51,8 @@ int executor_single(t_mini *mini)
 int executor(t_mini *mini, int size)
 {
 	int i;
-	int *pid;
-	int *status;
+	int pid;
+	int status;
 	int fd_pipe[2];
 	t_list *tmp;
 	t_token* token;
@@ -61,22 +60,16 @@ int executor(t_mini *mini, int size)
 	i = 0;
 	tmp = mini->cmd_lst;
 	// signal_handler_children();
-	pid = malloc(sizeof(int) * size);
-	if (!pid)
-		ft_error("pid malloc fail", 1);
-	status = malloc(sizeof(int) * size);
-	if (!status)
-		ft_error("status malloc fail", 1);
 	while (tmp && i < size)
 	{
 		token = (t_token*) tmp->content;
 		if (handle_io(token, fd_pipe, i, size) == 1)
 			return(1);
-		pid[i] = fork();
-		if (pid[i] == -1)
+		pid = fork();
+		if (pid == -1)
 			ft_error("fork failed", 4);
-		else if (pid[i] == 0)
-			cmd_execution_in_children_more(token, fd_pipe, size, mini);
+		else if (pid == 0)
+			cmd_execution_in_children(token, size, mini);
 		close(token->fd_in);
 		close(token->fd_out);
 		tmp = tmp->next;
@@ -85,10 +78,9 @@ int executor(t_mini *mini, int size)
 	i = 0;
 	while(i < size)
 	{
-		waitpid(pid[i], &status[i], 0);
+		waitpid(pid, &status, 0);
 		i++;
 	}
-
 	//handel exit code
 	if (WIFEXITED(status))
 	{
@@ -169,7 +161,7 @@ int handle_file(t_token* token)
 	return(0);
 }
 
-int cmd_execution_in_children_one(t_token* token, int size, t_mini *mini)
+int cmd_execution_in_children(t_token* token, int size, t_mini *mini)
 {
 	char* tmp;
 	char* path_cmd;
@@ -180,7 +172,7 @@ int cmd_execution_in_children_one(t_token* token, int size, t_mini *mini)
 	dup2(token->fd_out, 1);
 	close(token->fd_out);
 	if (is_builtin(token, mini->env) == 1)
-		return (0);
+		exit (0);
 	if (access(token->cmd, X_OK) == 0)
 	{
 		if (execve(token->cmd, token->args, env_convert(mini->env)) == -1)
@@ -194,13 +186,6 @@ int cmd_execution_in_children_one(t_token* token, int size, t_mini *mini)
 		if (execve(path_cmd, token->args, env_convert(mini->env)) == -1)
 			ft_error("Cannot execute command", 2); // !error return
 	}
-	return(1);
-}
-
-int cmd_execution_in_children_more(t_token* token, int* fd_pipe, int size, t_mini *mini)
-{
-	cmd_execution_in_children_one(token, size, mini);
-	//close(fd_pipe[1]);
 	return(1);
 }
 

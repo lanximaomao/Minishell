@@ -21,17 +21,17 @@ void minishell(t_mini *mini, char *line, int exitcode)
 	line_lst = NULL;
 
 	// test the result of cmd_lst without executor
-	tmp = mini->cmd_lst; // add by Lin
+	//tmp = mini->cmd_lst; // add by Lin
 
-	while (tmp)
-	{
-		printf("cmd: %s\n", ((t_token *)tmp->content)->cmd);
-		printf("num_args=%d\n", ((t_token *)tmp->content)->num_args);
+	//while (tmp)
+	//{
+	//	printf("cmd: %s\n", ((t_token *)tmp->content)->cmd);
+	//	printf("num_args=%d\n", ((t_token *)tmp->content)->num_args);
 	//	printf("num_infile=%d\n", ((t_token *)tmp->content)->num_infile);
 	//	printf("num_outfile=%d\n", ((t_token *)tmp->content)->num_outfile_type);
-		i = 0; // ignore the first arg which is cmd
-		while (i < ((t_token *)tmp->content)->num_args)
-			printf("args: %s\n", ((t_token *)tmp->content)->args[i++]);
+		//i = 0; // ignore the first arg which is cmd
+		//while (i < ((t_token *)tmp->content)->num_args)
+		//	printf("args: %s\n", ((t_token *)tmp->content)->args[i++]);
 	//	printf("\n******************************************************\n\n");
 		//i = 0;
 		//while (i < ((t_token *)tmp->content)->num_infile)
@@ -42,10 +42,10 @@ void minishell(t_mini *mini, char *line, int exitcode)
 		//	printf("outfile: %s\n", ((t_token *)tmp->content)->outfile[i]);
 		//	printf("output_type: %d\n", ((t_token *)tmp->content)->output_type[i++]);
 		//}
-		tmp = tmp->next;
-		if (tmp)
-			printf("\n****************the next cmd*****************\n");
-	}
+	//	tmp = tmp->next;
+	//	if (tmp)
+	//		printf("\n****************the next cmd*****************\n");
+	//}
 	// check for single builtin, if yes, just function call and return
 	size = ft_lstsize(mini->cmd_lst);
 	if (size == 0)
