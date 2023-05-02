@@ -7,19 +7,70 @@
 #include "builtin.h"
 
 // for handeling exit
-int is_exit(t_token* token, t_list *env)
+//int is_exit(t_token* token, t_list *env)
+//{
+//	int len;
+
+//	len = ft_strlen(token->cmd);
+
+//	if (len == 4 && ft_strncmp(token->cmd, "exit", len) == 0)
+//	{
+//		my_exit(token->args, env);
+//		return(1);
+//	}
+//	return (0);
+//}
+
+int is_builtin_no_run(t_token* token, t_list *env)
 {
 	int len;
 
+	//printf("\n**************** builtin *****************\n");
+
+	//printf("args: %s\n", token->args[0]);
+	//printf("args: %s\n", token->args[1]);
+
 	len = ft_strlen(token->cmd);
 
-	if (len == 4 && ft_strncmp(token->cmd, "exit", len) == 0)
+	if (len == 2 && ft_strncmp(token->cmd, "cd", len) == 0)
 	{
-		my_exit(token->args, env);
+		//my_cd(token->args, env);
+		return(1);
+	}
+	else if (len == 3 && ft_strncmp(token->cmd, "pwd", len) == 0)
+	{
+		//my_pwd(env);
+		return(1);
+	}
+	else if (len == 3 && ft_strncmp(token->cmd, "env", len) == 0)
+	{
+		//my_env(env);
+		return(1);
+	}
+	else if (len == 4 && ft_strncmp(token->cmd, "exit", len) == 0)
+	{
+		//my_exit(token->args, env);
+		return(1);
+	}
+	else if (len == 4 && ft_strncmp(token->cmd, "echo", len) == 0)
+	{
+		//my_echo(token->args, env);
+		return (1);
+	}
+	else if (len == 5 && ft_strncmp(token->cmd, "unset", len) == 0)
+	{
+		//my_unset(token->args, env);
+		return (1);
+
+	}
+	else if (len == 6 && ft_strncmp(token->cmd, "export", len) == 0)
+	{
+		//my_export(token->args, env);
 		return(1);
 	}
 	return (0);
 }
+
 
 int is_builtin(t_token* token, t_list *env)
 {
@@ -107,9 +158,9 @@ int	my_pwd(t_list *env)
 	if (getcwd(buf, sizeof(buf)) != NULL)
 	{
 		ft_printf("%s\n", buf);
-		exit (0);
+		return (0);
 	}
-	exit (1);
+	return (1);
 }
 
 /*
@@ -121,7 +172,7 @@ void	my_env(t_list *env)
 	t_list	*tmp;
 	char**	env_content;
 
-	printf("calling my env functions.\n");
+	//printf("calling my env functions.\n");
 	tmp = env;
 	while (tmp)
 	{
@@ -129,7 +180,7 @@ void	my_env(t_list *env)
 		ft_printf("%s=%s\n", env_content[0], env_content[1]);
 		tmp = tmp->next;
 	}
-	exit(0);
+	//return(0);
 }
 
 /* create exit function with no option */
@@ -192,7 +243,7 @@ void	my_export(char **arg, t_list *env)
 	if (!arg[i])
 	{
 		my_export_no_aguments(env);
-		exit(0);
+		return;
 	}
 	while (arg[i])
 	{
@@ -229,7 +280,7 @@ void	my_export(char **arg, t_list *env)
 		ft_lstadd_back(&env, node);
 		//my_env(env);
 	}
-	exit(0); // cannot exit. because if exitted, the exported variable will be removed from env list.
+	//return(0); // cannot exit. because if exitted, the exported variable will be removed from env list.
 }
 
 // sorting?
@@ -284,7 +335,7 @@ void	my_unset(char **arg, t_list *env)
 
 		i++;
 	}
-	exit(0);
+	//return(0);
 }
 
 /*
@@ -300,7 +351,7 @@ void my_echo(char **arg, t_list *env)
 	if (!arg[1])
 	{
 		ft_printf("\n");
-		exit (0);
+		return;
 		//return (0);
 	}
 	ret = check_n(arg);
@@ -329,7 +380,7 @@ void my_echo(char **arg, t_list *env)
 			i++;
 		}
 	}
-	exit(0);
+	//return(0);
 }
 
 int check_n(char** arg)

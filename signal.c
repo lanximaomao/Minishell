@@ -25,6 +25,7 @@ void sa_handle_ctrl_d(int sig)
 void sa_handle_ctrl_c(int sig)
 {
 	(void) sig;
+	//g_exitcode = 130;
 	write(1, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 1); // 1 means to clear this line's history
@@ -71,5 +72,11 @@ void signal_handler_heredoc()
 
 void sa_handle_ctrl_c_heredoc()
 {
-	exit(131) ;
+	//exit(131) ;
+	//unlink
+	write(1, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 1); // 1 means to clear this line's history
+	rl_redisplay();
+	return;
 }

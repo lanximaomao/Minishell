@@ -8,15 +8,29 @@ int executor_single(t_mini *mini)
 	int pid;
 	int status;
 	t_token* token;
+	int in;
+	int out;
 
 	signal_handler_children();
 	token = (t_token*)mini->cmd_lst->content;
 	if (handle_file(token) != 0)
 		return(1);
 
-	if(is_exit(token, mini->env) == 1)
+	if(is_builtin_no_run(token, mini->env) == 1)
+	{
+		in = dup(0);
+		out = dup(1);
+		dup2(token->fd_in, 0);
+		close(token->fd_in);
+		dup2(token->fd_out, 1);
+		close(token->fd_out);
+		is_builtin(token, mini->env);
+		dup2(in, 0);
+		close(in);
+		dup2(out, 1);
+		close(out);
 		return(0);
-
+	}
 	pid = fork();
 	if (pid == -1)
 		ft_error("fork failed", 4);
@@ -25,7 +39,14 @@ int executor_single(t_mini *mini)
 	close(token->fd_in);
 	close(token->fd_out);
 	waitpid(pid, &status, 0);
-	return(status);
+
+	//exit code
+	if (WIFEXITED(status))
+	{
+		g_exitcode = WEXITSTATUS(status);
+		printf("exit_code=%d\n", g_exitcode);
+	}
+	return(0);
 }
 
 int executor(t_mini *mini, int size)
@@ -67,7 +88,14 @@ int executor(t_mini *mini, int size)
 		waitpid(pid[i], &status[i], 0);
 		i++;
 	}
-	return(status[i]);
+
+	//handel exit code
+	if (WIFEXITED(status))
+	{
+		g_exitcode = WEXITSTATUS(status);
+		printf("exit_code=%d\n", g_exitcode);
+	}
+	return(0);
 }
 
 ///* still happening in main processor*/
