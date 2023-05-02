@@ -14,10 +14,8 @@ int executor_single(t_mini *mini)
 	if (handle_file(token) != 0)
 		return(1);
 
-	if (is_cd(token, mini->env) == 1)
-	{
-		return(my_cd(token->args, mini->env));
-	}
+	if(is_exit(token, mini->env) == 1)
+		return(0);
 
 	pid = fork();
 	if (pid == -1)
@@ -81,6 +79,7 @@ int handle_io(t_token* token, int* fd_pipe, int cmd_order, int size)
 	//	token->fd_in = fd_pipe[0];
 	if (cmd_order != 0)
 	{
+		close(fd_pipe[1]);
 		dup2(fd_pipe[0], token->fd_in);
 		close(fd_pipe[0]);
 		//close(fd_pipe[1]);
@@ -173,7 +172,7 @@ int cmd_execution_in_children_one(t_token* token, int size, t_mini *mini)
 int cmd_execution_in_children_more(t_token* token, int* fd_pipe, int size, t_mini *mini)
 {
 	cmd_execution_in_children_one(token, size, mini);
-	close(fd_pipe[1]);
+	//close(fd_pipe[1]);
 	return(1);
 }
 

@@ -6,15 +6,16 @@
 #include "minishell.h"
 #include "builtin.h"
 
-int is_cd(t_token* token, t_list *env)
+// for handeling exit
+int is_exit(t_token* token, t_list *env)
 {
 	int len;
 
 	len = ft_strlen(token->cmd);
 
-	if (len == 2 && ft_strncmp(token->cmd, "cd", len) == 0)
+	if (len == 4 && ft_strncmp(token->cmd, "exit", len) == 0)
 	{
-		//my_cd(token->args, env);
+		my_exit(token->args, env);
 		return(1);
 	}
 	return (0);
@@ -39,6 +40,11 @@ int is_builtin(t_token* token, t_list *env)
 	else if (len == 3 && ft_strncmp(token->cmd, "pwd", len) == 0)
 	{
 		my_pwd(env);
+		return(1);
+	}
+	else if (len == 3 && ft_strncmp(token->cmd, "env", len) == 0)
+	{
+		my_env(env);
 		return(1);
 	}
 	else if (len == 4 && ft_strncmp(token->cmd, "exit", len) == 0)
@@ -86,7 +92,7 @@ int	my_cd(char **arg, t_list *env)
 	}
 	if (getcwd(buf, sizeof(buf)) != NULL)
 		env_find_and_replace(env, "PWD", buf);
-	return (1);
+	return (1); // cd > out will hang. but if exit is used, cd is not working as it should be.
 }
 
 /*
@@ -135,7 +141,10 @@ void	my_exit(char** arg, t_list *env)
 
 	i = 0;
 	ft_printf("exit\n");
-	while (arg[1][i]) 	//check if arg[1] is numeric
+
+	if (arg[1] == NULL)
+		exit(0);
+	while (arg[1] && arg[1][i]) 	//check if arg[1] is numeric
 	{
 		if (arg[1][i] == '+' || arg[1][i] == '-')
 			i++;
@@ -143,7 +152,6 @@ void	my_exit(char** arg, t_list *env)
 		{
 			ft_printf("minishell: exit: %s: numeric argument required.\n", arg[1]);
 			exit(255);
-			return;
 		}
 		i++;
 	}
@@ -181,7 +189,6 @@ void	my_export(char **arg, t_list *env)
 
 	i = 1;
 	len = 0;
-
 	if (!arg[i])
 	{
 		my_export_no_aguments(env);
@@ -205,7 +212,6 @@ void	my_export(char **arg, t_list *env)
 				env_content[0]=ft_substr(arg[i], j-len, len);
 				env_content[1]=ft_substr(arg[i], len+1, ft_strlen(arg[i]));
 				env_content[2] = NULL;
-				//ft_printf("env[0]=%s, env[1]=%s, env[3]=%s\n", env_content[0], env_content[1], env_content[2]);
 				break;
 			}
 			else
@@ -217,13 +223,16 @@ void	my_export(char **arg, t_list *env)
 	if (env_find_and_replace(env, env_content[0], env_content[1]) == 0)
 	{
 		node = ft_lstnew(env_content);
+		//ft_printf("env[0]=%s, env[1]=%s, env[3]=%s\n", env_content[0], env_content[1], env_content[2]);
 		if (!node)
 			ft_error("cann't create a new node.\n", 1);
 		ft_lstadd_back(&env, node);
+		//my_env(env);
 	}
-	exit(0);
+	exit(0); // cannot exit. because if exitted, the exported variable will be removed from env list.
 }
 
+// sorting?
 void my_export_no_aguments(t_list *env)
 {
 	t_list *tmp;

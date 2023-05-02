@@ -102,6 +102,8 @@ t_list *get_linelst(char *line, t_list *line_lst, int i) // i = -1
 				ft_error("Malloc failed", MALLOC);
 			ft_lstadd_back(&line_lst, node);
 		}
+		if (!line[i])
+			break;
 	}
 	return (line_lst);
 }
