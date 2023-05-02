@@ -4,7 +4,7 @@
 
 int cmd_execution_in_children_one(t_token* token, int size, t_mini *mini);
 int cmd_execution_in_children_more(t_token* token, int* fd_pipe, int size, t_mini *mini);
-
+int is_builtin_no_run(t_token* token, t_list *env);
 int handle_io(t_token* token, int* fd_pipe, int cmd_order, int size);
 int handle_file(t_token* token);
 void handle_pipe_create(int** fd_pipe, int size);
