@@ -86,11 +86,11 @@ int executor(t_mini *mini, int size)
 		waitpid(pid[i], &status[i], 0);
 		i++;
 	}
-	//if (WIFEXITED(status))
-//	{
-//		g_exitcode = WEXITSTATUS(status);
-//		printf("exit_code=%d\n", g_exitcode);
-//	}
+	if (WIFEXITED(status[size-1]))
+	{
+		g_exitcode = WEXITSTATUS(status);
+		printf("exit_code=%d\n", g_exitcode);
+	}
 	return(status[i]);
 }
 

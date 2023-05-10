@@ -215,7 +215,8 @@ void	my_export(char **arg, t_list *env)
 	while (arg[i])
 	{
 		j = 0;
-		//is_valid_argument(arg, env, i)
+		if (is_valid_argument(arg[i], env) == 1)
+			return;
 		while (arg[i][j])
 		{
 			len = 0;
@@ -228,6 +229,13 @@ void	my_export(char **arg, t_list *env)
 					ft_error("malloc fail.\n", 1);
 				env_content[0]=ft_substr(arg[i], j-len, len);
 				env_content[1]=ft_substr(arg[i], len+1, ft_strlen(arg[i]));
+				if (env_content[1] == NULL)
+				{
+					free(env_content[0]);
+					free(env_content[1]);
+					free(env_content);
+					break;
+				}
 				env_content[2] = NULL;
 				my_export_arguments(env, env_content);
 				break;
@@ -241,19 +249,40 @@ void	my_export(char **arg, t_list *env)
 
 }
 
-//int is_valid_argument(char** arg, t_list *env, int i)
-//{
-//	int j;
+//first character should be a ltter or _
+//- is not allowed anywhere
+// no space before or after equal sign?
+int is_valid_argument(char* arg, t_list *env)
+{
+	int i;
+	int ret;
 
-//	j = 0;
-//	while (arg[i][j])
-//	{
-//		/* code */
-//	}
-
-
-
-//}
+	if (ft_isalpha(arg[0]) == 0 && arg[0] != '_')
+	{
+		printf("minishell: export:`%s`: not a valid identifier\n", arg);
+		g_exitcode = 1;
+		return(1);
+	}
+	while (arg[i])
+	{
+		if (arg[i] == '-' || arg[i] == ' ')
+		{
+			printf("minishell: export:`%s`: not a valid identifier\n", arg);
+			g_exitcode = 1;
+			return(1);
+		}
+		i++;
+	}
+	i = 0;
+	while ((arg[i]))
+	{
+		if(arg[i] == '=')
+			return (0);
+		else
+			i++;
+	}
+	return(1);
+}
 
 void my_export_arguments(t_list *env, char** env_content)
 {
