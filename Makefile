@@ -19,7 +19,7 @@ OBJS = $(SRCS:.c=.o)
 
 SRCS_TEST =		main.c minishell.c mini_utils.c			\
 				lexer.c expander.c parser.c				\
-				builtin.c env.c	executor.c # test_lliu.c #signal.c
+				builtin.c env.c	executor.c signal.c # test_lliu.c
 
 NAME = minishell
 CC = cc

@@ -11,7 +11,7 @@ int executor_single(t_mini *mini)
 	int in;
 	int out;
 
-	// signal_handler_children();
+	signal_handler_children();
 	token = (t_token*)mini->cmd_lst->content;
 	if (handle_file(token) != 0)
 		return(1);
@@ -24,7 +24,7 @@ int executor_single(t_mini *mini)
 		close(token->fd_in);
 		dup2(token->fd_out, 1);
 		close(token->fd_out);
-		is_builtin(token, mini->env);
+		is_builtin(token, mini->env);// add the exit code to builtin
 		dup2(in, 0);
 		close(in);
 		dup2(out, 1);
@@ -58,7 +58,7 @@ int executor(t_mini *mini, int size)
 	t_token* token;
 	i = 0;
 	tmp = mini->cmd_lst;
-	//signal_handler_children();
+	signal_handler_children();
 	pid = malloc(sizeof(int) * size);
 	if (!pid)
 		ft_error("pid malloc fail", 1);

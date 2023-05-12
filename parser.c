@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lliu <lliu@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: lsun <lsun@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 00:45:46 by srall             #+#    #+#             */
-/*   Updated: 2023/04/29 23:32:39 by lliu             ###   ########.fr       */
+/*   Updated: 2023/05/10 15:46:48 by lsun             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode)
 		ft_error_minishell("Open tmp_file failed", FILE_OP, 1);
 	while(1)
 	{
-		// signal_handler_heredoc();
+		signal_handler_heredoc();
 		line = readline("heredoc >> ");
 		if (!line && !errno) // 相当于SIGTERM
 		{

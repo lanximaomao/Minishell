@@ -2,7 +2,7 @@
 #include "builtin.h"
 #include "signal.h"
 
-int g_exitcode = 0;
+int g_exitcode = 127;
 
 int	readline_prompt(t_mini *mini)
 {
@@ -13,7 +13,7 @@ int	readline_prompt(t_mini *mini)
 	//ascii_art_pattern();
 	while (1)
 	{
-		// signal_handler();
+		signal_handler();
 		if (!(line = readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ")))
 			return(1);
 			//ft_error("Readline error", FUNC);
