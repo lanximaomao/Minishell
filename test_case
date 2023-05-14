@@ -4,11 +4,11 @@
 #LLIU**************************************
 # argument parsing??
 
-# should print $ sign instead of nothing
 echo "$"
 echo $
-
+echo "> >> < * ? [ ] | ; [ ] || && ( ) & # $  <<"
 #***************************************
+export HELLO="123 A-"
 
 
 

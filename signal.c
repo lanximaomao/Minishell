@@ -25,7 +25,7 @@ void sa_handle_ctrl_d(int sig)
 void sa_handle_ctrl_c(int sig)
 {
 	(void) sig;
-	//g_exitcode = 130;
+	g_exitcode = 1;
 	write(1, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 1); // 1 means to clear this line's history
@@ -72,11 +72,14 @@ void signal_handler_heredoc()
 
 void sa_handle_ctrl_c_heredoc()
 {
-	//exit(131) ;
+	printf("here I am.\n");
+	g_exitcode = 256;
+	unlink("tmp_file_name");
 	//unlink
 	write(1, "\n", 1);
-	rl_on_new_line();
-	rl_replace_line("", 1); // 1 means to clear this line's history
-	rl_redisplay();
+	//readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ");
+	//rl_on_new_line();
+	//rl_replace_line("", 1); // 1 means to clear this line's history
+	//rl_redisplay();
 	return;
 }
