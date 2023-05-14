@@ -45,7 +45,7 @@ int executor_single(t_mini *mini)
 	{
 		//printf("before WEXITSTATUS= %d\n", g_exitcode);
 		g_exitcode = WEXITSTATUS(status);
-		printf("g_exitcode=%d\n", g_exitcode);
+		//printf("g_exitcode=%d\n", g_exitcode);
 	}
 	return(0);
 }
@@ -58,6 +58,7 @@ int executor(t_mini *mini, int size)
 	int fd_pipe[2];
 	t_list *tmp;
 	t_token* token;
+
 	i = 0;
 	tmp = mini->cmd_lst;
 	signal_handler_children();
@@ -70,8 +71,9 @@ int executor(t_mini *mini, int size)
 	while (tmp && i < size)
 	{
 		token = (t_token*) tmp->content;
-		if (handle_io(token, fd_pipe, i, size) == 1)
-			return(1);
+		//if (handle_io(token, fd_pipe, i, size) == 1)
+		//	return(1);
+		handle_io(token, fd_pipe, i, size);
 		pid[i] = fork();
 		if (pid[i] == -1)
 			ft_error("fork failed", 4);
@@ -90,8 +92,9 @@ int executor(t_mini *mini, int size)
 	}
 	if (WIFEXITED(status[size-1]))
 	{
-		g_exitcode = WEXITSTATUS(status);
-		printf("here at executor: g_exitcode=%d\n", g_exitcode);
+		//printf("here at executor00: g_exitcode=%d\n", g_exitcode);
+		g_exitcode = WEXITSTATUS(status[size - 1]);
+		//printf("here at executor01: g_exitcode=%d\n", g_exitcode);
 	}
 	return(status[i]);
 }
@@ -142,6 +145,7 @@ int handle_file(t_token* token)
 		if (token->fd_in == -1)
 		{
 			perror("minishell: infile");
+			g_exitcode = 1;
 			return(1);
 		}
 
@@ -174,6 +178,12 @@ int cmd_execution_in_children(t_token* token, int size, t_mini *mini)
 	char* path_cmd;
 
 	//write(2, "here\n", 5);
+	if (token->fd_in < 0)
+	{
+		g_exitcode = 1;
+		exit(1);
+	}
+
 	dup2(token->fd_in, 0);
 	close(token->fd_in);
 	dup2(token->fd_out, 1);

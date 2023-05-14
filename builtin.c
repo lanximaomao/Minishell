@@ -106,7 +106,7 @@ void	my_cd(char **arg, t_list *env)
 	//printf("%s\n", arg[1]);
 	if (chdir(arg[1]) != 0)
 	{
-		ft_printf("No such file or directory.\n");
+		ft_putstr_fd(" No such file or directory\n", 2);
 		g_exitcode = 1;
 		//return (2);
 	}
@@ -170,13 +170,18 @@ void	my_exit(char** arg, t_list *env)
 
 	if (arg[1] == NULL)
 		exit(0);
+	//if (arg[2]) // if too many arguments
+	//	g_exitcode = 1;
+	//	ft_putstr_fd(" too many arguments\n", 2);
+		//ft_printf("minishell: exit: too many arguments.\n");
 	while (arg[1] && arg[1][i]) 	//check if arg[1] is numeric
 	{
 		if (arg[1][i] == '+' || arg[1][i] == '-')
 			i++;
 		if (ft_isdigit(arg[1][i]) == 0)
 		{
-			ft_printf("minishell: exit: %s: numeric argument required.\n", arg[1]);
+			//ft_printf("minishell: exit: %s: numeric argument required.\n", arg[1]);
+			ft_putstr_fd(" numeric argument required\n", 2);
 			g_exitcode = 255;
 			exit(g_exitcode);
 		}
@@ -184,12 +189,16 @@ void	my_exit(char** arg, t_list *env)
 	}
 	status = ft_atoi(arg[1]);
 	if (status > 9223372036854775807)
-		ft_printf("minishell: exit: %s: numeric argument required.\n", arg[1]);
-	if (arg[2]) // if too many arguments
-		ft_printf("minishell: exit: too many arguments.\n");
+		ft_putstr_fd(" numeric argument required\n", 2);
+		//ft_printf("minishell: exit: %s: numeric argument required.\n", arg[1]);
 	status = (unsigned char)ft_atoi(arg[1]);
 	g_exitcode = status;
-	printf("g_exitcode=%d\n", g_exitcode);
+	//printf("statuss=%llu, heree g_exitcode=%d\n", status, g_exitcode);
+	if (arg[2])
+	{
+		g_exitcode = 1;
+		ft_putstr_fd(" too many arguments\n", 2);
+	}
 	exit(g_exitcode);
 }
 
@@ -217,6 +226,7 @@ void	my_export(char **arg, t_list *env)
 
 	i = 1;
 	len = 0;
+	//printf("arg0=%s, arg1=%s, arg2=%s\n", arg[0], arg[1], arg[2]);
 	if (!arg[i])
 	{
 		my_export_no_aguments(env);
@@ -239,6 +249,7 @@ void	my_export(char **arg, t_list *env)
 					ft_error("malloc fail.\n", 1);
 				env_content[0]=ft_substr(arg[i], j-len, len);
 				env_content[1]=ft_substr(arg[i], len+1, ft_strlen(arg[i]));
+				//printf("%s and %s\n", env_content[0], env_content[1]);
 				if (env_content[1] == NULL)
 				{
 					free(env_content[0]);
@@ -269,15 +280,17 @@ int is_valid_argument(char* arg, t_list *env)
 
 	if (ft_isalpha(arg[0]) == 0 && arg[0] != '_')
 	{
-		printf("minishell: export:`%s`: not a valid identifier\n", arg);
+		//printf("minishell: export:`%s`: not a valid identifier\n", arg);
+		ft_putstr_fd(" not a valid identifier\n", 2);
 		g_exitcode = 1;
 		return(1);
 	}
 	while (arg[i])
 	{
-		if (arg[i] == '-' || arg[i] == ' ')
+		if (arg[i] == '-' && is_equal_sign(arg, i) == 0)
 		{
-			printf("minishell: export:`%s`: not a valid identifier\n", arg);
+			//printf("minishell: export:`%s`: not a valid identifier\n", arg);
+			ft_putstr_fd(" not a valid identifier\n", 2);
 			g_exitcode = 1;
 			return(1);
 		}
@@ -291,7 +304,20 @@ int is_valid_argument(char* arg, t_list *env)
 		else
 			i++;
 	}
-	return(1);
+	g_exitcode = 0;
+	return(0);
+}
+
+int is_equal_sign(char* arg, int i)
+{
+	while (arg[i])
+	{
+		if (arg[i] == '=')
+			return(1);
+		else
+			i--;
+	}
+	return(0);
 }
 
 void my_export_arguments(t_list *env, char** env_content)
@@ -333,6 +359,8 @@ void	my_unset(char **arg, t_list *env)
 	char** env_content;
 
 	i = 0;
+	if (arg[1] == NULL)
+		return;
 	while (arg[i])
 	{
 		current = env;
