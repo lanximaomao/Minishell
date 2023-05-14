@@ -6,9 +6,9 @@
 
 int is_builtin(t_token* token, t_list *env);
 int is_exit(t_token* token, t_list *env);
-int		my_cd(char **arg, t_list *env);
-int		my_pwd(t_list *env);
-void	my_env(t_list *env);
+void		my_cd(char **arg, t_list *env);
+void		my_pwd(t_list *env);
+int	my_env(char** arg, t_list *env);
 void	my_export(char **arg, t_list *env);
 void	my_unset(char **arg, t_list *env);
 void	my_exit(char **arg, t_list *env);

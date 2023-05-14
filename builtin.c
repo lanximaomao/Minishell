@@ -61,7 +61,7 @@ int is_builtin(t_token* token, t_list *env)
 	}
 	else if (len == 3 && ft_strncmp(token->cmd, "env", len) == 0)
 	{
-		my_env(env);
+		my_env(token->args, env);
 		return(1);
 	}
 	else if (len == 4 && ft_strncmp(token->cmd, "exit", len) == 0)
@@ -95,7 +95,7 @@ int is_builtin(t_token* token, t_list *env)
 ** !!save current directory into OLDPWD
 */
 
-int	my_cd(char **arg, t_list *env)
+void	my_cd(char **arg, t_list *env)
 {
 	char	buf[1024];
 	char *home;
@@ -107,11 +107,12 @@ int	my_cd(char **arg, t_list *env)
 	if (chdir(arg[1]) != 0)
 	{
 		ft_printf("No such file or directory.\n");
-		return (2);
+		g_exitcode = 1;
+		//return (2);
 	}
 	if (getcwd(buf, sizeof(buf)) != NULL)
 		env_find_and_replace(env, "PWD", buf);
-	return (1); // cd > out will hang. but if exit is used, cd is not working as it should be.
+	//return (1); // cd > out will hang. but if exit is used, cd is not working as it should be.
 }
 
 /*
@@ -119,28 +120,34 @@ int	my_cd(char **arg, t_list *env)
 ** if there are any argments,just ignore
 */
 
-int	my_pwd(t_list *env)
+void	my_pwd(t_list *env)
 {
 	char	buf[1024];
 
 	if (getcwd(buf, sizeof(buf)) != NULL)
 	{
 		ft_printf("%s\n", buf);
-		return (0);
+		//return (0);
 	}
-	return (1);
+	//return (1);
 }
 
 /*
 ** env with no options or aguments
 */
 
-void	my_env(t_list *env)
+int	my_env(char **arg, t_list *env)
 {
 	t_list	*tmp;
 	char**	env_content;
 
 	//printf("calling my env functions.\n");
+	if (arg[1] != NULL)
+	{
+		g_exitcode = 127;
+		ft_printf("env: %s: No such file or directory\n", arg[1]);
+		return(g_exitcode);
+	}
 	tmp = env;
 	while (tmp)
 	{
@@ -148,7 +155,7 @@ void	my_env(t_list *env)
 		ft_printf("%s=%s\n", env_content[0], env_content[1]);
 		tmp = tmp->next;
 	}
-	//return(0);
+	return(0);
 }
 
 /* create exit function with no option */
@@ -170,7 +177,8 @@ void	my_exit(char** arg, t_list *env)
 		if (ft_isdigit(arg[1][i]) == 0)
 		{
 			ft_printf("minishell: exit: %s: numeric argument required.\n", arg[1]);
-			exit(255);
+			g_exitcode = 255;
+			exit(g_exitcode);
 		}
 		i++;
 	}
@@ -180,7 +188,9 @@ void	my_exit(char** arg, t_list *env)
 	if (arg[2]) // if too many arguments
 		ft_printf("minishell: exit: too many arguments.\n");
 	status = (unsigned char)ft_atoi(arg[1]);
-	exit(status);
+	g_exitcode = status;
+	printf("g_exitcode=%d\n", g_exitcode);
+	exit(g_exitcode);
 }
 
 

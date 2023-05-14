@@ -39,11 +39,13 @@ int executor_single(t_mini *mini)
 	close(token->fd_in);
 	close(token->fd_out);
 	waitpid(pid, &status, 0);
+	//printf("status=%d\n", status);
 	//exit code
 	if (WIFEXITED(status))
 	{
+		//printf("before WEXITSTATUS= %d\n", g_exitcode);
 		g_exitcode = WEXITSTATUS(status);
-		printf("exit_code=%d\n", g_exitcode);
+		printf("g_exitcode=%d\n", g_exitcode);
 	}
 	return(0);
 }
@@ -89,7 +91,7 @@ int executor(t_mini *mini, int size)
 	if (WIFEXITED(status[size-1]))
 	{
 		g_exitcode = WEXITSTATUS(status);
-		printf("exit_code=%d\n", g_exitcode);
+		printf("here at executor: g_exitcode=%d\n", g_exitcode);
 	}
 	return(status[i]);
 }
@@ -177,19 +179,25 @@ int cmd_execution_in_children(t_token* token, int size, t_mini *mini)
 	dup2(token->fd_out, 1);
 	close(token->fd_out);
 	if (is_builtin(token, mini->env) == 1)
-		exit (0);
+		exit (g_exitcode);
 	if (access(token->cmd, X_OK) == 0)
 	{
 		if (execve(token->cmd, token->args, env_convert(mini->env)) == -1)
-			ft_error("Cannot execute command", 2); // !error return
+		{
+			g_exitcode = 127;
+			ft_error("Cannot execute command", g_exitcode); // !error return
+		}
 	}
 	else
 	{
 		tmp = ft_strjoin("/", token->cmd);//to be freed
 		path_cmd = get_path_cmd(tmp, mini->env);
 		free(tmp);
-		if (execve(path_cmd, token->args, env_convert(mini->env)) == -1)
-			ft_error("Cannot execute command", 2); // !error return
+		if (!path_cmd || execve(path_cmd, token->args, env_convert(mini->env)) == -1)
+		{
+			g_exitcode = 127;
+			ft_error("Cannot execute command", g_exitcode); // !error return
+		}
 	}
 	return(1);
 }

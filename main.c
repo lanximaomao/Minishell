@@ -2,7 +2,7 @@
 #include "builtin.h"
 #include "signal.h"
 
-int g_exitcode = 127;
+int g_exitcode = 0;
 
 int	readline_prompt(t_mini *mini)
 {
