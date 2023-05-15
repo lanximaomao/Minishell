@@ -104,20 +104,43 @@ char *replace_env_expand(char *temp_line, t_list *env_lst)
 	return temp_line;
 }
 
-void handle_args_expand(t_list *line_lst, t_list *env_lst)
+int handle_args_expand(t_list *line_lst, t_list *env_lst)
 {
 	while (line_lst)
 	{
+		if (!(line_lst->next))
+		{
+			if (((t_input *)line_lst->content)->pipe_sign == 1)
+			{
+				ft_error_minishell("Syntax error: parse error456.", SYNTAX, 2);
+				return (-1);
+			}
+		}
 		// 连续两个node为空，报错newline with prompt
 		if (!ft_strncmp(((t_input *)line_lst->content)->temp_line, "", 1)) // handle error: parse error, '| |', '< >', '> <<'
 		{
-			if (line_lst->next && !ft_strncmp(((t_input *)line_lst->next->content)->temp_line, "", 1))
-				ft_error_minishell("Syntax error: parse error.", SYNTAX, 2);
+			if (((t_input *)line_lst->content)->pipe_sign == 1)
+			{
+				if (line_lst->next->next && !ft_strncmp(((t_input *)line_lst->next->content)->temp_line, "", 1)
+					&& !ft_strncmp(((t_input *)line_lst->next->next->content)->temp_line, "", 1))
+					{
+						ft_error_minishell("Syntax error: parse error123.", SYNTAX, 2);
+						return (-1);
+					}
+			}
+			else
+			{
+				if (line_lst->next && !ft_strncmp(((t_input *)line_lst->next->content)->temp_line, "", 1))
+					{
+						ft_error_minishell("Syntax error: parse error1.", SYNTAX, 2);
+						return (-1);
+					}
+			}
 		}
 		if (((t_input *)line_lst->content)->quote_type != 1
 			 && ft_strchr(((t_input *)line_lst->content)->temp_line, '$'))
 			((t_input *)line_lst->content)->temp_line = replace_env_expand(((t_input *)line_lst->content)->temp_line, env_lst);
-
 		line_lst = line_lst->next;
 	}
+	return (0);
 }
