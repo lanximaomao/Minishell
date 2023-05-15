@@ -70,6 +70,12 @@ int executor(t_mini *mini, int size)
 		ft_error("status malloc fail", 1);
 	while (tmp && i < size)
 	{
+		// add to handel ctrl + c in heredoc.....
+		if (g_exitcode == 256)
+		{
+			g_exitcode = 1;
+			return(1);
+		}
 		token = (t_token*) tmp->content;
 		//if (handle_io(token, fd_pipe, i, size) == 1)
 		//	return(1);
@@ -177,6 +183,17 @@ int cmd_execution_in_children(t_token* token, int size, t_mini *mini)
 	char* tmp;
 	char* path_cmd;
 
+	// if cmd is null, add 15/5
+	if (token->cmd == NULL)
+		exit(g_exitcode);
+
+	// if ctrl+c is pressed in heredoc
+	printf("in children process, g_exitcode=%d\n", g_exitcode);
+	if (g_exitcode == 256)
+	{
+		g_exitcode = 1;
+		exit(g_exitcode);
+	}
 	//write(2, "here\n", 5);
 	if (token->fd_in < 0)
 	{
@@ -209,7 +226,7 @@ int cmd_execution_in_children(t_token* token, int size, t_mini *mini)
 			ft_error("Cannot execute command", g_exitcode); // !error return
 		}
 	}
-	return(1);
+	exit(g_exitcode); // change from return to exit 15/5
 }
 
 char* get_path_cmd(char* str, t_list *env)

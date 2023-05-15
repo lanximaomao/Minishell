@@ -10,6 +10,8 @@ echo "> >> < * ? [ ] | ; [ ] || && ( ) & # $  <<"
 #***************************************
 export HELLO="123 A-"
 
+<< f1
+<< f1 cat
 
 
 #bash: export: `A-': not a valid identifier

@@ -15,10 +15,12 @@ void sa_handle_nothing(int sig)
 
 /* ctrl + D = EOF, exits the shell */
 // ! Readline error: interrupted system call.
-void sa_handle_ctrl_d(int sig)
-{
-	return;
-}
+//void sa_handle_ctrl_d(int sig)
+//{
+//	printf("am i here?\n");
+	//g_exitcode = 1;
+	//exit(g_exitcode);
+//}
 
 /* ctrl + c should dispays a new prompt on a new line */
 //! by two times ctrl + c we got an readline error
@@ -36,22 +38,21 @@ void sa_handle_ctrl_c(int sig)
 void signal_handler()
 {
 	struct sigaction sa_c; //ctrl + c
-	struct sigaction sa_d; //ctrl + d
+	//struct sigaction sa_d; //ctrl + d
 	struct sigaction sa_nothing; //ctrl + \
 
 	sa_c.sa_handler = &sa_handle_ctrl_c;
-	sa_d.sa_handler = &sa_handle_ctrl_d;
+	//sa_d.sa_handler = &sa_handle_ctrl_d;
 	sa_nothing.sa_handler = &sa_handle_nothing;
 
 	sigaction(SIGINT, &sa_c, NULL);
-	sigaction(SIGUSR1, &sa_d, NULL);
+	//sigaction(SIGUSR1, &sa_d, NULL);
 	sigaction(SIGQUIT, &sa_nothing, NULL);
 }
 
 void signal_handler_children()
 {
 	struct sigaction sa_nothing; //ctrl + \
-
 	sa_nothing.sa_handler = &sa_children_exit;
 	sigaction(SIGQUIT, &sa_nothing, NULL);
 }
@@ -72,7 +73,7 @@ void signal_handler_heredoc()
 
 void sa_handle_ctrl_c_heredoc()
 {
-	printf("here I am.\n");
+	//printf("here I am.\n");
 	g_exitcode = 256;
 	unlink("tmp_file_name");
 	//unlink

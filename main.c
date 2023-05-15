@@ -15,7 +15,12 @@ int	readline_prompt(t_mini *mini)
 	{
 		signal_handler();
 		if (!(line = readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ")))
-			return(1);
+		{
+			g_exitcode = 1; // CTRL+D gives an EOF signal, and sets line to NULL.
+			//printf("am i returning here?\n");
+			exit(g_exitcode);
+		}
+
 			//ft_error("Readline error", FUNC);
 		//if (!ft_strncmp(line, "exit", 5))
 		//{

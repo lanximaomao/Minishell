@@ -25,6 +25,9 @@ int is_builtin_no_run(t_token* token, t_list *env)
 {
 	int len;
 
+	// if no cmd is given, just return. this is to avoide the segfault by doing << f1 
+	if (token->cmd == NULL)
+		return (0);
 	len = ft_strlen(token->cmd);
 	if (len == 2 && ft_strncmp(token->cmd, "cd", len) == 0)
 		return(1);
