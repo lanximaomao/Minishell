@@ -3,6 +3,8 @@
 
 void rl_replace_line (const char *, int);
 
+int sigaction(int signum, const struct sigaction *act, struct sigaction *oldact);
+
 /* ctrl + \ = SIGQUIT, does nothing */
 
 void sa_handle_nothing(int sig)

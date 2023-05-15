@@ -1,6 +1,7 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
+#include <signal.h>
 # include "libft.h"
 # include "ft_printf.h"
 # include <stdlib.h> // malloc
@@ -10,7 +11,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h> // open
-#include <signal.h>
 #include <string.h>
 #include <errno.h>
 #include <stdarg.h>

@@ -73,7 +73,7 @@ char *replace_env_expand(char *temp_line, t_list *env_lst)
 {
 	int i;
 	char **tmp_exp; // $ split每个temp_line
-	char *tmp_end; // split出来的最后一个字符串，用于连接$
+	char *tmp_str; // split出来的最后一个字符串，用于连接$
 
 	i = -1;
 	if (!(tmp_exp = ft_split(temp_line, '$')))
@@ -84,16 +84,21 @@ char *replace_env_expand(char *temp_line, t_list *env_lst)
 	{
 		if (tmp_exp[i][0] == '?')
 			tmp_exp[i] = handle_exitcode(tmp_exp[i]);
+		else if (tmp_exp[i][0] == ' ')
+		{
+			tmp_str = tmp_exp[i]; // 复用
+			tmp_exp[i] = ft_strjoin("$", tmp_str);
+			free_str(tmp_str);
+		}
 		else
 			tmp_exp[i] = replace_env(tmp_exp[i], env_lst, NULL, -1);
 	}
 	// the last char is $
 	if (i && temp_line[ft_strlen(temp_line) - 1] == '$')
 	{
-		tmp_end = tmp_exp[i - 1];
-		tmp_exp[i - 1] = ft_strjoin(tmp_end, "$");
-		free(tmp_end);
-		tmp_end = NULL;
+		tmp_str = tmp_exp[i - 1];
+		tmp_exp[i - 1] = ft_strjoin(tmp_str, "$");
+		free_str(tmp_str);
 	}
 	free_str(temp_line);
 	if (i == 0) // echo $
