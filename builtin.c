@@ -25,7 +25,7 @@ int is_builtin_no_run(t_token* token, t_list *env)
 {
 	int len;
 
-	// if no cmd is given, just return. this is to avoide the segfault by doing << f1 
+	// if no cmd is given, just return. this is to avoide the segfault by doing << f1
 	if (token->cmd == NULL)
 		return (0);
 	len = ft_strlen(token->cmd);
@@ -116,6 +116,7 @@ void	my_cd(char **arg, t_list *env)
 	if (getcwd(buf, sizeof(buf)) != NULL)
 		env_find_and_replace(env, "PWD", buf);
 	//return (1); // cd > out will hang. but if exit is used, cd is not working as it should be.
+	g_exitcode = 0;
 }
 
 /*
@@ -132,6 +133,7 @@ void	my_pwd(t_list *env)
 		ft_printf("%s\n", buf);
 		//return (0);
 	}
+	g_exitcode = 0;
 	//return (1);
 }
 
@@ -158,6 +160,7 @@ int	my_env(char **arg, t_list *env)
 		ft_printf("%s=%s\n", env_content[0], env_content[1]);
 		tmp = tmp->next;
 	}
+	g_exitcode = 0;
 	return(0);
 }
 
@@ -273,6 +276,7 @@ void	my_export(char **arg, t_list *env)
 		}
 		i++;
 	}
+	g_exitcode = 0;
 	//loop throught the env, 0 means not found
 
 }
@@ -396,6 +400,7 @@ void	my_unset(char **arg, t_list *env)
 
 		i++;
 	}
+	g_exitcode = 0;
 	//return(0);
 }
 
@@ -441,6 +446,7 @@ void my_echo(char **arg, t_list *env)
 			i++;
 		}
 	}
+	g_exitcode = 0;
 	//return(0);
 }
 

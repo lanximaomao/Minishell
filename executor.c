@@ -169,6 +169,7 @@ int handle_file(t_token* token)
 		if (token->fd_out == -1)
 		{
 			perror("Fail to create or open outfile");//exit or not?
+			g_exitcode = 1;
 			return(2);
 		}
 		if (i + 1 < token->num_outfile_type)
@@ -188,8 +189,11 @@ int cmd_execution_in_children(t_token* token, int size, t_mini *mini)
 	if (token->cmd == NULL)
 		exit(g_exitcode);
 
+	// if outfile cannot be created
+	if (token->fd_out == -1)
+		exit(g_exitcode);
 	// if ctrl+c is pressed in heredoc
-	printf("in children process, g_exitcode=%d\n", g_exitcode);
+	// printf("in children process, g_exitcode=%d\n", g_exitcode);
 	if (g_exitcode == 256)
 	{
 		g_exitcode = 1;
@@ -213,7 +217,7 @@ int cmd_execution_in_children(t_token* token, int size, t_mini *mini)
 		if (execve(token->cmd, token->args, env_convert(mini->env)) == -1)
 		{
 			g_exitcode = 127;
-			ft_error("Cannot execute command", g_exitcode); // !error return
+			ft_error("No such file or directory", g_exitcode); // !error return
 		}
 	}
 	else
