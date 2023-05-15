@@ -3,23 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lsun <lsun@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: lliu <lliu@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 00:45:46 by srall             #+#    #+#             */
-/*   Updated: 2023/05/15 11:00:24 by lsun             ###   ########.fr       */
+/*   Updated: 2023/05/15 16:48:14 by lliu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "signal.h"
 
-void init_tokens(t_token *tokens)
+void init_tokens(t_token *tokens, int num_cmd)
 {
 	tokens->cmd = NULL;
 	tokens->args = NULL;
 	tokens->infile = NULL;
 	tokens->outfile = NULL;
 	tokens->output_type = NULL;
+	tokens->cmd_id = num_cmd;
 	tokens->num_args = 0;
 	tokens->num_infile = 0;
 	tokens->num_outfile_type = 0;
@@ -33,14 +34,17 @@ void init_tokens(t_token *tokens)
 // return: -1 means error and handle this, no more free in this function
 // after call: 	delete the tmp_heredoc_file after this cmd_node, and strongly recommend to use different file_name for 1st argument
 // 				<< heredoc 需要将每行都要执行参数扩展、命令替换以及算术扩展
-void handle_heredoc(t_list *env_lst, t_input *input, int exitcode)
+void handle_heredoc(t_list *env_lst, t_input *input, int exitcode, char *num_heredoc)
 {
 	int fd; // for tmp_file, store the heredoc
 	char *heredoc;
 	char *line;
+	char *file_name;
 
-	if ((fd = open("tmp_file_name", O_WRONLY|O_CREAT|O_TRUNC, 0644)) < 0) // 读写/读/读
-		ft_error_minishell("Open tmp_file failed", FILE_OP, 1);
+	file_name = ft_strjoin("heredoc_name", num_heredoc);
+	if ((fd = open(file_name, O_WRONLY|O_CREAT|O_TRUNC, 0644)) < 0) // 读写/读/读
+		ft_error_minishell("Open heredoc_name failed", FILE_OP, 1); // Pls remember free_str(file_name);!!!!!
+	free_str(file_name);
 	while(g_exitcode != 256)
 	{
 		signal_handler_heredoc();
@@ -61,7 +65,7 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode)
 			if (!(heredoc = ft_strjoin(line, "\n"))) // line no need free
 				ft_error_minishell("Malloc failed", MALLOC, 2);
 			if (write(fd, heredoc, ft_strlen(heredoc)) == -1)
-				ft_error_minishell("Open tmp_file failed", FILE_OP, 1);
+				ft_error_minishell("Open heredoc_name failed", FILE_OP, 1);
 			free_str(heredoc);
 		}
 	}
@@ -72,6 +76,8 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode)
 // parse < << input redirection,
 void parse_redir12(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int i, int exitcode)
 {
+	char *num_heredoc;
+
 	if (((t_input *)line_lst->content)->redir_sign == 1) // <
 	{
 		if (!cmd_tokens->infile)
@@ -87,11 +93,13 @@ void parse_redir12(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int i
 	}
 	else if (((t_input *)line_lst->content)->redir_sign == 2) // <<
 	{
-		handle_heredoc(env_lst, ((t_input *)line_lst->next->content), exitcode);
+		num_heredoc = ft_itoa(cmd_tokens->cmd_id);
+		handle_heredoc(env_lst, ((t_input *)line_lst->next->content), exitcode, num_heredoc);
 		cmd_tokens->infile = (char **)ft_realloc(cmd_tokens->infile, sizeof(char *) * (i + 1), sizeof(char *) * (i + 2));
-		cmd_tokens->infile[i] = ft_strdup("tmp_file_name"); // tmp_file_name same with in handle_heredoc
+		cmd_tokens->infile[i] = ft_strjoin("heredoc_name", num_heredoc); // tmp_file_name same with in handle_heredoc
 		if (!cmd_tokens->infile[i])
 			ft_error_minishell("Malloc failed", MALLOC, 2);
+		free_str(num_heredoc);
 	}
 	cmd_tokens->num_infile = ++i;
 }
@@ -179,11 +187,13 @@ t_list *iterate_cmds(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int
 // after call: free the cmd_lst, free the line_lst from the get_linelst() in lexer.c
 t_list *parse_cmds(t_list *line_lst, t_list *env_lst, int exitcode)
 {
+	int num_cmd;
 	int k;
 	t_list *node;
 	t_list *cmd_lst;
 	t_token *cmd_tokens; // the single cmd split from line input
 
+	num_cmd = 0;
 	node = NULL;
 	cmd_lst = NULL;
 	cmd_tokens = NULL;
@@ -192,7 +202,7 @@ t_list *parse_cmds(t_list *line_lst, t_list *env_lst, int exitcode)
 		k = 0; // for num_args, k = 0 for cmd in front of args
 		if (!(cmd_tokens = (t_token *)ft_calloc(sizeof(t_token), 1)))
 			ft_error_minishell("Malloc failed", MALLOC, 2);
-		init_tokens(cmd_tokens);
+		init_tokens(cmd_tokens, num_cmd);
 		line_lst = iterate_cmds(cmd_tokens, line_lst, env_lst, exitcode, &k);
 		node = ft_lstnew((t_token *)cmd_tokens);
 		if (!node)
@@ -200,6 +210,7 @@ t_list *parse_cmds(t_list *line_lst, t_list *env_lst, int exitcode)
 		ft_lstadd_back(&cmd_lst, node);
 		if (!line_lst) // 上面的redir会向下遍历一位，所以在这里判断一下是否最后，以防止segfault
 			break;
+		num_cmd++;
 		line_lst = line_lst->next;
 	}
 	return (cmd_lst);

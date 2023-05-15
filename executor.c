@@ -141,6 +141,7 @@ int handle_file(t_token* token)
 	i = 0;
 	while ( i < token->num_infile)
 	{
+
 		token->fd_in = open(token->infile[i], O_RDONLY);
 		if (token->fd_in == -1)
 		{
@@ -148,7 +149,6 @@ int handle_file(t_token* token)
 			g_exitcode = 1;
 			return(1);
 		}
-
 		if (i + 1 < token->num_infile)
 			close(token->fd_in);
 		i++;
@@ -169,6 +169,7 @@ int handle_file(t_token* token)
 			close(token->fd_out);
 		i++;
 	}
+	// printf("test\n");
 	return(0);
 }
 
