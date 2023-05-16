@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lsun <lsun@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: srall <srall@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 00:45:46 by srall             #+#    #+#             */
-/*   Updated: 2023/05/15 18:29:07 by lsun             ###   ########.fr       */
+/*   Updated: 2023/05/16 02:57:47 by srall            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,7 @@ t_list *iterate_cmds(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int
 
 	i = 0; // for num_infile
 	j = 0; // for num_outfile
-	while (line_lst && ((t_input *)line_lst->content)->pipe_sign != 1)
+	while (line_lst)
 	{ // no handle the <>/<>>/></><</<<>/<<>>/>></>><</>>>/>>>>, should be syntax error or
 		if (((t_input *)line_lst->content)->redir_sign != 0)
 		{
@@ -174,8 +174,10 @@ t_list *iterate_cmds(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int
 				parse_redir34(cmd_tokens, ((t_input *)line_lst->next->content), ((t_input *)line_lst->content)->redir_sign, j++);
 			line_lst = line_lst->next;
 		}
-		else
+		else if (ft_strncmp(((t_input *)line_lst->content)->temp_line, "", 1))
 			parse_cmd_args(cmd_tokens, ((t_input *)line_lst->content), k);
+		if (((t_input *)line_lst->content)->pipe_sign == 1)
+			break;
 		line_lst = line_lst->next;
 	}
 	return line_lst;

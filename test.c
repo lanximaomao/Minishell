@@ -4,10 +4,9 @@
 
 int main()
 {
-	char *str;
-
-
-	str = malloc(1);
+	char *str = substr("");
+	char *tmp = substr(" ");
+	if (tmp )
 	int i = strlen(str);
 	return printf("%d", i);
 }

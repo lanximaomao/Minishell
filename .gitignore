@@ -3,9 +3,9 @@
 .history
 minishell_tester
 test
+out
 tmp_file_name
 minishell_test
-test
 minishell_tester
 
 # Prerequisites
