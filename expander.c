@@ -36,10 +36,21 @@ static char *replace_env(char *tmp_exp, t_list *env_lst, char *tmp_substr, int l
 		}
 		env_lst = env_lst->next;
 	}
+	char *trim_str = NULL; // trim_str for "$ABS=dss", output: "=dss"
+	trim_str = tmp_exp;
 	if (len_envp != -1)
 	{
-		free_str(tmp_exp);
-		tmp_exp = ft_strdup("");
+		len_envp = 0; // reuse, as index
+		while (tmp_exp)
+		{
+			if (!ft_isalnum(*tmp_exp))
+			{
+				tmp_exp = ft_strdup(tmp_exp);
+				free_str(trim_str);
+				break;
+			}
+			tmp_exp++;
+		}
 	}
 	return (tmp_exp);
 }
