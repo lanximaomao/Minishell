@@ -2,88 +2,83 @@
 #include "signal.h"
 
 void rl_replace_line (const char *, int);
-
 int sigaction(int signum, const struct sigaction *act, struct sigaction *oldact);
 
-/* ctrl + \ = SIGQUIT, does nothing */
+/* ctrl + c = SIGINT */
+/* ctrl + \ = SIGQUIT */
+/* ctrl + D = EOF */
 
-void sa_handle_nothing(int sig)
+void signal_main()
 {
-	rl_on_new_line();
-	rl_replace_line("  ", 1); // 1 means to clear this line's history
-	rl_redisplay();
+	struct sigaction sa;
+
+	sa.sa_handler = &sa_handler_main;
+	sigaction(SIGINT, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
+}
+
+void signal_children()
+{
+	struct sigaction sa;
+
+	sa.sa_handler =  &sa_handler_children;
+	sigaction(SIGINT, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
+}
+
+void signal_heredoc()
+{
+	struct sigaction sa;
+
+	sa.sa_handler = &sa_handler_heredoc;
+	sigaction(SIGINT, &sa, NULL);
+}
+
+void sa_handler_main(int sig)
+{
+	if (sig == SIGINT)
+	{
+		g_exitcode = 1;
+		write(1, "\n", 1);
+	}
+	else if (sig == SIGQUIT)
+	{
+		int fd;
+		struct termios term;
+
+		//printf("sig=%d\n", sig);
+		fd = 0;
+		if (tcgetattr(fd, &term) != -1)
+		{
+			//term.c_iflag &= ~(IXON);
+			//term.c_lflag &= ~(ECHO);
+			tcsetattr(fd, TCSANOW, &term);
+		}
+	}
+	prompt();
 	return;
 }
 
-/* ctrl + D = EOF, exits the shell */
-// ! Readline error: interrupted system call.
-//void sa_handle_ctrl_d(int sig)
-//{
-//	printf("am i here?\n");
-	//g_exitcode = 1;
-	//exit(g_exitcode);
-//}
-
-/* ctrl + c should dispays a new prompt on a new line */
-//! by two times ctrl + c we got an readline error
-void sa_handle_ctrl_c(int sig)
+void sa_handler_children (int sig)
 {
-	(void) sig;
-	g_exitcode = 1;
+	if (sig == SIGINT)
+		g_exitcode = 130;
+	else if (sig == SIGQUIT)
+		g_exitcode = 131;
+}
+
+void sa_handler_heredoc(int sig)
+{
+	if (sig == SIGINT)
+		g_exitcode = 256;// trigger the exit of the heredoc loop
 	write(1, "\n", 1);
+	prompt();
+	return;
+}
+
+void prompt()
+{
 	rl_on_new_line();
 	rl_replace_line("", 1); // 1 means to clear this line's history
 	rl_redisplay();
-	return;
-}
-
-void signal_handler()
-{
-	struct sigaction sa_c; //ctrl + c
-	//struct sigaction sa_d; //ctrl + d
-	struct sigaction sa_nothing; //ctrl + \
-
-	sa_c.sa_handler = &sa_handle_ctrl_c;
-	//sa_d.sa_handler = &sa_handle_ctrl_d;
-	sa_nothing.sa_handler = &sa_handle_nothing;
-
-	sigaction(SIGINT, &sa_c, NULL);
-	//sigaction(SIGUSR1, &sa_d, NULL);
-	sigaction(SIGQUIT, &sa_nothing, NULL);
-}
-
-void signal_handler_children()
-{
-	struct sigaction sa_nothing; //ctrl + \
-	sa_nothing.sa_handler = &sa_children_exit;
-	sigaction(SIGQUIT, &sa_nothing, NULL);
-}
-
-/* ctrl + \ = SIGQUIT, quit in children */
-void sa_children_exit(int sig)
-{
-	exit(g_exitcode); // change from return
-}
-
-void signal_handler_heredoc()
-{
-	struct sigaction sa_c; //ctrl + c
-
-	sa_c.sa_handler = &sa_handle_ctrl_c_heredoc;
-	sigaction(SIGINT, &sa_c, NULL);
-}
-
-// cannot unlink here
-void sa_handle_ctrl_c_heredoc()
-{
-	//printf("here I am.\n");
-	g_exitcode = 256;
-	unlink("tmp_file_name");
-	//unlink
-	write(1, "\n", 1);
-	//readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ");
-	//rl_on_new_line();
-	//rl_replace_line("", 1); // 1 means to clear this line's history
-	//rl_redisplay();
-	return;
 }

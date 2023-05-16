@@ -11,7 +11,7 @@ int executor_single(t_mini *mini)
 	int in;
 	int out;
 
-	signal_handler_children();
+	signal_children();
 	token = (t_token*)mini->cmd_lst->content;
 	if (handle_file(token) != 0)
 		return(1);
@@ -61,7 +61,7 @@ int executor(t_mini *mini, int size)
 
 	i = 0;
 	tmp = mini->cmd_lst;
-	signal_handler_children();
+	signal_children();
 	pid = malloc(sizeof(int) * size);
 	if (!pid)
 		ft_error(" pid malloc fail", 1);

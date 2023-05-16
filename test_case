@@ -1,6 +1,9 @@
 #!/bin/bash
 
 #Bugs to fix
+
+cat | cat |ls
+
 #LLIU**************************************
 # argument parsing??
 

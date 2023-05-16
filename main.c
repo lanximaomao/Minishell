@@ -13,11 +13,11 @@ int	readline_prompt(t_mini *mini)
 	//ascii_art_pattern();
 	while (1)
 	{
-		signal_handler();
+		signal_main();
 		if (!(line = readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ")))
 		{
-			g_exitcode = 1; // CTRL+D gives an EOF signal, and sets line to NULL.
-			//printf("am i returning here?\n");
+			g_exitcode = 0; // CTRL+D gives an EOF signal, and sets line to NULL.
+			printf("exit\n");
 			exit(g_exitcode);
 		}
 

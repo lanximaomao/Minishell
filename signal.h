@@ -1,13 +1,15 @@
 #ifndef SIGNAL_H
 # define SIGNAL_H
 
-void signal_handler();
-void signal_handler_children();
-void sa_handle_ctrl_c(int sig);
-void sa_handle_ctrl_d(int sig);
-void sa_handle_nothing(int sig);
-void sa_children_exit(int sig);
-void sa_handle_ctrl_c_heredoc();
-void signal_handler_heredoc();
+#include <termios.h>
+
+void signal_main();
+void signal_children();
+void signal_heredoc();
+void sa_handler_main(int sig);
+void sa_handler_children (int sig);
+void sa_handler_heredoc(int sig);
+void prompt();
+
 
 #endif
