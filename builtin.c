@@ -109,9 +109,9 @@ void	my_cd(char **arg, t_list *env)
 	//printf("%s\n", arg[1]);
 	if (chdir(arg[1]) != 0)
 	{
-		ft_putstr_fd(" No such file or directory\n", 2);
 		g_exitcode = 1;
-		//return (2);
+		ft_putstr_fd(" No such file or directory\n", 2);
+		return;
 	}
 	if (getcwd(buf, sizeof(buf)) != NULL)
 		env_find_and_replace(env, "PWD", buf);
@@ -166,24 +166,33 @@ int	my_env(char **arg, t_list *env)
 
 /* create exit function with no option */
 /*
-** Minimum long value: -9223372036854775808
-** Maximum long value: 9223372036854775807
+** Minimum long value:
+** exit -9223372036854775808--> 0
+** exit 9223372036854775807 --> 255
+** exit -9223372036854775807--> 1
+** exit -9223372036854775809 --> 255
 */
 
 void	my_exit(char** arg, t_list *env)
 {
 	int i;
-	unsigned long long status;
+	long long status;
 
 	i = 0;
 	ft_printf("exit\n");
 
+	//char* a4 = "9223372036854775808";
+	//char* b3 = "-9223372036854775807";
+	//char* b4 = "-9223372036854775808";
+	//char* b5 = "-9223372036854775809";
+	//printf("num=%s, atoi=%d, unsigned=%hhu\n", a4, atoi(a4), (unsigned char)atoi(a4));
+	//printf("num=%s, my_atoi=%llu, unsigned=%hhu\n", a4, my_atoi(a4), (unsigned char)my_atoi(a4));
+	//printf("num=%s, ft_atoi=%lld, unsigned=%hhu\n", b3, my_atoi(b3), (unsigned char)my_atoi(b3));
+	//printf("num=%s, ft_atoi=%lld, unsigned=%hhu\n", b4, my_atoi(b4), (unsigned char)my_atoi(b4));
+	//printf("num=%s, ft_atoi=%lld, unsigned=%hhu\n", b5, my_atoi(b5), (unsigned char)my_atoi(b5));
+
 	if (arg[1] == NULL)
 		exit(0);
-	//if (arg[2]) // if too many arguments
-	//	g_exitcode = 1;
-	//	ft_putstr_fd(" too many arguments\n", 2);
-		//ft_printf("minishell: exit: too many arguments.\n");
 	while (arg[1] && arg[1][i]) 	//check if arg[1] is numeric
 	{
 		if (arg[1][i] == '+' || arg[1][i] == '-')
@@ -197,13 +206,14 @@ void	my_exit(char** arg, t_list *env)
 		}
 		i++;
 	}
-	status = ft_atoi(arg[1]);
+	status = my_atoi(arg[1]);
+	//printf("arg[1]=%s, status=%llu ", arg[1], status);
 	if (status > 9223372036854775807)
 		ft_putstr_fd(" numeric argument required\n", 2);
 		//ft_printf("minishell: exit: %s: numeric argument required.\n", arg[1]);
-	status = (unsigned char)ft_atoi(arg[1]);
+	status = (unsigned char)my_atoi(arg[1]);
 	g_exitcode = status;
-	//printf("statuss=%llu, heree g_exitcode=%d\n", status, g_exitcode);
+	//printf("g_exitcode=%d\n", g_exitcode);
 	if (arg[2])
 	{
 		g_exitcode = 1;
@@ -212,6 +222,33 @@ void	my_exit(char** arg, t_list *env)
 	exit(g_exitcode);
 }
 
+long long	my_atoi(const char *str)
+{
+	long long	result;
+	int		sign;
+
+	sign = 1;
+	result = 0;
+	while (*str == ' ' || (*str >= 9 && *str <= 13))
+		str++;
+	if (*str == '-')
+		sign = -1;
+	if (*str == '-' || *str == '+')
+		str++;
+	while (*str >= '0' && *str <= '9')
+	{
+		result = result * 10 + (*str - '0');
+		if (result > 9223372036854775807)
+		{
+			if (sign > 0)
+				return (-1);
+			else
+				return (1);
+		}
+		str++;
+	}
+	return (result * sign);
+}
 
 
 /*

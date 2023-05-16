@@ -64,7 +64,7 @@ int executor(t_mini *mini, int size)
 	signal_handler_children();
 	pid = malloc(sizeof(int) * size);
 	if (!pid)
-		ft_error("pid malloc fail", 1);
+		ft_error(" pid malloc fail", 1);
 	status = malloc(sizeof(int) * size);
 	if (!status)
 		ft_error("status malloc fail", 1);
@@ -82,7 +82,7 @@ int executor(t_mini *mini, int size)
 		handle_io(token, fd_pipe, i, size);
 		pid[i] = fork();
 		if (pid[i] == -1)
-			ft_error("fork failed", 4);
+			ft_error(" fork failed", 4);
 		else if (pid[i] == 0)
 			cmd_execution_in_children(token, size, mini);
 		close(token->fd_in);
@@ -168,7 +168,7 @@ int handle_file(t_token* token)
 			token->fd_out = open(token->outfile[i], O_WRONLY | O_CREAT|O_TRUNC, 0644);
 		if (token->fd_out == -1)
 		{
-			perror("Fail to create or open outfile");//exit or not?
+			perror("fail to create or open outfile");//exit or not?
 			g_exitcode = 1;
 			return(2);
 		}
@@ -216,8 +216,8 @@ int cmd_execution_in_children(t_token* token, int size, t_mini *mini)
 	{
 		if (execve(token->cmd, token->args, env_convert(mini->env)) == -1)
 		{
-			g_exitcode = 127;
-			ft_error("No such file or directory", g_exitcode); // !error return
+			g_exitcode = 126;
+			ft_error(" no such file or directory", g_exitcode); // !error return
 		}
 	}
 	else
@@ -228,7 +228,7 @@ int cmd_execution_in_children(t_token* token, int size, t_mini *mini)
 		if (!path_cmd || execve(path_cmd, token->args, env_convert(mini->env)) == -1)
 		{
 			g_exitcode = 127;
-			ft_error("Cannot execute command", g_exitcode); // !error return
+			ft_error(" command not found", g_exitcode); // !error return
 		}
 	}
 	exit(g_exitcode); // change from return to exit 15/5
@@ -246,7 +246,7 @@ char* get_path_cmd(char* str, t_list *env)
 	{
 		path_cmd = ft_strjoin(path_env[i], str);
 		if (!path_cmd)
-			ft_error("string join failed. \n", 1);
+			ft_error(" string join failed. \n", 1);
 		if (access(path_cmd, X_OK) == 0)
 			break;
 		if (path_cmd)
@@ -278,6 +278,6 @@ char **get_path_env(t_list *env)
 	}
 	path_env = ft_split(env_content[1], ':');
 	if (!path_env)
-		ft_error("Malloc fail or PATH is NULL.\n", 1);
+		ft_error(" malloc fail or PATH is NULL.\n", 1);
 	return(path_env);
 }

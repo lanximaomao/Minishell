@@ -36,6 +36,7 @@ typedef struct s_input
 						// 5 for errinfile "2<", 6 for errheredoc "2<<", 7 for erroutfile "2>", 8 for errappend "2>>"
 }			t_input;
 
+//heredoc, // $
 typedef struct s_token
 {
 	char	*cmd;

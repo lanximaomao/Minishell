@@ -13,7 +13,11 @@ void ft_error(char* msg, int error_code)
 	if (error_code <= 2)
 		perror(msg);
 	else
-		printf("%s\n", msg);
+	{
+		ft_putstr_fd(msg, 2);
+		write(2, "\n", 1);
+	}
+		//printf("%s\n", msg);
 	exit(error_code);
 }
 // handle error in parent process

@@ -62,7 +62,7 @@ void signal_handler_children()
 /* ctrl + \ = SIGQUIT, quit in children */
 void sa_children_exit(int sig)
 {
-	return;
+	exit(g_exitcode); // change from return
 }
 
 void signal_handler_heredoc()
@@ -73,6 +73,7 @@ void signal_handler_heredoc()
 	sigaction(SIGINT, &sa_c, NULL);
 }
 
+// cannot unlink here
 void sa_handle_ctrl_c_heredoc()
 {
 	//printf("here I am.\n");
