@@ -6,7 +6,7 @@
 /*   By: srall <srall@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 00:45:46 by srall             #+#    #+#             */
-/*   Updated: 2023/05/16 02:57:47 by srall            ###   ########.fr       */
+/*   Updated: 2023/05/16 03:11:57 by srall            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,6 +172,8 @@ t_list *iterate_cmds(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int
 			else if (((t_input *)line_lst->content)->redir_sign == 3
 				|| ((t_input *)line_lst->content)->redir_sign == 4) // >> <<
 				parse_redir34(cmd_tokens, ((t_input *)line_lst->next->content), ((t_input *)line_lst->content)->redir_sign, j++);
+			if (ft_strncmp(((t_input *)line_lst->content)->temp_line, "", 1))
+				parse_cmd_args(cmd_tokens, ((t_input *)line_lst->content), k);
 			line_lst = line_lst->next;
 		}
 		else if (ft_strncmp(((t_input *)line_lst->content)->temp_line, "", 1))
