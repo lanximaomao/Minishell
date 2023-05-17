@@ -11,7 +11,6 @@ int executor_single(t_mini *mini)
 	int in;
 	int out;
 
-	signal_children();
 	token = (t_token*)mini->cmd_lst->content;
 	if (handle_file(token) != 0)
 		return(1);
@@ -31,11 +30,15 @@ int executor_single(t_mini *mini)
 		close(out);
 		return(0);
 	}
+	signal_cat();
 	pid = fork();
+
 	if (pid == -1)
 		ft_error("fork failed", 4);
 	else if (pid == 0)
+	{
 		cmd_execution_in_children(token, 1, mini);
+	}
 	close(token->fd_in);
 	close(token->fd_out);
 	waitpid(pid, &status, 0);
@@ -61,7 +64,8 @@ int executor(t_mini *mini, int size)
 
 	i = 0;
 	tmp = mini->cmd_lst;
-	signal_children();
+	signal_cat();//
+	signal(SIGINT, SIG_IGN);
 	pid = malloc(sizeof(int) * size);
 	if (!pid)
 		ft_error(" pid malloc fail", 1);
@@ -84,7 +88,10 @@ int executor(t_mini *mini, int size)
 		if (pid[i] == -1)
 			ft_error(" fork failed", 4);
 		else if (pid[i] == 0)
+		{
+			signal(SIGINT, SIG_IGN);
 			cmd_execution_in_children(token, size, mini);
+		}
 		close(token->fd_in);
 		close(token->fd_out);
 		tmp = tmp->next;
@@ -97,11 +104,7 @@ int executor(t_mini *mini, int size)
 		i++;
 	}
 	if (WIFEXITED(status[size-1]))
-	{
-		//printf("here at executor00: g_exitcode=%d\n", g_exitcode);
 		g_exitcode = WEXITSTATUS(status[size - 1]);
-		//printf("here at executor01: g_exitcode=%d\n", g_exitcode);
-	}
 	return(status[i]);
 }
 
@@ -147,7 +150,6 @@ int handle_file(t_token* token)
 	i = 0;
 	while ( i < token->num_infile)
 	{
-
 		token->fd_in = open(token->infile[i], O_RDONLY);
 		if (token->fd_in == -1)
 		{
@@ -184,7 +186,13 @@ int cmd_execution_in_children(t_token* token, int size, t_mini *mini)
 {
 	char* tmp;
 	char* path_cmd;
+	//struct termios t;
 
+	// signal part
+	//tcgetattr(0, &t);
+	//close_echo_control(&t);
+	signal_in_child();
+	//open_echo_control(&t);
 	// if cmd is null, add 15/5
 	if (token->cmd == NULL)
 		exit(g_exitcode);

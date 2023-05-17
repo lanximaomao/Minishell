@@ -4,29 +4,27 @@
 
 int g_exitcode = 0;
 
+
 int	readline_prompt(t_mini *mini)
 {
 	char	*line;
 	char	buf[256];
+	struct termios t;
 
 	line = NULL;
 	//ascii_art_pattern();
 	while (1)
 	{
+		tcgetattr(0, &t);
 		signal_main();
+		close_echo_control(&t);
 		if (!(line = readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ")))
 		{
 			g_exitcode = 0; // CTRL+D gives an EOF signal, and sets line to NULL.
 			printf("exit\n");
 			exit(g_exitcode);
 		}
-
-			//ft_error("Readline error", FUNC);
-		//if (!ft_strncmp(line, "exit", 5))
-		//{
-		//	free(line);
-		//	break ;
-		//}
+		open_echo_control(&t);
 		//parsing using mini
 		add_history(line);
 		// execute all the input cmd, while loop for signal processing

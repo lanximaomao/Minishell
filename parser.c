@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: linlinsun <linlinsun@student.42.fr>        +#+  +:+       +#+        */
+/*   By: lsun <lsun@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 00:45:46 by srall             #+#    #+#             */
-/*   Updated: 2023/05/17 00:51:44 by linlinsun        ###   ########.fr       */
+/*   Updated: 2023/05/17 19:04:17 by lsun             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode, char *num_her
 	char *heredoc;
 	char *line;
 	char *file_name;
+	struct termios t;
 
 	file_name = ft_strjoin("heredoc_name", num_heredoc);
 	if ((fd = open(file_name, O_WRONLY|O_CREAT|O_TRUNC, 0644)) < 0) // 读写/读/读
@@ -47,8 +48,11 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode, char *num_her
 	free_str(file_name);
 	while(g_exitcode != 256)
 	{
+		tcgetattr(0, &t);
 		signal_heredoc();
+		close_echo_control(&t);
 		line = readline("heredoc >> ");
+		open_echo_control(&t);
 		if (!line && !errno) // 相当于SIGTERM
 		{
 			close(fd);
@@ -69,7 +73,6 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode, char *num_her
 			free_str(heredoc);
 		}
 	}
-	g_exitcode = 1;
 	close(fd);
 }
 
