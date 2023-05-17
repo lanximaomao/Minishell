@@ -20,7 +20,7 @@ int	readline_prompt(t_mini *mini)
 		close_echo_control(&t);
 		if (!(line = readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ")))
 		{
-			g_exitcode = 0; // CTRL+D gives an EOF signal, and sets line to NULL.
+			// CTRL+D gives an EOF signal, and sets line to NULL.
 			printf("exit\n");
 			exit(g_exitcode);
 		}

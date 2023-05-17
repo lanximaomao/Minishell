@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: lsun <lsun@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: linlinsun <linlinsun@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 00:45:46 by srall             #+#    #+#             */
-/*   Updated: 2023/05/17 19:04:17 by lsun             ###   ########.fr       */
+/*   Updated: 2023/05/18 02:34:21 by linlinsun        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode, char *num_her
 		close_echo_control(&t);
 		line = readline("heredoc >> ");
 		open_echo_control(&t);
+
 		if (!line && !errno) // 相当于SIGTERM
 		{
 			close(fd);
