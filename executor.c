@@ -41,7 +41,7 @@ int executor_single(t_mini *mini)
 	waitpid(pid, &status, 0);
 	//printf("status=%d\n", status);
 	//exit code
-	if (WIFEXITED(status))
+	if (g_exitcode != -1 && (g_exitcode != 130 && g_exitcode != 131) && WIFEXITED(status))
 	{
 		//printf("before WEXITSTATUS= %d\n", g_exitcode);
 		g_exitcode = WEXITSTATUS(status);
@@ -93,7 +93,7 @@ int executor(t_mini *mini, int size)
 		waitpid(pid[i], &status[i], 0);
 		i++;
 	}
-	if (WIFEXITED(status[size-1]))
+	if (g_exitcode != -1 && WIFEXITED(status[size-1]))
 		g_exitcode = WEXITSTATUS(status[size - 1]);
 	return(status[i]);
 }

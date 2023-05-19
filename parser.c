@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   parser.c                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lsun <lsun@student.42.fr>                  +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/21 00:45:46 by srall             #+#    #+#             */
-/*   Updated: 2023/05/19 15:29:42 by lsun             ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minishell.h"
 #include "signal.h"
 
@@ -53,11 +41,10 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode, char *num_her
 		close_echo_control(&t);
 		line = readline("heredoc >> ");
 		open_echo_control(&t);
-
 		if (!line && !errno) // 相当于SIGTERM
 		{
 			close(fd);
-			g_exitcode = 0;
+			g_exitcode = -1;
 			return ;
 		}
 		if (!ft_strncmp(line, input->temp_line, ft_strlen(input->temp_line))
@@ -74,7 +61,8 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode, char *num_her
 			free_str(heredoc);
 		}
 	}
-	if_received_signal();
+	//if (g_exitcode == -1)
+	//	g_exitcode = 1;
 	close(fd);
 }
 
@@ -92,7 +80,8 @@ void parse_redir12(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int i
 		}
 		else
 			cmd_tokens->infile = (char **)ft_realloc(cmd_tokens->infile, sizeof(char *) * (i + 1), sizeof(char *) * (i + 2));
-		cmd_tokens->infile[i] = ft_strdup(((t_input *)line_lst->next->content)->temp_line);
+		if (line_lst->next)
+			cmd_tokens->infile[i] = ft_strdup(((t_input *)line_lst->next->content)->temp_line);
 		if (!cmd_tokens->infile[i])
 			ft_error_minishell("Malloc failed", MALLOC, 2);
 	}
@@ -170,7 +159,7 @@ t_list *iterate_cmds(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int
 		if (((t_input *)line_lst->content)->redir_sign != 0)
 		{
 			if (line_lst->next == NULL) // handle error: each redirection file cannot be empty, parse error
-				ft_error_minishell("Syntax error: no redirection argument.", SYNTAX, 2);
+				ft_error_minishell("Syntax error: no redirection argument.", SYNTAX, 2); // modify later by Lin's signal_handler
 			if (((t_input *)line_lst->content)->redir_sign == 1
 				|| ((t_input *)line_lst->content)->redir_sign == 2) // < >
 				parse_redir12(cmd_tokens, line_lst, env_lst, i++, exitcode);

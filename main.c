@@ -15,9 +15,11 @@ int	readline_prompt(t_mini *mini)
 	//ascii_art_pattern();
 	while (1)
 	{
+		//printf("start of my minishell loop\n");
 		tcgetattr(0, &t);
 		signal_main();
 		close_echo_control(&t);
+		//printf("ready to readlines from minishell loop\n");
 		if (!(line = readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ")))
 		{
 			// CTRL+D gives an EOF signal, and sets line to NULL.
@@ -29,7 +31,7 @@ int	readline_prompt(t_mini *mini)
 		//parsing using mini
 		add_history(line);
 		// execute all the input cmd, while loop for signal processing
-		//signal_cat();
+		signal_cat();// re-register sigaction function
 		minishell(mini, line, 0); // exitcode is 0, handle in later
 	}
 	clear_history(); // ! why rl_clear_history does not work?

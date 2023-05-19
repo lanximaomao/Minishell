@@ -11,6 +11,7 @@ int sigaction(int signum, const struct sigaction *act, struct sigaction *oldact)
 
 void signal_main()
 {
+	//printf("here or not?\n");
 	struct sigaction sa;
 
 	sa.sa_handler = &sa_handler_main;
@@ -47,11 +48,16 @@ void signal_heredoc()
 
 void sa_handler_main(int sig)
 {
-	if (sig == SIGINT)
+	//printf("hello from handler main.\n");
+	//printf("%d\n", g_exitcode);
+	if (g_exitcode != -1 && sig == SIGINT)
 	{
+		//printf("test\n");
 		g_exitcode = 1;
-		write(1, "\n", 1);
+		printf("\n");
 	}
+	//else if (g_exitcode == -1)
+	//	g_exitcode = 1;
 	prompt();
 }
 
@@ -59,9 +65,10 @@ void sa_handler_main(int sig)
 void sa_handler_cat (int sig)
 {
 	if (sig == SIGINT)
-		write(1, "\n", 1);
+		printf("\n");//
 	if (sig == SIGQUIT)
 		printf("Quit: 3\n");
+	//printf("am I here?\n");
 	g_exitcode = sig + 128;
 	//signal(SIGINT, SIG_IGN);//to ingnore the sigint, otherwise minishell prompt will be printed two times
 }
@@ -78,8 +85,10 @@ void sa_handler_heredoc(int sig)
 	if (sig == SIGINT)
 	{
 		g_exitcode = 256;// trigger the exit of the heredoc loop
-		ioctl(STDIN_FILENO, TIOCSTI, "\n");//inject a newline into stdin buffer
+		ioctl(STDIN_FILENO, TIOCSTI, "\x04");//inject a newline into stdin buffer
 	}
+	//if (sig == SIGQUIT)
+		//no newline
 }
 
 void prompt()
