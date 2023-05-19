@@ -79,18 +79,9 @@ void sa_handler_in_child(int sig)
 // why do we have two extra newlines if "<< f1 cat"?
 void sa_handler_heredoc(int sig)
 {
-	char c;
-
 	if (sig == SIGINT)
 		g_exitcode = 256;// trigger the exit of the heredoc loop
-	//signal(SIGINT, SIG_IGN);
 	ioctl(STDIN_FILENO, TIOCSTI, "\n");//inject a newline into stdin buffer
-		//
-	//if (read(STDIN_FILENO, &c, 1) == 1)
-	//{
-	//	if (c == '\n')
-	//		c = 0;
-	//}
 }
 
 void prompt()

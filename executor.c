@@ -202,11 +202,11 @@ int cmd_execution_in_children(t_token* token, int size, t_mini *mini)
 		exit(g_exitcode);
 	// if ctrl+c is pressed in heredoc
 	// printf("in children process, g_exitcode=%d\n", g_exitcode);
-	if (g_exitcode == 256)
-	{
-		g_exitcode = 1;
-		exit(g_exitcode);
-	}
+	//if (g_exitcode == 256)
+	//{
+	//	g_exitcode = 1;
+	//	exit(g_exitcode);
+	//}
 	//write(2, "here\n", 5);
 	if (token->fd_in < 0)
 	{
