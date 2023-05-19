@@ -8,6 +8,7 @@ int sigaction(int signum, const struct sigaction *act, struct sigaction *oldact)
 /* ctrl + \ = SIGQUIT, 3 */
 /* ctrl + D = EOF */
 
+
 void signal_main()
 {
 	struct sigaction sa;
@@ -32,6 +33,7 @@ void signal_in_child()
 
 	sa.sa_handler =  &sa_handler_in_child;
 	sigaction(SIGINT, &sa, NULL);
+	sigaction(SIGQUIT, &sa, NULL);
 }
 
 void signal_heredoc()
@@ -40,6 +42,7 @@ void signal_heredoc()
 
 	sa.sa_handler = &sa_handler_heredoc;
 	sigaction(SIGINT, &sa, NULL);
+	signal(SIGQUIT, SIG_IGN);
 }
 
 void sa_handler_main(int sig)
@@ -65,13 +68,6 @@ void sa_handler_cat (int sig)
 
 void sa_handler_in_child(int sig)
 {
-	if (sig == SIGINT)
-	{
-		write(1, "\n", 1); // why this nl is not printed?
-	}
-	if (sig == SIGQUIT)
-		printf("^\\");
-	g_exitcode = sig + 128;
 	exit(g_exitcode);
 }
 
@@ -80,8 +76,10 @@ void sa_handler_in_child(int sig)
 void sa_handler_heredoc(int sig)
 {
 	if (sig == SIGINT)
+	{
 		g_exitcode = 256;// trigger the exit of the heredoc loop
-	ioctl(STDIN_FILENO, TIOCSTI, "\n");//inject a newline into stdin buffer
+		ioctl(STDIN_FILENO, TIOCSTI, "\n");//inject a newline into stdin buffer
+	}
 }
 
 void prompt()
@@ -103,4 +101,19 @@ void	open_echo_control(struct termios *t)
 	t->c_lflag |= ECHOCTL;
 	if (tcsetattr(0, TCSANOW, t) == -1)
 		ft_error(" error in tcsetattr", 1);
+}
+
+
+void if_received_signal()
+{
+	struct sigaction sa;
+
+	sa.sa_handler = &handler_is_receved_signal;
+	sigaction(SIGINT, &sa, NULL);
+}
+
+void handler_is_receved_signal(int sig)
+{
+	if (sig == SIGINT)
+		g_exitcode = 1;
 }

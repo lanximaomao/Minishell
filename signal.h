@@ -14,5 +14,7 @@ void sa_handler_heredoc(int sig);
 void prompt();
 void	close_echo_control(struct termios *t);
 void	open_echo_control(struct termios *t);
+void if_received_signal();
+void handler_is_receved_signal(int sig);
 
 #endif

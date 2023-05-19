@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: linlinsun <linlinsun@student.42.fr>        +#+  +:+       +#+        */
+/*   By: lsun <lsun@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/21 00:45:46 by srall             #+#    #+#             */
-/*   Updated: 2023/05/18 02:34:21 by linlinsun        ###   ########.fr       */
+/*   Updated: 2023/05/19 15:29:42 by lsun             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode, char *num_her
 			free_str(heredoc);
 		}
 	}
+	if_received_signal();
 	close(fd);
 }
 

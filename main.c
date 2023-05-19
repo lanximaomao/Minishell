@@ -22,12 +22,14 @@ int	readline_prompt(t_mini *mini)
 		{
 			// CTRL+D gives an EOF signal, and sets line to NULL.
 			printf("exit\n");
+			g_exitcode = 0;
 			exit(g_exitcode);
 		}
 		open_echo_control(&t);
 		//parsing using mini
 		add_history(line);
 		// execute all the input cmd, while loop for signal processing
+		//signal_cat();
 		minishell(mini, line, 0); // exitcode is 0, handle in later
 	}
 	clear_history(); // ! why rl_clear_history does not work?

@@ -1,6 +1,7 @@
 #include "minishell.h"
 #include "builtin.h"
 #include "executor.h"
+#include "signal.h"
 
 void minishell(t_mini *mini, char *line, int exitcode)
 {
@@ -59,6 +60,7 @@ void minishell(t_mini *mini, char *line, int exitcode)
 	size = ft_lstsize(mini->cmd_lst);
 	if (size == 0)
 		return;
+	//signal_cat();//
 	if (size == 1)
 		executor_single(mini);
 	else

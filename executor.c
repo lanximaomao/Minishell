@@ -30,15 +30,12 @@ int executor_single(t_mini *mini)
 		close(out);
 		return(0);
 	}
-	signal_cat();
 	pid = fork();
 
 	if (pid == -1)
 		ft_error("fork failed", 4);
 	else if (pid == 0)
-	{
 		cmd_execution_in_children(token, 1, mini);
-	}
 	close(token->fd_in);
 	close(token->fd_out);
 	waitpid(pid, &status, 0);
@@ -64,8 +61,6 @@ int executor(t_mini *mini, int size)
 
 	i = 0;
 	tmp = mini->cmd_lst;
-	signal_cat();//
-	signal(SIGINT, SIG_IGN);
 	pid = malloc(sizeof(int) * size);
 	if (!pid)
 		ft_error(" pid malloc fail", 1);
@@ -81,17 +76,12 @@ int executor(t_mini *mini, int size)
 			return(1);
 		}
 		token = (t_token*) tmp->content;
-		//if (handle_io(token, fd_pipe, i, size) == 1)
-		//	return(1);
 		handle_io(token, fd_pipe, i, size);
 		pid[i] = fork();
 		if (pid[i] == -1)
 			ft_error(" fork failed", 4);
 		else if (pid[i] == 0)
-		{
-			signal(SIGINT, SIG_IGN);
 			cmd_execution_in_children(token, size, mini);
-		}
 		close(token->fd_in);
 		close(token->fd_out);
 		tmp = tmp->next;
