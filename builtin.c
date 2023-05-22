@@ -1,112 +1,70 @@
-/*
-!! update unset
-!! update echo
-*/
-
 #include "minishell.h"
 #include "builtin.h"
 
-// for handeling exit
-//int is_exit(t_token* token, t_list *env)
-//{
-//	int len;
-
-//	len = ft_strlen(token->cmd);
-
-//	if (len == 4 && ft_strncmp(token->cmd, "exit", len) == 0)
-//	{
-//		my_exit(token->args, env);
-//		return(1);
-//	}
-//	return (0);
-//}
-
-int is_builtin_no_run(t_token* token, t_list *env)
+/* 	if no cmd is given, just return. this is to avoide the segfault by doing << f1 */
+int buildtin_or_not(t_token* token, t_list *env)
 {
 	int len;
 
-	// if no cmd is given, just return. this is to avoide the segfault by doing << f1
 	if (token->cmd == NULL)
 		return (0);
 	len = ft_strlen(token->cmd);
 	if (len == 2 && ft_strncmp(token->cmd, "cd", len) == 0)
 		return(1);
 	else if (len == 3 && ft_strncmp(token->cmd, "pwd", len) == 0)
-		return(1);
+		return(2);
 	else if (len == 3 && ft_strncmp(token->cmd, "env", len) == 0)
-		return(1);
+		return(3);
 	else if (len == 4 && ft_strncmp(token->cmd, "exit", len) == 0)
-		return(1);
+		return(4);
 	else if (len == 4 && ft_strncmp(token->cmd, "echo", len) == 0)
-		return (1);
+		return (5);
 	else if (len == 5 && ft_strncmp(token->cmd, "unset", len) == 0)
-		return (1);
+		return (6);
 	else if (len == 6 && ft_strncmp(token->cmd, "export", len) == 0)
-		return(1);
+		return(7);
 	return (0);
 }
 
-
-int is_builtin(t_token* token, t_list *env)
+int buildtin_run(t_token* token, t_list *env)
 {
-	int len;
+	int ret;
 
-	len = ft_strlen(token->cmd);
-	if (len == 2 && ft_strncmp(token->cmd, "cd", len) == 0)
-	{
+	ret = buildtin_or_not(token, env);
+	if (ret == 0)
+		return (0);
+	if (ret == 1)
 		my_cd(token->args, env);
-		return(1);
-	}
-	else if (len == 3 && ft_strncmp(token->cmd, "pwd", len) == 0)
-	{
+	if (ret == 2)
 		my_pwd(env);
-		return(1);
-	}
-	else if (len == 3 && ft_strncmp(token->cmd, "env", len) == 0)
-	{
+	if (ret == 3)
 		my_env(token->args, env);
-		return(1);
-	}
-	else if (len == 4 && ft_strncmp(token->cmd, "exit", len) == 0)
-	{
-		my_exit(token->args, env);
-		return(1);
-	}
-	else if (len == 4 && ft_strncmp(token->cmd, "echo", len) == 0)
-	{
+	if (ret == 4)
 		my_echo(token->args, env);
-		return (1);
-	}
-	else if (len == 5 && ft_strncmp(token->cmd, "unset", len) == 0)
-	{
+	if (ret == 5)
+		my_echo(token->args, env);
+	if (ret == 6)
 		my_unset(token->args, env);
-		return (1);
-
-	}
-	else if (len == 6 && ft_strncmp(token->cmd, "export", len) == 0)
-	{
+	if (ret == 7)
 		my_export(token->args, env);
-		return(1);
-	}
-	return (0);
+	return(1);
 }
 
-
-
-/*
-** cd with only a relative or absolute path
-** !!save current directory into OLDPWD
-*/
 
 void	my_cd(char **arg, t_list *env)
 {
 	char	buf[1024];
 	char *home;
+	int is_null;
 
-	home = env_handler(env, "HOME");
+	if (getcwd(buf, sizeof(buf)) != NULL)
+		env_find_and_replace(env, "OLDPWD", buf);
 	if (arg[1] == NULL)
+	{
+		is_null = 1;
+		home = env_handler(env, "HOME");
 		arg[1] = ft_strdup(home);//to be freed
-	//printf("%s\n", arg[1]);
+	}
 	if (chdir(arg[1]) != 0)
 	{
 		g_exitcode = 1;
@@ -115,7 +73,8 @@ void	my_cd(char **arg, t_list *env)
 	}
 	if (getcwd(buf, sizeof(buf)) != NULL)
 		env_find_and_replace(env, "PWD", buf);
-	//return (1); // cd > out will hang. but if exit is used, cd is not working as it should be.
+	if(is_null == 1)
+		free(arg[1]);
 	g_exitcode = 0;
 }
 
@@ -123,18 +82,13 @@ void	my_cd(char **arg, t_list *env)
 ** pwd with no options
 ** if there are any argments,just ignore
 */
-
 void	my_pwd(t_list *env)
 {
 	char	buf[1024];
 
 	if (getcwd(buf, sizeof(buf)) != NULL)
-	{
 		ft_printf("%s\n", buf);
-		//return (0);
-	}
 	g_exitcode = 0;
-	//return (1);
 }
 
 /*
@@ -146,7 +100,6 @@ int	my_env(char **arg, t_list *env)
 	t_list	*tmp;
 	char**	env_content;
 
-	//printf("calling my env functions.\n");
 	if (arg[1] != NULL)
 	{
 		g_exitcode = 127;
@@ -157,7 +110,8 @@ int	my_env(char **arg, t_list *env)
 	while (tmp)
 	{
 		env_content = (char**)tmp->content;
-		ft_printf("%s=%s\n", env_content[0], env_content[1]);
+		if (env_content[1][0] != '\0')
+			ft_printf("%s=%s\n", env_content[0], env_content[1]);
 		tmp = tmp->next;
 	}
 	g_exitcode = 0;
@@ -171,16 +125,6 @@ int	my_env(char **arg, t_list *env)
 ** exit 9223372036854775807 --> 255
 ** exit -9223372036854775807--> 1
 ** exit -9223372036854775809 --> 255
-*/
-
-void	my_exit(char** arg, t_list *env)
-{
-	int i;
-	long long status;
-
-	i = 0;
-	ft_printf("exit\n");
-
 	//char* a4 = "9223372036854775808";
 	//char* b3 = "-9223372036854775807";
 	//char* b4 = "-9223372036854775808";
@@ -190,7 +134,15 @@ void	my_exit(char** arg, t_list *env)
 	//printf("num=%s, ft_atoi=%lld, unsigned=%hhu\n", b3, my_atoi(b3), (unsigned char)my_atoi(b3));
 	//printf("num=%s, ft_atoi=%lld, unsigned=%hhu\n", b4, my_atoi(b4), (unsigned char)my_atoi(b4));
 	//printf("num=%s, ft_atoi=%lld, unsigned=%hhu\n", b5, my_atoi(b5), (unsigned char)my_atoi(b5));
+*/
 
+void	my_exit(char** arg, t_list *env)
+{
+	int i;
+	long long status;
+
+	i = 0;
+	ft_printf("exit\n");
 	if (arg[1] == NULL)
 		exit(0);
 	while (arg[1] && arg[1][i]) 	//check if arg[1] is numeric
@@ -199,7 +151,6 @@ void	my_exit(char** arg, t_list *env)
 			i++;
 		if (ft_isdigit(arg[1][i]) == 0)
 		{
-			//ft_printf("minishell: exit: %s: numeric argument required.\n", arg[1]);
 			ft_putstr_fd(" numeric argument required\n", 2);
 			g_exitcode = 255;
 			exit(g_exitcode);
@@ -207,13 +158,10 @@ void	my_exit(char** arg, t_list *env)
 		i++;
 	}
 	status = my_atoi(arg[1]);
-	//printf("arg[1]=%s, status=%llu ", arg[1], status);
 	if (status > 9223372036854775807)
 		ft_putstr_fd(" numeric argument required\n", 2);
-		//ft_printf("minishell: exit: %s: numeric argument required.\n", arg[1]);
 	status = (unsigned char)my_atoi(arg[1]);
 	g_exitcode = status;
-	//printf("g_exitcode=%d\n", g_exitcode);
 	if (arg[2])
 	{
 		g_exitcode = 1;
@@ -273,7 +221,6 @@ void	my_export(char **arg, t_list *env)
 
 	i = 1;
 	len = 0;
-	//printf("arg0=%s, arg1=%s, arg2=%s\n", arg[0], arg[1], arg[2]);
 	if (!arg[i])
 	{
 		my_export_no_aguments(env);
@@ -296,7 +243,6 @@ void	my_export(char **arg, t_list *env)
 					ft_error("malloc fail.\n", 1);
 				env_content[0]=ft_substr(arg[i], j-len, len);
 				env_content[1]=ft_substr(arg[i], len+1, ft_strlen(arg[i]));
-				//printf("%s and %s\n", env_content[0], env_content[1]);
 				if (env_content[1] == NULL)
 				{
 					free(env_content[0]);
@@ -315,7 +261,6 @@ void	my_export(char **arg, t_list *env)
 	}
 	g_exitcode = 0;
 	//loop throught the env, 0 means not found
-
 }
 
 //first character should be a ltter or _
@@ -328,7 +273,6 @@ int is_valid_argument(char* arg, t_list *env)
 
 	if (ft_isalpha(arg[0]) == 0 && arg[0] != '_')
 	{
-		//printf("minishell: export:`%s`: not a valid identifier\n", arg);
 		ft_putstr_fd(" not a valid identifier\n", 2);
 		g_exitcode = 1;
 		return(1);
@@ -337,7 +281,6 @@ int is_valid_argument(char* arg, t_list *env)
 	{
 		if (arg[i] == '-' && is_equal_sign(arg, i) == 0)
 		{
-			//printf("minishell: export:`%s`: not a valid identifier\n", arg);
 			ft_putstr_fd(" not a valid identifier\n", 2);
 			g_exitcode = 1;
 			return(1);
@@ -375,11 +318,9 @@ void my_export_arguments(t_list *env, char** env_content)
 	if (env_find_and_replace(env, env_content[0], env_content[1]) == 0)
 	{
 		node = ft_lstnew(env_content);
-		//ft_printf("env[0]=%s, env[1]=%s, env[3]=%s\n", env_content[0], env_content[1], env_content[2]);
 		if (!node)
 			ft_error("cann't create a new node.\n", 1);
 		ft_lstadd_back(&env, node);
-		//my_env(env);
 	}
 }
 
@@ -398,7 +339,6 @@ void my_export_no_aguments(t_list *env)
 	}
 }
 
-/* TO BE UPDATED */
 void	my_unset(char **arg, t_list *env)
 {
 	int i;
@@ -444,47 +384,31 @@ void	my_unset(char **arg, t_list *env)
 /*
 ** create echo with option -n
 */
-
 void my_echo(char **arg, t_list *env)
 {
 	int i;
-	int ret;
+	int nl;
 
-	//ft_printf("arg[0]=%s, arg[[1]=%s, arg[2]=%s\n", arg[0], arg[1], arg[2]);
+	nl = 0;
 	if (!arg[1])
 	{
 		ft_printf("\n");
 		return;
-		//return (0);
 	}
-	ret = check_n(arg);
-	//ft_printf("ret is %d\n", ret);
-	if (ret == 0)
-	{
+	if (check_n(arg) == 0 && ++nl)
 		i = 1;
-		while (arg[i])
-		{
-			ft_printf("%s", arg[i]);
-			if (arg[i+1])
-				ft_printf(" ");
-			i++;
-		}
-		ft_printf("\n");
-	}
-
 	else
-	{
 		i = 2;
-		while (arg[i])
-		{
-			ft_printf("%s", arg[i]);
-			if (arg[i+1])
-				ft_printf(" ");
-			i++;
-		}
+	while (arg[i])
+	{
+		ft_printf("%s", arg[i]);
+		if (arg[i+1])
+			ft_printf(" ");
+		i++;
 	}
+	if (nl == 1)
+		ft_printf("\n");
 	g_exitcode = 0;
-	//return(0);
 }
 
 int check_n(char** arg)
@@ -506,73 +430,3 @@ int check_n(char** arg)
 	}
 	return(0);
 }
-
-//int main()
-//{
-//	char **arg;
-
-//	arg = ft_split("", '*');
-//	my_echo(arg);
-//	my_echo(arg);
-//	arg = ft_split("-n -m hello", '*');
-//	my_echo(arg);
-//	my_echo(arg);
-//	arg = ft_split("-nnn 123 4 56 abcd", '*');
-//	my_echo(arg);
-//	my_echo(arg);
-//	arg = ft_split("-nnn 123 4 56 abcd", '*');
-//	my_echo(arg);
-//	my_echo(arg);
-//	arg = ft_split("-nnm123 4 56 abcd", '*');
-//	my_echo(arg);
-//	my_echo(arg);
-//	arg = ft_split("-nnnnnnnnnnk-- 123 4 56 abcd", '*');
-//	my_echo(arg);
-//	my_echo(arg);
-//	return(0);
-//}
-
-/*
-> echo hello
-hello
-> echo -n hello
-hello>
-> echo -nn hello
-hello>
-> echo -nm hello
--nm hello
-> echo -n -m hello
--m hello>
-> echo -mn hello
--mn hello
-> echo -nnnnnnnnnnnnn hello
-hello>
-> echo -nnnnnnnnnnnnn hello world
-hello world>
-> echo -nnnnnnnnnnnnn hello world\n
-hello worldn>
-> echo hello world\n
-hello worldn
-
-> echo -nn -nm hello world
--nm hello world>
-
-echo hello world -nn  yello yorld --> if -n is in the middle, not interpreted
-hello world -nn yello yorld
-
-> echo hello he"ll"o0 'he"ll"o1' "he"ll"o2" ""he"ll"o3 he"ll"o4"" ''he"ll"o5 he"ll"o6''
-hello hello0 he"ll"o1 hello2 hello3 hello4 hello5 hello6
-
-prog_args=-e
-echo $prog_args
-
-echo $HOME = echo "$HOME"
-echo '$HOME'
-echo "Goodbye, World!" >> hello.txt
-
-echo "-n" --> do nothing
-echo '-n' --> do nothing
-echo --> newline and return
-
-The echo utility exits 0 on success, and >0 if an error occurs.
-*/

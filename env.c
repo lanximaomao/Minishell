@@ -25,7 +25,6 @@ int	env_init(t_mini *mini, char **env)
 		ft_lstadd_back(&mini->env, node);
 		i++;
 	}
-	//test_env_functions(mini);
 	return (1);
 }
 

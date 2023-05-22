@@ -4,7 +4,7 @@
 #include "minishell.h"
 # include <signal.h>
 
-int is_builtin(t_token* token, t_list *env);
+int buildtin_run(t_token* token, t_list *env);
 int is_exit(t_token* token, t_list *env);
 void		my_cd(char **arg, t_list *env);
 void		my_pwd(t_list *env);

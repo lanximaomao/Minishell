@@ -15,7 +15,7 @@ int executor_single(t_mini *mini)
 	if (handle_file(token) != 0)
 		return(1);
 
-	if(is_builtin_no_run(token, mini->env) == 1)
+	if(buildtin_or_not(token, mini->env) > 0)
 	{
 		in = dup(0);
 		out = dup(1);
@@ -23,7 +23,7 @@ int executor_single(t_mini *mini)
 		close(token->fd_in);
 		dup2(token->fd_out, 1);
 		close(token->fd_out);
-		is_builtin(token, mini->env);// add the exit code to builtin
+		buildtin_run(token, mini->env);// add the exit code to builtin
 		dup2(in, 0);
 		close(in);
 		dup2(out, 1);
@@ -208,7 +208,7 @@ int cmd_execution_in_children(t_token* token, int size, t_mini *mini)
 	close(token->fd_in);
 	dup2(token->fd_out, 1);
 	close(token->fd_out);
-	if (is_builtin(token, mini->env) == 1)
+	if (buildtin_run(token, mini->env) == 1 )
 		exit (g_exitcode);
 	if (access(token->cmd, X_OK) == 0)
 	{

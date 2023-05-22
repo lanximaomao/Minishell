@@ -8,10 +8,8 @@ int sigaction(int signum, const struct sigaction *act, struct sigaction *oldact)
 /* ctrl + \ = SIGQUIT, 3 */
 /* ctrl + D = EOF */
 
-
 void signal_main()
 {
-	//printf("here or not?\n");
 	struct sigaction sa;
 
 	sa.sa_handler = &sa_handler_main;
@@ -48,16 +46,15 @@ void signal_heredoc()
 
 void sa_handler_main(int sig)
 {
-	//printf("hello from handler main.\n");
-	//printf("%d\n", g_exitcode);
+	//printf("calling from sa_handler main\n");
 	if (g_exitcode != -1 && sig == SIGINT)
 	{
-		//printf("test\n");
 		g_exitcode = 1;
 		printf("\n");
 	}
 	//else if (g_exitcode == -1)
 	//	g_exitcode = 1;
+	//printf("g_exitcode=%d\n", g_exitcode);
 	prompt();
 }
 
@@ -83,12 +80,7 @@ void sa_handler_in_child(int sig)
 void sa_handler_heredoc(int sig)
 {
 	if (sig == SIGINT)
-	{
-		g_exitcode = 256;// trigger the exit of the heredoc loop
 		ioctl(STDIN_FILENO, TIOCSTI, "\x04");//inject a newline into stdin buffer
-	}
-	//if (sig == SIGQUIT)
-		//no newline
 }
 
 void prompt()
