@@ -17,6 +17,7 @@ int	env_init(t_mini *mini, char **env)
 	while (env[i])
 	{
 		env_content = ft_split(env[i], '=');
+		//printf("init%s=%s=%s\n", env_content[0], env_content[1], env_content[2]);
 		if (!env_content)
 			ft_error("malloc fail or null input?\n", 1);
 		node = ft_lstnew(env_content);

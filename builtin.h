@@ -5,19 +5,12 @@
 # include <signal.h>
 
 int buildtin_run(t_token* token, t_list *env);
-int is_exit(t_token* token, t_list *env);
 void		my_cd(char **arg, t_list *env);
 void		my_pwd(t_list *env);
 int	my_env(char** arg, t_list *env);
 void	my_export(char **arg, t_list *env);
-int is_equal_sign(char* arg, int i);
 void	my_unset(char **arg, t_list *env);
 void	my_exit(char **arg, t_list *env);
 void		my_echo(char **arg, t_list *env);
-int		check_n(char **arg);
-void	my_export_no_aguments(t_list *env);
-void my_export_arguments(t_list *env, char** env_content);
-int is_valid_argument(char* arg, t_list *env);
-long long	my_atoi(const char *str);
 
 #endif
