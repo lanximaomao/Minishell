@@ -46,7 +46,7 @@ static int	is_valid_argument(char *arg, t_list *env)
 	return (0);
 }
 
-void	my_unset(char **arg, t_list *env)
+void	my_unset(char **arg, t_list **env)
 {
 	int i;
 	t_list	*current;
@@ -58,7 +58,7 @@ void	my_unset(char **arg, t_list *env)
 		return;
 	while (arg[++i])
 	{
-		current = env;
+		current = *env;
 		previous = NULL;
 		while (current)
 		{
@@ -68,16 +68,16 @@ void	my_unset(char **arg, t_list *env)
 			previous = current;
 			current = current->next;
 		}
-		if (current == NULL) //node not found, just return;
-			return;
-		if (previous == NULL) //remove the head node
-			env = env->next;
-		else
-			previous->next = current->next;
-		free(env_content[0]);
-		free(env_content[1]);
-		free(current);
+		if (current)
+		{
+			if (previous == NULL) //remove the head node
+				*env = (*env)->next;
+			else
+				previous->next = current->next;
+			free(env_content[0]);
+			free(env_content[1]);
+			free(current);
+		}
 	}
 	g_exitcode = 0;
-	//my_env(arg, env);
 }

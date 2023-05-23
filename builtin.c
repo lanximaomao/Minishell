@@ -26,27 +26,27 @@ int buildtin_or_not(t_token* token, t_list *env)
 	return (0);
 }
 
-int buildtin_run(t_token* token, t_list *env)
+int buildtin_run(t_token* token, t_list **env)
 {
 	int ret;
 
-	ret = buildtin_or_not(token, env);
+	ret = buildtin_or_not(token, *env);
 	if (ret == 0)
 		return (0);
 	if (ret == 1)
-		my_cd(token->args, env);
+		my_cd(token->args, *env);
 	if (ret == 2)
-		my_pwd(env);
+		my_pwd(*env);
 	if (ret == 3)
-		my_env(token->args, env);
+		my_env(token->args, *env);
 	if (ret == 4)
-		my_echo(token->args, env);
+		my_echo(token->args, *env);
 	if (ret == 5)
-		my_echo(token->args, env);
+		my_echo(token->args, *env);
 	if (ret == 6)
 		my_unset(token->args, env);
 	if (ret == 7)
-		my_export(token->args, env);
+		my_export(token->args, *env);
 	return(1);
 }
 
@@ -99,12 +99,13 @@ int	my_env(char **arg, t_list *env)
 	t_list	*tmp;
 	char**	env_content;
 
+	//printf("head%p\n", env);
 	tmp = env;
 	while (tmp)
 	{
 		env_content = (char**)tmp->content;
 		//if (env_content)
-			ft_printf("%s=%s=%s\n", env_content[0], env_content[1], env_content[2]);
+			ft_printf("%s=%s\n", env_content[0], env_content[1]);
 		tmp = tmp->next;
 	}
 	g_exitcode = 0;
