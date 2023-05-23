@@ -16,5 +16,6 @@ void	close_echo_control(struct termios *t);
 void	open_echo_control(struct termios *t);
 void if_received_signal();
 void handler_is_receved_signal(int sig);
+int ioctl(int fildes, unsigned long request, ...);
 
 #endif

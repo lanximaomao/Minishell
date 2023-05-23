@@ -47,9 +47,13 @@ void signal_heredoc()
 void sa_handler_main(int sig)
 {
 	//printf("calling from sa_handler main\n");
-	if (g_exitcode != -1 && sig == SIGINT)
-	{
+	if (sig == SIGINT )
 		g_exitcode = 1;
+	if (sig == SIGINT && g_exitcode == -1)
+		g_exitcode = 258;
+	if (g_exitcode != 258 && sig == SIGINT)
+	{
+		//g_exitcode = 1;
 		printf("\n");
 	}
 	//else if (g_exitcode == -1)
@@ -81,7 +85,7 @@ void sa_handler_heredoc(int sig)
 {
 	if (sig == SIGINT)
 	{
-		g_exitcode = 256;// trigger the exit of the heredoc loop
+		g_exitcode = 513;// trigger the exit of the heredoc loop
 		ioctl(STDIN_FILENO, TIOCSTI, "\x04");//inject a newline into stdin buffer
 	}
 }
