@@ -85,6 +85,11 @@ void sa_handler_heredoc(int sig)
 		ioctl(STDIN_FILENO, TIOCSTI, "\x04");//inject a newline into stdin buffer
 	}
 }
+	{
+		g_exitcode = 256;// trigger the exit of the heredoc loop
+		//ioctl(STDIN_FILENO, TIOCSTI, "\x04");//inject a newline into stdin buffer
+	}
+}
 
 void prompt()
 {
