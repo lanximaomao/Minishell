@@ -13,8 +13,11 @@ WHITE		=	\033[0;97m
 ECHO		= echo
 
 SRCS = 		main.c minishell.c mini_utils.c			\
-				lexer.c expander.c parser.c				\
-				builtin.c env.c	executor.c signal.c# test_lliu.c #
+				lexer.c expander.c parser.c			\
+				env.c executor.c signal.c			\
+				builtin.c builtin_echo.c			\
+				builtin_exit.c builtin_export.c		\
+				builtin_unset.c
 OBJS = $(SRCS:.c=.o)
 
 SRCS_TEST =		main.c minishell.c mini_utils.c			\

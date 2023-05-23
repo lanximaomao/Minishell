@@ -32,7 +32,7 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode, char *num_her
 	if ((fd = open(file_name, O_WRONLY|O_CREAT|O_TRUNC, 0644)) < 0) // 读写/读/读
 		ft_error_minishell("Open heredoc_name failed", FILE_OP, 1); // Pls remember free_str(file_name);!!!!!
 	free_str(file_name);
-	while(1)
+	while(g_exitcode != 256)
 	{
 		tcgetattr(0, &t);
 		signal_heredoc();
