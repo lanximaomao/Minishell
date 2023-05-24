@@ -62,7 +62,12 @@ void minishell(t_mini *mini, char *line, int exitcode)
 		return;
 	//signal_cat();//
 	if (size == 1)
+	{
+		printf("exitcode05=%d\n", g_exitcode);
 		executor_single(mini);
+		printf("exitcode06=%d\n", g_exitcode);
+	}
+
 	else
 		executor(mini, size);
 }

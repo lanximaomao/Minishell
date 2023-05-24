@@ -11,10 +11,11 @@ int executor_single(t_mini *mini)
 	int in;
 	int out;
 
+	printf("exitcode07=%d\n", g_exitcode);
 	token = (t_token*)mini->cmd_lst->content;
 	if (handle_file(token) != 0)
 		return(1);
-
+	printf("exitcode08=%d\n", g_exitcode);
 	if(buildtin_or_not(token, mini->env) > 0)
 	{
 		in = dup(0);
@@ -31,7 +32,6 @@ int executor_single(t_mini *mini)
 		return(0);
 	}
 	pid = fork();
-
 	if (pid == -1)
 		ft_error("fork failed", 4);
 	else if (pid == 0)
@@ -40,13 +40,16 @@ int executor_single(t_mini *mini)
 	close(token->fd_out);
 	waitpid(pid, &status, 0);
 	//printf("status=%d\n", status);
-	//exit code
-	if (g_exitcode != -1 && (g_exitcode != 130 && g_exitcode != 131) && WIFEXITED(status))
+	printf("exitcode09=%d\n", g_exitcode);
+	if (g_exitcode !=256 && g_exitcode != -1 && (g_exitcode != 130 && g_exitcode != 131) && WIFEXITED(status))
 	{
-		//printf("before WEXITSTATUS= %d\n", g_exitcode);
+		printf("before WEXITSTATUS= %d\n", g_exitcode);
 		g_exitcode = WEXITSTATUS(status);
-		//printf("g_exitcode=%d\n", g_exitcode);
+		printf("g_exitcode=%d\n", g_exitcode);
 	}
+	//else
+	//	g_exitcode = 0;
+	printf("exitcode10=%d\n", g_exitcode);
 	return(0);
 }
 
@@ -185,8 +188,10 @@ int cmd_execution_in_children(t_token* token, int size, t_mini *mini)
 	//open_echo_control(&t);
 	// if cmd is null, add 15/5
 	if (token->cmd == NULL)
+	{
+		printf("try heredoc without a cmd");
 		exit(g_exitcode);
-
+	}
 	// if outfile cannot be created
 	if (token->fd_out == -1)
 		exit(g_exitcode);
