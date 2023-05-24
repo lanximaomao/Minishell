@@ -5,11 +5,11 @@ void handle_signal(int sig)
 	if (sig == SIGINT)
 	{
 		if (g_exitcode == 256 || g_exitcode == 385)
-			g_exitcode = 385; // 255 +130
+			g_exitcode = 386; // 255 +130
 		else
 		{
 			printf("\n");
-			g_exitcode = 130;
+			g_exitcode = 1;
 		}
 		rl_on_new_line(); // readline移动到新行，保留输入，否则会直接清空当前输入
 		rl_replace_line("", 0); // 替换为空字符，需要在display之前
@@ -29,7 +29,7 @@ void handle_cmd(int sig)
 	}
 	else if (sig == SIGQUIT) // parent process ignore and quit in child process
 	{
-		printf("^\\Quit: %d\n", sig);
+		printf("Quit: %d\n", sig);
 		g_exitcode = 131;
 	}
 	return ;

@@ -14,8 +14,8 @@ int executor_single(t_mini *mini)
 	token = (t_token*)mini->cmd_lst->content;
 	if (handle_file(token) != 0)
 		return(1);
-
-	if(buildtin_or_not(token, mini->env) > 0)
+	status = buildtin_or_not(token, mini->env);
+	if(status > 0)
 	{
 		in = dup(0);
 		out = dup(1);
@@ -30,6 +30,8 @@ int executor_single(t_mini *mini)
 		close(out);
 		return(0);
 	}
+	else if (status < 0)
+		return (0);
 	pid = fork();
 
 	if (pid == -1)

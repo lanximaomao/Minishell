@@ -26,7 +26,6 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode, char *num_her
 	char *heredoc;
 	char *line;
 	char *file_name;
-	struct termios t;
 
 	file_name = ft_strjoin("heredoc_name", num_heredoc);
 	if ((fd = open(file_name, O_WRONLY|O_CREAT|O_TRUNC, 0644)) < 0) // 读写/读/读

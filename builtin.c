@@ -7,7 +7,7 @@ int buildtin_or_not(t_token* token, t_list *env)
 	int len;
 
 	if (token->cmd == NULL)
-		return (0);
+		return (-1);
 	len = ft_strlen(token->cmd);
 	if (len == 2 && ft_strncmp(token->cmd, "cd", len) == 0)
 		return(1);
