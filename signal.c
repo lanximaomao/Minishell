@@ -85,7 +85,7 @@ void sa_handler_heredoc(int sig)
 {
 	if (sig == SIGINT)
 	{
-		g_exitcode = 513;// trigger the exit of the heredoc loop
+		g_exitcode = 257;// trigger the exit of the heredoc loop // by unsigned it is 1
 		ioctl(STDIN_FILENO, TIOCSTI, "\x04");//inject a newline into stdin buffer
 	}
 }
