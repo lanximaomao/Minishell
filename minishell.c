@@ -57,11 +57,12 @@ void minishell(t_mini *mini, char *line, int exitcode)
 	// 		printf("\n****************the next cmd*****************\n");
 	// }
 	// check for single builtin, if yes, just function call and return
+	signal(SIGQUIT, handle_cmd);
+	signal(SIGINT, handle_cmd);
 	size = ft_lstsize(mini->cmd_lst);
 	if (size == 0)
 		return;
-	//signal_cat();//
-	if (size == 1)
+	else if (size == 1)
 		executor_single(mini);
 	else
 		executor(mini, size);

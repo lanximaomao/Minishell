@@ -15,11 +15,8 @@ int	readline_prompt(t_mini *mini)
 	//ascii_art_pattern();
 	while (1)
 	{
-		//printf("start of my minishell loop\n");
-		tcgetattr(0, &t);
-		signal_main();
-		close_echo_control(&t);
-		//printf("ready to readlines from minishell loop\n");
+		signal(SIGINT, handle_signal);
+		signal(SIGQUIT, SIG_IGN);
 		if (!(line = readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ")))
 		{
 			// CTRL+D gives an EOF signal, and sets line to NULL.
@@ -27,11 +24,9 @@ int	readline_prompt(t_mini *mini)
 			g_exitcode = 0;
 			exit(g_exitcode);
 		}
-		open_echo_control(&t);
 		//parsing using mini
 		add_history(line);
 		// execute all the input cmd, while loop for signal processing
-		signal_cat();// re-register sigaction function
 		minishell(mini, line, 0); // exitcode is 0, handle in later
 	}
 	clear_history(); // ! why rl_clear_history does not work?
@@ -41,6 +36,7 @@ int	readline_prompt(t_mini *mini)
 int	main(int argc, char **argv, char **env)
 {
 	t_mini *mini;
+	struct termios t;
 
 
 	if (argc != 1 || argv[1])
@@ -50,7 +46,14 @@ int	main(int argc, char **argv, char **env)
 		ft_error("malloc fail.\n", 1);
 	if (env_init(mini, env) != 1)
 		ft_error("fail to init env variables.", 3);
+	tcgetattr(0, &t); // 获取终端stdin属性结构体
+	t.c_lflag &= ~ECHOCTL; // 禁止终端回显控制字符
+	tcsetattr(0, TCSANOW, &t); // TCSANOW立即生效
 	readline_prompt(mini);
+	ft_lstfree(mini->env);
+	free_str((char *)mini); // 内部cmd_lst在使用结束后已经free了
+	t.c_lflag |= ECHOCTL; // 重新修改回来，否则自身terminal也无法回显控制字符
+	tcsetattr(0, TCSANOW, &t);
 	return(0);
 }
 

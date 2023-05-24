@@ -176,14 +176,7 @@ int cmd_execution_in_children(t_token* token, int size, t_mini *mini)
 {
 	char* tmp;
 	char* path_cmd;
-	//struct termios t;
 
-	// signal part
-	//tcgetattr(0, &t);
-	//close_echo_control(&t);
-	signal_in_child();
-	//open_echo_control(&t);
-	// if cmd is null, add 15/5
 	if (token->cmd == NULL)
 		exit(g_exitcode);
 

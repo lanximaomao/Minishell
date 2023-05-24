@@ -1,20 +1,22 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-#include <signal.h>
 # include "libft.h"
 # include "ft_printf.h"
 # include <stdlib.h> // malloc
 #include <stdio.h> //printf
 #include <unistd.h> // write
-#include <sys/wait.h>
+#include <sys/wait.h> // WEXITSTATUS/WIFEXITED/WIFSIGNALED
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h> // open
+#include <signal.h>
 #include <string.h>
 #include <errno.h>
 #include <stdarg.h>
 #include <dirent.h>
+#include <termios.h> // tcgetattr tcsetattr ECHOCTL
+#include <sys/ioctl.h> // ioctl TIOCSTI
 # include <readline/readline.h>
 # include <readline/history.h>
 
@@ -97,8 +99,12 @@ int executor_single(t_mini *mini);
 int executor(t_mini *mini, int size);
 
 
-// test_lliu.c
-void shell(void);
-void handle_sig(int sig);
+// signal.c
+void rl_replace_line (const char *text, int clear_undo);
+void handle_signal(int sig); // signal.c main.c
+void handle_cmd(int sig);
+void handle_signal_heredoc(int sig);
+int	event(void);
+
 
 #endif

@@ -32,17 +32,16 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode, char *num_her
 	if ((fd = open(file_name, O_WRONLY|O_CREAT|O_TRUNC, 0644)) < 0) // 读写/读/读
 		ft_error_minishell("Open heredoc_name failed", FILE_OP, 1); // Pls remember free_str(file_name);!!!!!
 	free_str(file_name);
-	while(g_exitcode != 512)
+	while(g_exitcode != -2)
 	{
-		tcgetattr(0, &t);
-		signal_heredoc();
-		close_echo_control(&t);
+		signal(SIGINT, handle_signal_heredoc);
 		line = readline("heredoc >> ");
-		open_echo_control(&t);
 		if (!line && !errno) // 相当于SIGTERM
 		{
-			//close(fd);
-			g_exitcode = -1;
+			close(fd);
+			g_exitcode = 256;
+			printf("\033[1A");
+			rl_redisplay();
 			break ;
 		}
 		if (!ft_strncmp(line, input->temp_line, ft_strlen(input->temp_line))
@@ -59,9 +58,9 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode, char *num_her
 			free_str(heredoc);
 		}
 	}
-	if(g_exitcode == -1)
-		g_exitcode = 0;
 	close(fd);
+	if(g_exitcode == -2)
+		g_exitcode = 1;
 }
 
 // parse < << input redirection,
