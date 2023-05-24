@@ -12,13 +12,15 @@ int executor_single(t_mini *mini)
 	int out;
 
 	token = (t_token*)mini->cmd_lst->content;
+	in = dup(0);
+	out = dup(1);
+	token->fd_in = in;
+	token->fd_out = out;
 	if (handle_file(token) != 0)
 		return(1);
 	status = buildtin_or_not(token, mini->env);
 	if(status > 0)
 	{
-		in = dup(0);
-		out = dup(1);
 		dup2(token->fd_in, 0);
 		close(token->fd_in);
 		dup2(token->fd_out, 1);
@@ -109,7 +111,7 @@ int executor(t_mini *mini, int size)
 ///* still happening in main processor*/
 int handle_io(t_token* token, int* fd_pipe, int cmd_order, int size)
 {
-	printf("before %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
+	//printf("before %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
 
 	// no need to create any pipe while reaching the last cmd
 	//if (cmd_order != 0 && size > 1)
@@ -126,7 +128,7 @@ int handle_io(t_token* token, int* fd_pipe, int cmd_order, int size)
 	if (cmd_order != size - 1 && pipe(fd_pipe) == -1)//
 		ft_error("error in creating pipes.\n", 4);
 	// io from pipe
-	printf("pipe %d, fd_pipe_r = %d, fd_pipe_w = %d\n", cmd_order, fd_pipe[0], fd_pipe[1]);
+	//printf("pipe %d, fd_pipe_r = %d, fd_pipe_w = %d\n", cmd_order, fd_pipe[0], fd_pipe[1]);
 	if (cmd_order == 0) // first cmd
 	{
 		token->fd_in = dup(0);
@@ -137,7 +139,7 @@ int handle_io(t_token* token, int* fd_pipe, int cmd_order, int size)
 	else if (cmd_order > 0 && cmd_order < size - 1) // middle cmd, token->fd_in shoud be from a previous comd output
 		token->fd_out = fd_pipe[1];
 
-	printf("after %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
+	//printf("after %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
 	if (handle_file(token) == 1)
 		return (1);
 	return (0);
