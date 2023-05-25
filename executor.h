@@ -4,12 +4,13 @@
 
 int cmd_execution_in_children(t_token* token, int size, t_mini *mini);
 int buildtin_or_not(t_token* token, t_list *env);
-int handle_io(t_token* token, int* fd_pipe, int cmd_order, int size);
+int handle_io(t_token* token, int cmd_order, int size);
 int handle_file(t_token* token);
-void handle_pipe_create(int** fd_pipe, int size);
-int handle_pipe_close(int **fd_pipe, int size, int which_pipe);
+
+int executor(t_mini *mini, int size);
+int single(t_token* token, t_list *env);
 char* get_path_cmd(char* str, t_list *env);
 char **get_path_env(t_list *env);
-void close_all(int a, int b);
+void get_exitcode(int size, int* pid, int*status);
 
 #endif

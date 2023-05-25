@@ -61,14 +61,14 @@ void minishell(t_mini *mini, char *line, int exitcode)
 	if (size == 0)
 		return;
 	//signal_cat();//
-	if (size == 1)
-	{
-		printf("exitcode05=%d\n", g_exitcode);
-		executor_single(mini);
-		printf("exitcode06=%d\n", g_exitcode);
-	}
+	//if (size == 1)
+	//{
+	//	printf("exitcode05=%d\n", g_exitcode);
+	//	executor_single(mini);
+	//	printf("exitcode06=%d\n", g_exitcode);
+	//}
 
-	else
+	//else
 		executor(mini, size);
 }
 // <<"EOF" <infile 'ls' "-l" | grep "test" >outfile >>'out2' test$?test 42$PWD-hive

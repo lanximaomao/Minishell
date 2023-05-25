@@ -2,65 +2,14 @@
 #include "executor.h"
 #include "signal.h"
 
-
-int executor_single(t_mini *mini)
-{
-	int pid;
-	int status;
-	t_token* token;
-	int in;
-	int out;
-
-	printf("exitcode07=%d\n", g_exitcode);
-	token = (t_token*)mini->cmd_lst->content;
-	if (handle_file(token) != 0)
-		return(1);
-	printf("exitcode08=%d\n", g_exitcode);
-	if(buildtin_or_not(token, mini->env) > 0)
-	{
-		in = dup(0);
-		out = dup(1);
-		dup2(token->fd_in, 0);
-		close(token->fd_in);
-		dup2(token->fd_out, 1);
-		close(token->fd_out);
-		buildtin_run(token, &(mini->env));// add the exit code to builtin
-		dup2(in, 0);
-		close(in);
-		dup2(out, 1);
-		close(out);
-		return(0);
-	}
-	pid = fork();
-	if (pid == -1)
-		ft_error("fork failed", 4);
-	else if (pid == 0)
-		cmd_execution_in_children(token, 1, mini);
-	close(token->fd_in);
-	close(token->fd_out);
-	waitpid(pid, &status, 0);
-	//printf("status=%d\n", status);
-	printf("exitcode09=%d\n", g_exitcode);
-	if (g_exitcode !=256 && g_exitcode != -1 && (g_exitcode != 130 && g_exitcode != 131) && WIFEXITED(status))
-	{
-		printf("before WEXITSTATUS= %d\n", g_exitcode);
-		g_exitcode = WEXITSTATUS(status);
-		printf("g_exitcode=%d\n", g_exitcode);
-	}
-	//else
-	//	g_exitcode = 0;
-	printf("exitcode10=%d\n", g_exitcode);
-	return(0);
-}
-
 int executor(t_mini *mini, int size)
 {
 	int i;
 	int *pid;
 	int *status;
-	int fd_pipe[2];
 	t_list *tmp;
 	t_token* token;
+	int ret;
 
 	i = 0;
 	tmp = mini->cmd_lst;
@@ -72,14 +21,18 @@ int executor(t_mini *mini, int size)
 		ft_error("status malloc fail", 1);
 	while (tmp && i < size)
 	{
-		// add to handel ctrl + c in heredoc.....
-		if (g_exitcode == 256)
+		token = (t_token*) tmp->content;
+		ret = handle_io(token, i, size);
+		if ( ret == 0 && size == 1 && buildtin_or_not(token, mini->env) > 0)
 		{
-			g_exitcode = 1;
+			single(token, mini->env);
 			return(1);
 		}
-		token = (t_token*) tmp->content;
-		handle_io(token, fd_pipe, i, size);
+		if(size != 1)
+		{
+			token->fd_in = ret;
+			close(ret);
+		}
 		pid[i] = fork();
 		if (pid[i] == -1)
 			ft_error(" fork failed", 4);
@@ -90,49 +43,54 @@ int executor(t_mini *mini, int size)
 		tmp = tmp->next;
 		i++;
 	}
-	i = 0;
-	while(i < size)
-	{
-		waitpid(pid[i], &status[i], 0);
-		i++;
-	}
-	if (g_exitcode != -1 && WIFEXITED(status[size-1]))
-		g_exitcode = WEXITSTATUS(status[size - 1]);
-	return(status[i]);
+	get_exitcode(size, pid, status);
+	return(0);
 }
 
-
-///* still happening in main processor*/
-int handle_io(t_token* token, int* fd_pipe, int cmd_order, int size)
+int single(t_token* token, t_list *env)
 {
-	//printf("before %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
-	// no need to create any pipe while reaching the last cmd
-	//if (cmd_order != 0 && size > 1)
-	//	token->fd_in = fd_pipe[0];
-	if (cmd_order != 0)
-	{
-		close(fd_pipe[1]);
-		dup2(fd_pipe[0], token->fd_in);
-		close(fd_pipe[0]);
-		//close(fd_pipe[1]);
-	}
-	if (cmd_order != size - 1 && pipe(fd_pipe) == -1)//
-		ft_error("error in creating pipes.\n", 4);
-	// io from pipe
-	if (cmd_order == 0) // first cmd
+	int in;
+	int out;
+
+	buildtin_run(token, &env);// add the exit code to builtin
+	close(token->fd_in);
+	close(token->fd_out);
+	return(0);
+}
+
+int handle_io(t_token* token, int cmd_order, int size)
+{
+	int fd_pipe[2];
+
+	// if single cmd, not need to open pipe. just init the fd_in and fd_out and handle the in/out files
+	if (size == 1)
 	{
 		token->fd_in = dup(0);
+		token->fd_out = dup(1);
+		return(handle_file(token)); // 0 is fine, and 1 means file broken
+	}
+	// if more than one cmd, and it is not the last cmd, create a pipe
+	if (cmd_order != size - 1 && pipe(fd_pipe) == -1)//
+		ft_error("error in creating pipes.\n", 4);
+	// first cmd, fd_in will most likely become 3
+	if (cmd_order == 0) // first cmd
+	{
+		token->fd_in = 0;
 		token->fd_out = fd_pipe[1];
 	}
-	else if (cmd_order == size - 1) // last cmd, token->fd_in shoud be from a previous comd output
-		token->fd_out = dup(1);//no need
-	else if (cmd_order > 0 && cmd_order < size - 1) // middle cmd, token->fd_in shoud be from a previous comd output
+	else if (cmd_order != 0 && cmd_order != size - 1)	// middle cmd
+	{
+		//token->fd_in = fd_pipe[0];
 		token->fd_out = fd_pipe[1];
-
-	//printf("after %d, fd_in = %d, fd_out = %d\n", cmd_order, token->fd_in, token->fd_out);
-	if (handle_file(token) == 1)
+	}
+	else // last cmd
+	{
+		//token->fd_in = fd_pipe[0];
+		token->fd_out = dup(1);
+	}
+	if (handle_file(token) == 1) // file broken
 		return (1);
-	return (0);
+	return (fd_pipe[0]);
 }
 
 // loop through number of files
@@ -171,7 +129,6 @@ int handle_file(t_token* token)
 			close(token->fd_out);
 		i++;
 	}
-	// printf("test\n");
 	return(0);
 }
 
@@ -179,36 +136,14 @@ int cmd_execution_in_children(t_token* token, int size, t_mini *mini)
 {
 	char* tmp;
 	char* path_cmd;
-	//struct termios t;
 
-	// signal part
-	//tcgetattr(0, &t);
-	//close_echo_control(&t);
 	signal_in_child();
-	//open_echo_control(&t);
-	// if cmd is null, add 15/5
 	if (token->cmd == NULL)
-	{
-		printf("try heredoc without a cmd");
 		exit(g_exitcode);
-	}
-	// if outfile cannot be created
-	if (token->fd_out == -1)
+	// if infile or outfile cannot be open or created
+	if (token->fd_in < 0 || token->fd_out < 0)
 		exit(g_exitcode);
-	// if ctrl+c is pressed in heredoc
-	// printf("in children process, g_exitcode=%d\n", g_exitcode);
-	//if (g_exitcode == 256)
-	//{
-	//	g_exitcode = 1;
-	//	exit(g_exitcode);
-	//}
-	//write(2, "here\n", 5);
-	if (token->fd_in < 0)
-	{
-		g_exitcode = 1;
-		exit(1);
-	}
-
+	//deactivate 0 and 1 fds and make it point to the fd_in and fd_out
 	dup2(token->fd_in, 0);
 	close(token->fd_in);
 	dup2(token->fd_out, 1);
@@ -283,4 +218,18 @@ char **get_path_env(t_list *env)
 	if (!path_env)
 		ft_error(" malloc fail or PATH is NULL.\n", 1);
 	return(path_env);
+}
+
+void get_exitcode(int size, int* pid, int*status)
+{
+	int i;
+
+	i = 0;
+	while(i < size)
+	{
+		waitpid(pid[i], &status[i], 0);
+		i++;
+	}
+	if (g_exitcode != -1 && WIFEXITED(status[size-1]))
+		g_exitcode = WEXITSTATUS(status[size - 1]);
 }
