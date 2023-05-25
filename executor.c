@@ -2,6 +2,7 @@
 #include "executor.h"
 #include "signal.h"
 
+/* return values to be fixed */
 int	executor(t_mini *mini, int size)
 {
 	int	*pid;
@@ -23,93 +24,115 @@ void	loop(t_mini *mini, int size, int *pid, int *status)
 	int		i;
 	t_list	*tmp;
 	t_token	*token;
-	int	fd_pipe[2];
-	int		ret;
+	int		fd_pipe[2];
 
-	i = 0;
+	i = -1;
 	tmp = mini->cmd_lst;
-	while (tmp && i < size)
+	while (tmp && ++i < size)
 	{
 		token = (t_token *)tmp->content;
-		ret = handle_io(token, i, size, fd_pipe);
-		if (ret == 0 && size == 1 && buildtin_or_not(token, mini->env) > 0 && single(token, mini->env) == 0)
-			return;
-		if (i > 0 && ret > 0)
-		{
-			token->fd_in = ret;
-			close(ret);
-		}
+		if (handle_io(token, i, size, fd_pipe) != -1 && size == 1
+			&& buildtin_or_not(token, mini->env) > 0 && single_builtin(token,
+				mini->env) == 0)
+			return ;
 		pid[i] = fork();
 		if (pid[i] == -1)
 			ft_error(" fork failed", 4);
 		else if (pid[i] == 0)
+		{
+			if (i < size - 1)
+				close(fd_pipe[0]);
 			cmd_execution_in_children(token, size, mini);
+		}
 		close(token->fd_in);
 		close(token->fd_out);
 		tmp = tmp->next;
-		i++;
 	}
 }
 
-int	single(t_token *token, t_list *env)
+int	single_builtin(t_token *token, t_list *env)
 {
-	//redirect the output
-	int in;
-	int out;
+	int	in;
+	int	out;
 
 	in = dup(0);
 	out = dup(1);
-
 	dup2(token->fd_in, 0);
 	close(token->fd_in);
 	dup2(token->fd_out, 1);
 	close(token->fd_out);
 	buildtin_run(token, &env);
+	dup2(in, 0);
 	close(in);
+	dup2(out, 1);
 	close(out);
 	return (0);
 }
 
 /*
-** if single cmd, not need to open pipe.
-just init the fd_in and fd_out and handle the in/out files
-** if more than one cmd, and it is not the last cmd, create a pipe
+** printf("cmd_order=%d, fd_in=%d, fd_out=%d, pipe[0]=%d, pipe[1]=%d\n",
+** cmd_order, token->fd_in, token->fd_out, fd_pipe[0], fd_pipe[1]);
 */
-int	handle_io(t_token *token, int cmd_order, int size, int* fd_pipe)
+int	handle_io(t_token *token, int cmd_order, int size, int *fd_pipe)
 {
-	int ret;
-	int in;
-	int out;
+	int	in;
+	int	out;
 
-	ret = -1;
 	if (size == 1)
 	{
-		return (handle_file(token));
+		token->fd_in = dup(0);
+		token->fd_out = dup(1);
+		return (get_file_fd(token));
 	}
-	if (cmd_order != size - 1)
-	{
-		if (pipe(fd_pipe) == -1)
-			ft_error("error in creating pipes.\n", 4);
-		else
-			ret = fd_pipe[0];
-	}
+	if (cmd_order != 0)
+		token->fd_in = fd_pipe[0];
+	if (cmd_order != size - 1 && pipe(fd_pipe) == -1)
+		ft_error("error in creating pipes.\n", 4);
 	if (cmd_order == 0)
 	{
-		token->fd_in = 0;
+		token->fd_in = dup(0);
 		token->fd_out = fd_pipe[1];
 	}
 	else if (cmd_order != 0 && cmd_order != size - 1)
 		token->fd_out = fd_pipe[1];
 	else
 		token->fd_out = dup(1);
-	printf("cmd_order=%d, fd_in=%d, fd_out=%d, pipe[0]=%d, pipe[1]=%d\n", cmd_order, token->fd_in, token->fd_out, fd_pipe[0], fd_pipe[1]);
-	if (handle_file(token) == 1)
-		return (-2);
-	printf("here I am returning %d\n", fd_pipe[0]);
-	return (ret);
+	return (get_file_fd(token));
 }
 
-int	handle_file(t_token *token)
+/*
+** -1 means problem occured with infile
+** -2 means problem occured with outfile
+*/
+int	get_file_fd(t_token *token)
+{
+	int	i;
+
+	i = 0;
+	if (get_infile_fd(token) == -1)
+		return (-1);
+	while (i < token->num_outfile_type)
+	{
+		if (token->output_type[i] == 2)
+			token->fd_out = open(token->outfile[i],
+				O_WRONLY | O_CREAT | O_APPEND, 0644);
+		else
+			token->fd_out = open(token->outfile[i],
+				O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		if (token->fd_out == -1)
+		{
+			perror("fail to create or open outfile");
+			g_exitcode = 1;
+			return (-2);
+		}
+		if (i + 1 < token->num_outfile_type)
+			close(token->fd_out);
+		i++;
+	}
+	return (0);
+}
+
+int	get_infile_fd(t_token *token)
 {
 	int	i;
 
@@ -127,23 +150,6 @@ int	handle_file(t_token *token)
 			close(token->fd_in);
 		i++;
 	}
-	i = 0;
-	while (i < token->num_outfile_type)
-	{
-		if (token->output_type[i] == 2)
-			token->fd_out = open(token->outfile[i], O_WRONLY | O_CREAT | O_APPEND, 0644);
-		else
-			token->fd_out = open(token->outfile[i], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		if (token->fd_out == -1)
-		{
-			perror("fail to create or open outfile");
-			g_exitcode = 1;
-			return (2);
-		}
-		if (i + 1 < token->num_outfile_type)
-			close(token->fd_out);
-		i++;
-	}
 	return (0);
 }
 
@@ -152,17 +158,7 @@ int	cmd_execution_in_children(t_token *token, int size, t_mini *mini)
 	char	*tmp;
 	char	*path_cmd;
 
-	printf("cmd in children, fd_in=%d, fd_out=%d\n", token->fd_in, token->fd_out);
-	if (token->cmd == NULL)
-		exit(g_exitcode);
-	if (token->fd_in < 0 || token->fd_out < 0)
-		exit(g_exitcode);
-	dup2(token->fd_in, 0);
-	close(token->fd_in);
-	dup2(token->fd_out, 1);
-	close(token->fd_out);
-	if (buildtin_run(token, &(mini->env)) == 1)
-		exit(g_exitcode);
+	child_error_handle(token, mini);
 	if (access(token->cmd, X_OK) == 0)
 	{
 		if (execve(token->cmd, token->args, env_convert(mini->env)) == -1)
@@ -184,6 +180,20 @@ int	cmd_execution_in_children(t_token *token, int size, t_mini *mini)
 		}
 	}
 	exit(g_exitcode);
+}
+
+void	child_error_handle(t_token *token, t_mini *mini)
+{
+	if (token->cmd == NULL)
+		exit(g_exitcode);
+	if (token->fd_in < 0 || token->fd_out < 0)
+		exit(g_exitcode);
+	dup2(token->fd_in, 0);
+	close(token->fd_in);
+	dup2(token->fd_out, 1);
+	close(token->fd_out);
+	if (buildtin_run(token, &(mini->env)) == 1)
+		exit(g_exitcode);
 }
 
 char	*get_path_cmd(char *str, t_list *env)
