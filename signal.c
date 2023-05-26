@@ -5,7 +5,7 @@ void handle_signal(int sig)
 	if (sig == SIGINT)
 	{
 		if (g_exitcode == 256 || g_exitcode == 386)
-			g_exitcode = 386; // 255 +130
+			g_exitcode = 386; // 255 + 1 + 130
 		else
 		{
 			printf("\n");
@@ -29,7 +29,7 @@ void handle_cmd(int sig)
 	}
 	else if (sig == SIGQUIT) // parent process ignore and quit in child process
 	{
-		printf("Quit: %d\n", sig);
+		printf("^\\Quit: %d\n", sig);
 		g_exitcode = 131;
 	}
 	return ;

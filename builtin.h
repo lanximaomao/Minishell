@@ -2,7 +2,6 @@
 # define builtIN_H
 
 #include "minishell.h"
-# include <signal.h>
 
 int buildtin_run(t_token* token, t_list **env);
 void		my_cd(char **arg, t_list *env);

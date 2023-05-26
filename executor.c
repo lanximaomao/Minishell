@@ -1,13 +1,16 @@
 #include "builtin.h"
 #include "executor.h"
-#include "signal.h"
 
 /* return values to be fixed */
 int	executor(t_mini *mini, int size)
 {
 	int	*pid;
 	int	*status;
+	struct termios t;
 
+	tcgetattr(0, &t);
+	t.c_lflag |= ECHOCTL;
+	tcsetattr(0, TCSANOW, &t);
 	pid = malloc(sizeof(int) * size);
 	if (!pid)
 		ft_error(" pid malloc fail", 1);
@@ -25,14 +28,18 @@ void	loop(t_mini *mini, int size, int *pid, int *status)
 	t_list	*tmp;
 	t_token	*token;
 	int		fd_pipe[2];
+	int		is_builtin;
 
 	i = -1;
 	tmp = mini->cmd_lst;
 	while (tmp && ++i < size)
 	{
 		token = (t_token *)tmp->content;
+		is_builtin = buildtin_or_not(token, mini->env);
+		if (is_builtin < 0)
+			return ;
 		if (handle_io(token, i, size, fd_pipe) != -1 && size == 1
-			&& buildtin_or_not(token, mini->env) > 0 && single_builtin(token,
+			&& is_builtin > 0 && single_builtin(token,
 				mini->env) == 0)
 			return ;
 		pid[i] = fork();
@@ -256,6 +263,6 @@ void	get_exitcode(int size, int *pid, int *status)
 		waitpid(pid[i], &status[i], 0);
 		i++;
 	}
-	if (g_exitcode != -1 && WIFEXITED(status[size - 1]))
+	if (g_exitcode != -2 && WIFEXITED(status[size - 1]))
 		g_exitcode = WEXITSTATUS(status[size - 1]);
 }

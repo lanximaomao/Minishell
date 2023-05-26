@@ -1,9 +1,8 @@
 #include "minishell.h"
 #include "builtin.h"
 #include "executor.h"
-#include "signal.h"
 
-void minishell(t_mini *mini, char *line, int exitcode)
+void minishell(t_mini *mini, char *line)
 {
 	int i;
 	t_list *line_lst;
@@ -17,7 +16,7 @@ void minishell(t_mini *mini, char *line, int exitcode)
 	line = NULL;
 	if (handle_args_expand(line_lst, mini->env) == -1)
 		return ;
-	mini->cmd_lst = parse_cmds(line_lst, mini->env, 0);
+	mini->cmd_lst = parse_cmds(line_lst, mini->env);
 	// print the line_lst
 	// t_list *tmp_tmp = line_lst;
 	// while (tmp_tmp)

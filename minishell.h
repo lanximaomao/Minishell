@@ -76,13 +76,13 @@ void free_tokens(t_token *token, int num_args, int num_infile, int num_outfile_t
 t_list *get_linelst(char *line, t_list *line_lst, int i);
 
 
-void		minishell(t_mini *mini, char *line, int exitcode);
+void		minishell(t_mini *mini, char *line);
 int			env_init(t_mini *mini, char **env);
 char**		env_convert(t_list* env);
 char*		env_handler(t_list *env, char* str);
 
 // parser.c
-t_list *parse_cmds(t_list *line_lst, t_list *env_lst, int exitcode);
+t_list *parse_cmds(t_list *line_lst, t_list *env_lst);
 
 // expander.c
 char *replace_env_expand(char *temp_line, t_list *env_lst);
