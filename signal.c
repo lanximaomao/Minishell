@@ -23,14 +23,14 @@ void handle_cmd(int sig)
 {
 	if (sig == SIGINT)
 	{
-		g_exitcode = 130;
+		//g_exitcode = 130;
 		printf("\n");
 		(void) sig;
 	}
 	else if (sig == SIGQUIT) // parent process ignore and quit in child process
 	{
 		printf("^\\Quit: %d\n", sig);
-		g_exitcode = 131;
+		//g_exitcode = 131;
 	}
 	return ;
 	// exit(g_exitcode);

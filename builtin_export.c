@@ -25,6 +25,7 @@ static int	is_valid_argument(char *arg, t_list *env)
 	int	i;
 	int	ret;
 
+	i = 0;
 	if (ft_isalpha(arg[0]) == 0 && arg[0] != '_')
 	{
 		ft_putstr_fd(" not a valid identifier\n", 2);
@@ -103,24 +104,28 @@ void	my_export(char **arg, t_list *env)
 	int		j;
 	int		len;
 	char	**env_content;
+	int		is_valid;
 
 	i = 1;
 	len = 0;
 	while (arg[i])
 	{
 		j = 0;
-		while (is_valid_argument(arg[i], env) == 0 && arg[i][j])
+		is_valid = is_valid_argument(arg[i], env);
+		if (is_valid == 1)
+			break;
+		while ( is_valid == 0 && arg[i][j])
 		{
 			if (add_argument(env, arg, i, j) == 0)
 				break ;
 			else
 				j++;
+			g_exitcode = 0;
 		}
 		i++;
 	}
-	g_exitcode = 0;
 	if (!arg[1] && empty_aguments(env) == 0)
-		return ;
+		g_exitcode = 0;
 }
 
 /*
