@@ -106,8 +106,6 @@ void	my_export(char **arg, t_list *env)
 
 	i = 1;
 	len = 0;
-	if (!arg[i] && empty_aguments(env) == 0)
-		return ;
 	while (arg[i])
 	{
 		j = 0;
@@ -121,6 +119,8 @@ void	my_export(char **arg, t_list *env)
 		i++;
 	}
 	g_exitcode = 0;
+	if (!arg[1] && empty_aguments(env) == 0)
+		return ;
 }
 
 /*

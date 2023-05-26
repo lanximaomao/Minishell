@@ -40,7 +40,7 @@ int buildtin_run(t_token* token, t_list **env)
 	if (ret == 3)
 		my_env(token->args, *env);
 	if (ret == 4)
-		my_echo(token->args, *env);
+		my_exit(token->args, *env);
 	if (ret == 5)
 		my_echo(token->args, *env);
 	if (ret == 6)

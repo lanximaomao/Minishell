@@ -12,7 +12,7 @@ WHITE		=	\033[0;97m
 
 ECHO		= echo
 
-SRCS = 		main.c minishell.c mini_utils.c			\
+SRCS = 			main.c minishell.c mini_utils.c			\
 				lexer.c expander.c parser.c			\
 				env.c executor.c signal.c			\
 				builtin.c builtin_echo.c			\
@@ -30,12 +30,12 @@ CFLAGS = -I./libft_42/inc
 LDFLAGS = -L./libft_42 -lft
 FSANITIZE	= -fsanitize=address -g3
 
-#READLINE_DIR = $(shell brew --prefix readline)
-#RL_L = -lreadline -L $(READLINE_DIR)/lib
-#RL_I = -lreadline -lhistory -I $(READLINE_DIR)/include/readline
+READLINE_DIR = $(shell brew --prefix readline)
+RL_L = -lreadline -L $(READLINE_DIR)/lib
+RL_I = -lreadline -lhistory -I $(READLINE_DIR)/include/readline
 
- RL_L = -lreadline -L /Users/lsun/.brew/opt/readline/lib
- RL_I = -lreadline -lhistory -I /Users/lsun/.brew/opt/readline/include/readline
+#  RL_L = -lreadline -L /Users/lsun/.brew/opt/readline/lib
+#  RL_I = -lreadline -lhistory -I /Users/lsun/.brew/opt/readline/include/readline
 
 
 

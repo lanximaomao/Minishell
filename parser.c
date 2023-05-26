@@ -1,7 +1,6 @@
 #include "minishell.h"
-#include "signal.h"
 
-void init_tokens(t_token *tokens, int num_cmd)
+static void init_tokens(t_token *tokens, int num_cmd)
 {
 	tokens->cmd = NULL;
 	tokens->args = NULL;
@@ -13,14 +12,14 @@ void init_tokens(t_token *tokens, int num_cmd)
 	tokens->num_infile = 0;
 	tokens->num_outfile_type = 0;
 	tokens->fd_in = 0;
-	tokens->fd_out = 0;
+	tokens->fd_out = 1;
 }
 
 // function: store the heredoc into a tem_heredoc_file(1st argument) line by line followed a newline
 // return: -1 means error and handle this, no more free in this function
 // after call: 	delete the tmp_heredoc_file after this cmd_node, and strongly recommend to use different file_name for 1st argument
 // 				<< heredoc 需要将每行都要执行参数扩展、命令替换以及算术扩展
-void handle_heredoc(t_list *env_lst, t_input *input, int exitcode, char *num_heredoc)
+static void handle_heredoc(t_list *env_lst, t_input *input, char *num_heredoc)
 {
 	int fd; // for tmp_file, store the heredoc
 	char *heredoc;
@@ -34,14 +33,13 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode, char *num_her
 	while(g_exitcode != -2)
 	{
 		signal(SIGINT, handle_signal_heredoc);
-		line = readline("heredoc >> ");
-		if (!line && !errno) // 相当于SIGTERM
+		if (!(line = readline("heredoc >> ")) && !errno) // 相当于SIGTERM
 		{
 			close(fd);
-			g_exitcode = 256;
-			printf("\033[1A");
-			rl_redisplay();
-			break ;
+			g_exitcode = 256; // 在输出的时候强制转换为unsigned int
+			printf("\033[1A"); // 光标向上移动一行
+			rl_redisplay(); // 重新显示"heredoc >>"
+			break;
 		}
 		if (!ft_strncmp(line, input->temp_line, ft_strlen(input->temp_line))
 			&& ft_strlen(input->temp_line) == ft_strlen(line) && free_str(line))
@@ -58,12 +56,12 @@ void handle_heredoc(t_list *env_lst, t_input *input, int exitcode, char *num_her
 		}
 	}
 	close(fd);
-	if(g_exitcode == -2)
+	if (g_exitcode == -2)
 		g_exitcode = 1;
 }
 
 // parse < << input redirection,
-void parse_redir12(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int i, int exitcode)
+static void parse_redir12(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int i)
 {
 	char *num_heredoc;
 
@@ -84,7 +82,7 @@ void parse_redir12(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int i
 	else if (((t_input *)line_lst->content)->redir_sign == 2) // <<
 	{
 		num_heredoc = ft_itoa(cmd_tokens->cmd_id);
-		handle_heredoc(env_lst, ((t_input *)line_lst->next->content), exitcode, num_heredoc);
+		handle_heredoc(env_lst, ((t_input *)line_lst->next->content), num_heredoc);
 		cmd_tokens->infile = (char **)ft_realloc(cmd_tokens->infile, sizeof(char *) * (i + 1), sizeof(char *) * (i + 2));
 		cmd_tokens->infile[i] = ft_strjoin("heredoc_name", num_heredoc); // tmp_file_name same with in handle_heredoc
 		if (!cmd_tokens->infile[i])
@@ -95,7 +93,7 @@ void parse_redir12(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int i
 }
 
 // parse > >> output redirection
-void parse_redir34(t_token *cmd_tokens, t_input *input, int redir_sign, int i)
+static void parse_redir34(t_token *cmd_tokens, t_input *input, int redir_sign, int i)
 {
 	if (!cmd_tokens->outfile)
 	{
@@ -121,7 +119,7 @@ void parse_redir34(t_token *cmd_tokens, t_input *input, int redir_sign, int i)
 	cmd_tokens->num_outfile_type = ++i;
 }
 
-void parse_cmd_args(t_token *cmd_tokens, t_input *input, int *k)
+static void parse_cmd_args(t_token *cmd_tokens, t_input *input, int *k)
 {
 	if (!cmd_tokens->cmd) // cmd
 	{
@@ -143,7 +141,7 @@ void parse_cmd_args(t_token *cmd_tokens, t_input *input, int *k)
 }
 
 // each cmd is a cmd_lst node, iterate the line_lst until | as one cmd
-t_list *iterate_cmds(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int exitcode, int *k)
+static t_list *iterate_cmds(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int *k)
 {
 	int i;
 	int j;
@@ -158,7 +156,7 @@ t_list *iterate_cmds(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int
 				ft_error_minishell("Syntax error: no redirection argument.", SYNTAX, 2); // modify later by Lin's signal_handler
 			if (((t_input *)line_lst->content)->redir_sign == 1
 				|| ((t_input *)line_lst->content)->redir_sign == 2) // < >
-				parse_redir12(cmd_tokens, line_lst, env_lst, i++, exitcode);
+				parse_redir12(cmd_tokens, line_lst, env_lst, i++);
 			else if (((t_input *)line_lst->content)->redir_sign == 3
 				|| ((t_input *)line_lst->content)->redir_sign == 4) // >> <<
 				parse_redir34(cmd_tokens, ((t_input *)line_lst->next->content), ((t_input *)line_lst->content)->redir_sign, j++);
@@ -179,7 +177,7 @@ t_list *iterate_cmds(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int
 // return: null means error and handle this;
 // leaks: handled the error free
 // after call: free the cmd_lst, free the line_lst from the get_linelst() in lexer.c
-t_list *parse_cmds(t_list *line_lst, t_list *env_lst, int exitcode)
+t_list *parse_cmds(t_list *line_lst, t_list *env_lst)
 {
 	int num_cmd;
 	int k;
@@ -197,7 +195,7 @@ t_list *parse_cmds(t_list *line_lst, t_list *env_lst, int exitcode)
 		if (!(cmd_tokens = (t_token *)ft_calloc(sizeof(t_token), 1)))
 			ft_error_minishell("Malloc failed", MALLOC, 2);
 		init_tokens(cmd_tokens, num_cmd);
-		line_lst = iterate_cmds(cmd_tokens, line_lst, env_lst, exitcode, &k);
+		line_lst = iterate_cmds(cmd_tokens, line_lst, env_lst, &k);
 		node = ft_lstnew((t_token *)cmd_tokens);
 		if (!node)
 			ft_error_minishell("Malloc failed", MALLOC, 2);
