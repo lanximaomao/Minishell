@@ -3,7 +3,7 @@
 
 #include "minishell.h"
 
-int buildtin_run(t_token* token, t_list **env);
+int builtin_run(t_token* token, t_list **env);
 void		my_cd(char **arg, t_list *env);
 void		my_pwd(t_list *env);
 int	my_env(char** arg, t_list *env);

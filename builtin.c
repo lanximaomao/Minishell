@@ -2,7 +2,7 @@
 #include "builtin.h"
 
 /* 	if no cmd is given, just return. this is to avoide the segfault by doing << f1 */
-int buildtin_or_not(t_token* token, t_list *env)
+int builtin_or_not(t_token* token, t_list *env)
 {
 	int len;
 
@@ -26,11 +26,11 @@ int buildtin_or_not(t_token* token, t_list *env)
 	return (0);
 }
 
-int buildtin_run(t_token* token, t_list **env)
+int builtin_run(t_token* token, t_list **env)
 {
 	int ret;
 
-	ret = buildtin_or_not(token, *env);
+	ret = builtin_or_not(token, *env);
 	if (ret == 0)
 		return (0);
 	if (ret == 1)

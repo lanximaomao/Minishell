@@ -17,12 +17,14 @@ int	executor(t_mini *mini, int size)
 	status = malloc(sizeof(int) * size);
 	if (!status)
 		ft_error("status malloc fail", 1);
-	loop(mini, size, pid, status);
-	get_exitcode(size, pid, status);
+	if (loop(mini, size, pid, status) != 1)
+		get_exitcode(size, pid, status);
+	free(pid);
+	free(status);
 	return (0);
 }
 
-void	loop(t_mini *mini, int size, int *pid, int *status)
+int	loop(t_mini *mini, int size, int *pid, int *status)
 {
 	int		i;
 	t_list	*tmp;
@@ -35,13 +37,13 @@ void	loop(t_mini *mini, int size, int *pid, int *status)
 	while (tmp && ++i < size)
 	{
 		token = (t_token *)tmp->content;
-		is_builtin = buildtin_or_not(token, mini->env);
-		if (is_builtin < 0)
-			return ;
+		is_builtin = builtin_or_not(token, mini->env);
+		//if (is_builtin < 0)
+		//	return ;
 		if (handle_io(token, i, size, fd_pipe) != -1 && size == 1
 			&& is_builtin > 0 && single_builtin(token,
 				mini->env) == 0)
-			return ;
+			return (1);
 		pid[i] = fork();
 		if (pid[i] == -1)
 			ft_error(" fork failed", 4);
@@ -57,6 +59,7 @@ void	loop(t_mini *mini, int size, int *pid, int *status)
 		//close(fd_pipe[1]);
 		tmp = tmp->next;
 	}
+	return (0);
 }
 
 int	single_builtin(t_token *token, t_list *env)
@@ -70,7 +73,7 @@ int	single_builtin(t_token *token, t_list *env)
 	close(token->fd_in);
 	dup2(token->fd_out, 1);
 	close(token->fd_out);
-	buildtin_run(token, &env);
+	builtin_run(token, &env);
 	dup2(in, 0);
 	close(in);
 	dup2(out, 1);
@@ -153,7 +156,7 @@ int	get_infile_fd(t_token *token)
 		{
 			perror("minishell: infile");
 			g_exitcode = 1;
-			return (1);
+			return (-1);
 		}
 		if (i + 1 < token->num_infile)
 			close(token->fd_in);
@@ -184,8 +187,16 @@ int	cmd_execution_in_children(t_token *token, int size, t_mini *mini)
 		if (!path_cmd || execve(path_cmd, token->args,
 				env_convert(mini->env)) == -1)
 		{
-			g_exitcode = 127;
-			ft_error(" command not found", g_exitcode);
+			if (errno == EACCES)
+			{
+				g_exitcode = 126;
+				ft_error(" Permission denied", g_exitcode);
+			}
+			else
+			{
+				g_exitcode = 127;
+				ft_error(" command not found", g_exitcode);
+			}
 		}
 	}
 	exit(g_exitcode);
@@ -201,7 +212,7 @@ void	child_error_handle(t_token *token, t_mini *mini)
 	close(token->fd_in);
 	dup2(token->fd_out, 1);
 	close(token->fd_out);
-	if (buildtin_run(token, &(mini->env)) == 1)
+	if (builtin_run(token, &(mini->env)) == 1)
 		exit(g_exitcode);
 }
 
@@ -261,8 +272,10 @@ void	get_exitcode(int size, int *pid, int *status)
 	while (i < size)
 	{
 		waitpid(pid[i], &status[i], 0);
+		if (WIFEXITED(status[size - 1]))
+			g_exitcode = WEXITSTATUS(status[i]);
+		else if (WIFSIGNALED(status[size - 1]))
+			g_exitcode = WTERMSIG(status[i]) + 128;
 		i++;
 	}
-	if (g_exitcode != -2 && WIFEXITED(status[size - 1]))
-		g_exitcode = WEXITSTATUS(status[size - 1]);
 }

@@ -48,4 +48,5 @@ void my_echo(char **arg, t_list *env)
 	}
 	if (nl == 1)
 		ft_printf("\n");
+	g_exitcode = 0;
 }
