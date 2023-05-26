@@ -7,7 +7,7 @@ static char *handle_exitcode(char *str) // test$?-test => test0-test
 	char *str_status = NULL; // itoa(status)
 	char *res = NULL;
 
-	str_status = ft_itoa((unsigned char)g_exitcode);
+	str_status = ft_itoa(g_exitcode); //unsigned char
 	res = ft_strjoin(str_status, str + 1); // 去掉'?'
 	free(str_status);
 	str_status = NULL;

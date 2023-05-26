@@ -11,8 +11,6 @@ static void init_tokens(t_token *tokens, int num_cmd)
 	tokens->num_args = 0;
 	tokens->num_infile = 0;
 	tokens->num_outfile_type = 0;
-	tokens->fd_in = 0;
-	tokens->fd_out = 1;
 }
 
 // function: store the heredoc into a tem_heredoc_file(1st argument) line by line followed a newline
