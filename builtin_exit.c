@@ -1,82 +1,60 @@
-#include "minishell.h"
-#include "builtin.h"
+#include "../minishell.h"
 
-static long long	my_atoi(const char *str)
-{
-	long long	result;
-	int		sign;
-
-	sign = 1;
-	result = 0;
-	while (*str == ' ' || (*str >= 9 && *str <= 13))
-		str++;
-	if (*str == '-')
-		sign = -1;
-	if (*str == '-' || *str == '+')
-		str++;
-	while (*str >= '0' && *str <= '9')
-	{
-		result = result * 10 + (*str - '0');
-		if (result > 9223372036854775807)
-		{
-			if (sign > 0)
-				return (-1);
-			else
-				return (1);
-		}
-		str++;
-	}
-	return (result * sign);
-}
-
-void	my_exit(char** arg, t_list *env)
+static void handle_error(char *str)
 {
 	int i;
-	long long status;
 
-	i = 0;
-	ft_printf("exit\n");
-	if (arg[1] == NULL)
-		exit(0);
-	while (arg[1] && arg[1][i]) 	//check if arg[1] is numeric
+	if (str[0] == '-')
 	{
-		if (arg[1][i] == '+' || arg[1][i] == '-')
-			i++;
-		if (ft_isdigit(arg[1][i]) == 0)
+		if ((ft_strlen(str) > 20) || (ft_strlen(str) == 20 // include '-', -9223372036854775808
+			&& ft_strncmp(str, "-9223372036854775808", 20)) > 0)
+			perror(" numeric argument required");
+	}
+	else if ((ft_strlen(str) > 19) || (ft_strlen(str) == 19
+			&& ft_strncmp(str, "9223372036854775807", 19) > 0))
+	{
+		perror(" numeric argument required");
+		exit(255);
+	}
+	i = 0;
+	if (str[0] == '-' || str[0] == '+')
+		i++;
+	while (str[i])
+	{
+		if (str[i] < '0' || str[i] > '9')
 		{
-			ft_putstr_fd(" numeric argument required\n", 2);
-			g_exitcode = 255;
-			exit(g_exitcode);
+			perror(" numeric argument required");
+			exit(255);
 		}
 		i++;
 	}
-	status = my_atoi(arg[1]);
-	if (status > 9223372036854775807)
-		ft_putstr_fd(" numeric argument required\n", 2);
-	status = (unsigned char)my_atoi(arg[1]);
-	g_exitcode = status;
-	if (arg[2])
-	{
-		g_exitcode = 1;
-		ft_putstr_fd(" too many arguments\n", 2);
-	}
-	exit(g_exitcode);
+	return ;
 }
 
-/* create exit function with no option */
-/*
-** Minimum long value:
-** exit -9223372036854775808--> 0
-** exit 9223372036854775807 --> 255
-** exit -9223372036854775807--> 1
-** exit -9223372036854775809 --> 255
-	//char* a4 = "9223372036854775808";
-	//char* b3 = "-9223372036854775807";
-	//char* b4 = "-9223372036854775808";
-	//char* b5 = "-9223372036854775809";
-	//printf("num=%s, atoi=%d, unsigned=%hhu\n", a4, atoi(a4), (unsigned char)atoi(a4));
-	//printf("num=%s, my_atoi=%llu, unsigned=%hhu\n", a4, my_atoi(a4), (unsigned char)my_atoi(a4));
-	//printf("num=%s, ft_atoi=%lld, unsigned=%hhu\n", b3, my_atoi(b3), (unsigned char)my_atoi(b3));
-	//printf("num=%s, ft_atoi=%lld, unsigned=%hhu\n", b4, my_atoi(b4), (unsigned char)my_atoi(b4));
-	//printf("num=%s, ft_atoi=%lld, unsigned=%hhu\n", b5, my_atoi(b5), (unsigned char)my_atoi(b5));
-*/
+void my_exit(char** args)
+{
+	long long ret;
+	int i;
+	int sign;
+
+	i = -1;
+	sign = 1;
+	ret = 0;
+	printf("exit\n");
+	handle_error(args[1]);
+	if (args[2])
+	{
+		perror(" too many arguments\n");
+		exit(1);
+	}
+	if (args[1] == NULL)
+		exit(EXIT_SUCCESS);
+	if ((args[1][0] == '-' && (sign = -1)) || args[1][0] == '+')
+		i++;
+	while (args[1][++i])
+	{
+		if (args[1][i] >= '0' && args[1][i] <= '9')
+			ret = ret * 10 + (args[1][i] - '0');
+	}
+	exit((unsigned char)ret * sign);
+}
