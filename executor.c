@@ -170,16 +170,17 @@ int	cmd_execution_in_children(t_token *token, int size, t_mini *mini)
 	char	*tmp;
 	char	*path_cmd;
 
-	child_error_handle(token, mini);
-	if (access(token->cmd, X_OK) == 0)
-	{
-		if (execve(token->cmd, token->args, env_convert(mini->env)) == -1)
-		{
-			g_exitcode = 126;
-			ft_error(" no such file or directory", g_exitcode);
-		}
-	}
-	else
+	if (token->cmd == NULL)
+		exit(g_exitcode);
+	if (token->fd_in < 0 || token->fd_out < 0)
+		exit(g_exitcode);
+	dup2(token->fd_in, 0);
+	close(token->fd_in);
+	dup2(token->fd_out, 1);
+	close(token->fd_out);
+	if (builtin_run(token, &(mini->env)) == 1)
+		exit(g_exitcode);
+	if (contains_slash(token->cmd) == 0)
 	{
 		tmp = ft_strjoin("/", token->cmd);
 		path_cmd = get_path_cmd(tmp, mini->env);
@@ -199,21 +200,55 @@ int	cmd_execution_in_children(t_token *token, int size, t_mini *mini)
 			}
 		}
 	}
+	else
+		cmd_with_full_path(token, mini);
 	exit(g_exitcode);
 }
 
-void	child_error_handle(t_token *token, t_mini *mini)
+int contains_slash(const char* str)
 {
-	if (token->cmd == NULL)
-		exit(g_exitcode);
-	if (token->fd_in < 0 || token->fd_out < 0)
-		exit(g_exitcode);
-	dup2(token->fd_in, 0);
-	close(token->fd_in);
-	dup2(token->fd_out, 1);
-	close(token->fd_out);
-	if (builtin_run(token, &(mini->env)) == 1)
-		exit(g_exitcode);
+	while ((*str))
+	{
+		if (*str == '/')
+			return (1);
+		str++;
+	}
+	return(0);
+}
+
+void	cmd_with_full_path(t_token *token, t_mini *mini)
+{
+	struct stat file_stat;
+
+	if (access(token->cmd, F_OK) == 0)
+	{
+		if (access(token->cmd, X_OK) != 0)
+		{
+			g_exitcode = 126;
+			ft_error(" Permission denied", g_exitcode);
+		}
+		if (stat(token->cmd, &file_stat) == 0)
+		{
+			if (S_ISDIR(file_stat.st_mode))
+			{
+				g_exitcode = 126;
+				ft_error(" is a directory", g_exitcode);
+			}
+			else if (S_ISREG(file_stat.st_mode))
+			{
+				if (execve(token->cmd, token->args, env_convert(mini->env)) == -1)
+				{
+					g_exitcode = 126;
+					ft_error(" no such file or directory", g_exitcode);
+				}
+			}
+		}
+	}
+	else
+	{
+		g_exitcode = 127;
+		ft_error(" No such file or directory", g_exitcode);
+	}
 }
 
 char	*get_path_cmd(char *str, t_list *env)
