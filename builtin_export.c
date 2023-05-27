@@ -1,25 +1,5 @@
 #include "builtin.h"
-#include "minishell.h"
 
-static int	is_equal_sign(char *arg, int i)
-{
-	while (arg[i])
-	{
-		if (arg[i] == '=')
-			return (1);
-		else
-			i--;
-	}
-	return (0);
-}
-
-/*
-first character should be a letter or _
-- is not allowed anywhere
- no space before or after equal sign?first character should be a letter or _
-- is not allowed anywhere
- no space before or after equal sign?
- */
 static int	is_valid_argument(char *arg, t_list *env)
 {
 	int	i;
@@ -27,19 +7,11 @@ static int	is_valid_argument(char *arg, t_list *env)
 
 	i = 0;
 	if (ft_isalpha(arg[0]) == 0 && arg[0] != '_')
-	{
-		ft_putstr_fd(" not a valid identifier\n", 2);
-		g_exitcode = 1;
-		return (1);
-	}
+		return (printf_error(" inot a valid identifier", 1));
 	while (arg[i])
 	{
 		if (arg[i] == '-' && is_equal_sign(arg, i) == 0)
-		{
-			ft_putstr_fd(" not a valid identifier\n", 2);
-			g_exitcode = 1;
-			return (1);
-		}
+			return (printf_error(" inot a valid identifier", 1));
 		i++;
 	}
 	i = 0;
@@ -54,30 +26,20 @@ static int	is_valid_argument(char *arg, t_list *env)
 	return (0);
 }
 
-static int	add_argument(t_list *env, char **arg, int i, int j)
+static int	add_argument(t_list *env, char *arg)
 {
 	t_list	*node;
 	char	**env_content;
 	int		len;
 
 	len = 0;
-	if (arg[i][j] != '=')
+	env_content = env_split(arg, '=');
+	if (env_find_and_replace(env, env_content[0], env_content[1]) == 0)
 	{
-		while (arg[i][j] && arg[i][j] != '=' && ++len)
-			j++;
-		env_content = malloc(sizeof(char *) * 3);
-		if (!env_content)
-			ft_error("malloc fail.\n", 1);
-		env_content[0] = ft_substr(arg[i], j - len, len);
-		env_content[1] = ft_substr(arg[i], len + 1, ft_strlen(arg[i]));
-		env_content[2] = 0;
-		if (env_find_and_replace(env, env_content[0], env_content[1]) == 0)
-		{
-			node = ft_lstnew(env_content);
-			if (!node)
-				ft_error("cann't create a new node.\n", 1);
-			ft_lstadd_back(&env, node);
-		}
+		node = ft_lstnew(env_content);
+		if (!node)
+			ft_error("cann't create a new node.\n", 1);
+		ft_lstadd_back(&env, node);
 		return (0);
 	}
 	return (1);
@@ -101,37 +63,19 @@ static int	empty_aguments(t_list *env)
 void	my_export(char **arg, t_list *env)
 {
 	int		i;
-	int		j;
-	int		len;
 	char	**env_content;
 	int		is_valid;
 
-	i = 1;
-	len = 0;
+	i = 0;
 	while (arg[i])
 	{
-		j = 0;
 		is_valid = is_valid_argument(arg[i], env);
 		if (is_valid == 1)
-			break;
-		while ( is_valid == 0 && arg[i][j])
-		{
-			if (add_argument(env, arg, i, j) == 0)
-				break ;
-			else
-				j++;
-			g_exitcode = 0;
-		}
+			break ;
+		add_argument(env, arg[i]);
 		i++;
+		g_exitcode = 0;
 	}
-	if (!arg[1] && empty_aguments(env) == 0)
+	if (!arg[0] && empty_aguments(env) == 0)
 		g_exitcode = 0;
 }
-
-/*
-export TEST --> no change
-export TEST --> TEST=
-export TEST=WHATEVER --> TEST=WHATEVER
-export TEST=YES,MINIHELL --> TEST=YES,MINIHELL
-export TEST=YES MINIHELL --> TEST=YES
-*/

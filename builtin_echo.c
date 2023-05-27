@@ -1,48 +1,48 @@
-#include "minishell.h"
 #include "builtin.h"
 
-static int check_n(char** arg)
+/* return (0) means does not satisfy -n condition */
+static int	check_n(char **arg)
 {
-	int i;
+	int	i;
 
 	i = 2;
-	if (arg[1][0] && arg[1][0] == '-' && arg[1][1] && arg[1][1] == 'n')
+	if (arg[0][0] && arg[0][1] && arg[0][0] == '-' && arg[0][1] == 'n')
 	{
-		while (arg[1][i] != '\0')
+		while (arg[0][i] != '\0')
 		{
-			if (arg[1][i] == ' ')
-				break;
-			if (arg[1][i] != 'n')
-				return(0);//does not satify -n condition
+			if (arg[0][i] == ' ')
+				break ;
+			if (arg[0][i] != 'n')
+				return (0);
 			i++;
 		}
-		return(i+1); // satify -n condition
+		return (i + 1);
 	}
-	return(0);
+	return (0);
 }
 
 /*
 ** create echo with option -n
 */
-void my_echo(char **arg, t_list *env)
+void	my_echo(char **arg, t_list *env)
 {
-	int i;
-	int nl;
+	int	i;
+	int	nl;
 
 	nl = 0;
-	if (!arg[1])
+	if (!arg[0])
 	{
 		ft_printf("\n");
-		return;
+		return ;
 	}
 	if (check_n(arg) == 0 && ++nl)
-		i = 1;
+		i = 0;
 	else
-		i = 2;
+		i = 1;
 	while (arg[i])
 	{
 		ft_printf("%s", arg[i]);
-		if (arg[i+1])
+		if (arg[i + 1])
 			ft_printf(" ");
 		i++;
 	}

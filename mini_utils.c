@@ -1,13 +1,16 @@
 #include "minishell.h"
 
-// combine this error function
-// exit(error_code)
-// # define MALLOC 1
-// # define FILE_OP 2
-// # define SYNTAX 3
-// # define FUNC 4
-// error_code: <= 2 for system perror(malloc, file_err...)
-			// others for the mini_error(syntax, parse_err)
+/*
+ combine this error function
+ exit(error_code)
+ # define MALLOC 1
+ # define FILE_OP 2
+ # define SYNTAX 3
+ # define FUNC 4
+ error_code: <= 2 for system perror(malloc, file_err...)
+ others for the mini_error(syntax, parse_err)
+*/
+
 void ft_error(char* msg, int error_code)
 {
 	if (error_code <= 2)
@@ -17,20 +20,19 @@ void ft_error(char* msg, int error_code)
 		ft_putstr_fd(msg, 2);
 		write(2, "\n", 1);
 	}
-		//printf("%s\n", msg);
-	exit(error_code);
+	g_exitcode = error_code;
+	exit(g_exitcode);
 }
-// handle error in parent process
+
+/* handle error in parent process */
 void ft_error_minishell(char* msg, int error_code, int sig)
 {
 	if (error_code <= 2)
 		perror(msg);
 	else
 		printf("%s\n", msg);
-	// handle_signal_heredoc(sig); // modify this handler function by Lin
 }
 
-// free char *
 int free_str(char *str)
 {
 	free(str);
@@ -38,7 +40,6 @@ int free_str(char *str)
 	return (1);
 }
 
-// free char **
 void free_char(char **str)
 {
 	int i;
@@ -97,4 +98,19 @@ void free_tokens(t_token *tokens, int num_args, int num_infile, int num_outfile_
 		free(tokens);
 		tokens = NULL;
 	}
+}
+
+int is_same_str(const char* s1, const char* s2)
+{
+	int len1;
+	int len2;
+
+	len1 = ft_strlen(s1);
+	len2 = ft_strlen(s2);
+	if ( len1 == len2)
+	{
+		if (ft_strncmp(s1, s2, len1))
+			return (1);
+	}
+	return(0);
 }

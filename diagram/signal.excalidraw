@@ -506,11 +506,11 @@
       "locked": false,
       "fontSize": 16,
       "fontFamily": 1,
-      "text": "children",
+      "text": "child",
       "textAlign": "left",
       "verticalAlign": "top",
       "containerId": null,
-      "originalText": "children"
+      "originalText": "child"
     },
     {
       "type": "text",
@@ -2900,11 +2900,11 @@
       "locked": false,
       "fontSize": 16,
       "fontFamily": 1,
-      "text": "children",
+      "text": "child",
       "textAlign": "left",
       "verticalAlign": "top",
       "containerId": null,
-      "originalText": "children"
+      "originalText": "child"
     },
     {
       "type": "text",

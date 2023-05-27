@@ -27,3 +27,22 @@ to do list:
 3. check for memory leak
 4. error handel
 5. remove printf in the signal handeler
+6. env_convert returned char** to be freed!
+7. update the error code for malloc fail etc, since it will be overlapping with other erros?
+
+
+/*
+export TEST --> no change
+export TEST --> TEST=
+export TEST=WHATEVER --> TEST=WHATEVER
+export TEST=YES,MINIHELL --> TEST=YES,MINIHELL
+export TEST=YES MINIHELL --> TEST=YES
+*/
+
+valid arg for export:
+/*
+first character should be a letter or _
+- is not allowed anywhere
+ no space before or after equal sign?
+ first character should be a letter or _
+ */

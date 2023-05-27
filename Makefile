@@ -12,12 +12,15 @@ WHITE		=	\033[0;97m
 
 ECHO		= echo
 
-SRCS = 			main.c minishell.c mini_utils.c			\
+SRCS = 			main.c mini_utils.c			\
 				lexer.c expander.c parser.c			\
-				env.c executor.c signal.c			\
-				builtin.c builtin_echo.c			\
+				env_var.c signal.c			\
+				builtin_echo.c			\
 				builtin_exit.c builtin_export.c		\
-				builtin_unset.c
+				builtin_unset.c builtin.c builtin_cd.c	\
+				builtin_env.c builtin_pwd.c \
+				executor.c executor_child.c executor_files.c	\
+				executor_utils.c
 OBJS = $(SRCS:.c=.o)
 
 SRCS_TEST =		main.c minishell.c mini_utils.c			\
