@@ -1,5 +1,6 @@
 #include "builtin.h"
 
+/* why the first if does not exit? */
 static void	handle_error(char *str)
 {
 	int	i;

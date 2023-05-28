@@ -138,7 +138,9 @@ static void parse_cmd_args(t_token *cmd_tokens, t_input *input, int *k)
 	cmd_tokens->num_args = *k;
 }
 
-// each cmd is a cmd_lst node, iterate the line_lst until | as one cmd
+/*
+** each cmd is a cmd_lst node, iterate the line_lst until | as one cmd
+*/
 static t_list *iterate_cmds(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst, int *k)
 {
 	int i;

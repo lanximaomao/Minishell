@@ -72,10 +72,10 @@ void		rl_clear_history(void);
 int			readline_prompt(t_mini *mini);
 void		minishell(t_mini *mini, char *line);
 void		ascii_art_pattern(void);
-
+void		exit_with_empty_line(char* msg, int exit_code);
 // env_var
 char		**env_split(char const *s, char c);
-int			env_init(t_mini *mini, char **env);
+void		env_init(t_mini *mini, char **env);
 char		*env_handler(t_list *env, char *str);
 char		**env_convert(t_list *env);
 int			env_find_and_replace(t_list *env, char *to_find, char *to_replace);

@@ -23,6 +23,7 @@ int handle_quote(char *line, int i, int *len)
 	return (i);
 }
 
+/* need to handel segfault in case >> or << */
 int handle_token(t_input *input, char *line, int i, int *len)
 {
 	*len = 0; //  length of the substring that needs to be extracted currently.
@@ -78,6 +79,7 @@ char *trim_quote(char *temp_line, int quote_type)
 	return (trim_line);
 }
 
+/* ascii 8 - 14 represents nl, tab etc */
 t_list *get_linelst(char *line, t_list *line_lst, int i) // i = -1
 {
 	int len;

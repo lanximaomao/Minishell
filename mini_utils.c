@@ -30,7 +30,7 @@ void ft_error_minishell(char* msg, int error_code, int sig)
 	if (error_code <= 2)
 		perror(msg);
 	else
-		printf("%s\n", msg);
+		ft_printf("%s\n", msg); // Add by Lin: should this print to fd 1 or 2??
 }
 
 int free_str(char *str)

@@ -33,7 +33,7 @@ char	**env_split(char const *s, char c)
 ** this function create a linked list
 ** and each node contains a enviromental variable's name and value
 */
-int	env_init(t_mini *mini, char **env)
+void	env_init(t_mini *mini, char **env)
 {
 	int		i;
 	char	**env_content;
@@ -52,7 +52,6 @@ int	env_init(t_mini *mini, char **env)
 		ft_lstadd_back(&mini->env, node);
 		i++;
 	}
-	return (1);
 }
 
 /*

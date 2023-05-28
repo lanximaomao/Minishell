@@ -120,6 +120,7 @@ char *replace_env_expand(char *temp_line, t_list *env_lst)
 	return temp_line;
 }
 
+/* by given ", syntax error will be printing nonstop...."*/
 int handle_args_expand(t_list *line_lst, t_list *env_lst)
 {
 	while (line_lst)

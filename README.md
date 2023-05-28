@@ -46,3 +46,8 @@ first character should be a letter or _
  no space before or after equal sign?
  first character should be a letter or _
  */
+
+bug:
+1. running cat and ctrl + \ results prints ^\^\Quit: 3 in terminal
+2. >> or << leads to segfault. check out lexer-> handle token
+3. by given ", syntax error will be printing nonstop.... 
