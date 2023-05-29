@@ -24,7 +24,7 @@ int handle_quote(char *line, int i, int *len)
 }
 
 /* need to handel segfault in case >> or << */
-int handle_token(t_input *input, char *line, int i, int *len)
+int   handle_token(t_input *input, char *line, int i, int *len)
 {
 	*len = 0; //  length of the substring that needs to be extracted currently.
 	while (!(line[i] == ' ' || (line[i] > 8 && line[i] < 14)) && line[i] && ++(*len))
@@ -46,7 +46,7 @@ int handle_token(t_input *input, char *line, int i, int *len)
 		}
 		else if (((line[i] == '\'' && (input->quote_type = 1))
 				|| (line[i] == '\"' && (input->quote_type = 2)))
-				&& ((i = handle_quote(line, i, len)) == -1)) // handle error: unclosed quote
+				&& ((i = handle_quote(line, i, len)) == -1)) // handle error: unclosed quote // Add by Lin: why handel the quote here, "|" should not be valid
 				ft_error_minishell("Syntax error: unclosed quote.", SYNTAX, 2);
 		i++;
 	}
