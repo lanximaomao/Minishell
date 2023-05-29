@@ -106,6 +106,5 @@ void		free_char(char **str);
 void		free_input(t_input *input);
 void		free_tokens(t_token *token, int num_args, int num_infile,
 				int num_outfile_type);
-int			is_same_str(const char *s1, const char *s2);
 
 #endif

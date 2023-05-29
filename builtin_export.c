@@ -7,11 +7,11 @@ static int	is_valid_argument(char *arg, t_list *env)
 
 	i = 0;
 	if (ft_isalpha(arg[0]) == 0 && arg[0] != '_')
-		return (printf_error(" inot a valid identifier", 1));
+		return (printf_error(" not a valid identifier\n", 1));
 	while (arg[i])
 	{
 		if (arg[i] == '-' && is_equal_sign(arg, i) == 0)
-			return (printf_error(" inot a valid identifier", 1));
+			return (printf_error(" not a valid identifier\n", 1));
 		i++;
 	}
 	i = 0;
@@ -38,7 +38,7 @@ static int	add_argument(t_list *env, char *arg)
 	{
 		node = ft_lstnew(env_content);
 		if (!node)
-			ft_error("cann't create a new node.\n", 1);
+			ft_error("cann't create a new node", 1);
 		ft_lstadd_back(&env, node);
 		return (0);
 	}
@@ -70,9 +70,8 @@ void	my_export(char **arg, t_list *env)
 	while (arg[i])
 	{
 		is_valid = is_valid_argument(arg[i], env);
-		if (is_valid == 1)
-			break ;
-		add_argument(env, arg[i]);
+		if (is_valid == 0)
+			add_argument(env, arg[i]);
 		i++;
 		g_exitcode = 0;
 	}

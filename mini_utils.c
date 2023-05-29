@@ -99,18 +99,3 @@ void free_tokens(t_token *tokens, int num_args, int num_infile, int num_outfile_
 		tokens = NULL;
 	}
 }
-
-int is_same_str(const char* s1, const char* s2)
-{
-	int len1;
-	int len2;
-
-	len1 = ft_strlen(s1);
-	len2 = ft_strlen(s2);
-	if ( len1 == len2)
-	{
-		if (ft_strncmp(s1, s2, len1))
-			return (1);
-	}
-	return(0);
-}

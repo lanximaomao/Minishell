@@ -7,18 +7,18 @@ static int	is_valid_argument(char *arg, t_list *env)
 
 	i = 0;
 	if (ft_isalpha(arg[0]) == 0 && arg[0] != '_')
-		return (printf_error(" inot a valid identifier", 1));
+		return (printf_error(" not a valid identifier\n", 1));
 	while (arg[i])
 	{
 		if (arg[i] == '-' && is_equal_sign(arg, i) == 0)
-			return (printf_error(" inot a valid identifier", 1));
+			return (printf_error(" not a valid identifier\n", 1));
 		i++;
 	}
 	i = 0;
 	while ((arg[i]))
 	{
 		if (arg[i] == '=')
-			return (printf_error(" inot a valid identifier", 1));
+			return (printf_error(" not a valid identifier\n", 1));
 		else
 			i++;
 	}

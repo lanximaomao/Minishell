@@ -33,6 +33,8 @@ int	run_builtin(t_token *token, t_list **env)
 	int	ret;
 
 	ret = is_builtin(token, *env);
+	if (token->fd_in < 0 || token->fd_out < 0)
+		return (-1);
 	if (ret == 0)
 		return (0);
 	if (ret == 1)

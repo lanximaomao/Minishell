@@ -29,6 +29,7 @@ to do list:
 5. remove printf in the signal handeler
 6. env_convert returned char** to be freed!
 7. update the error code for malloc fail etc, since it will be overlapping with other erros?
+8. memory?
 
 
 /*
@@ -49,5 +50,9 @@ first character should be a letter or _
 
 bug:
 1. running cat and ctrl + \ results prints ^\^\Quit: 3 in terminal
-2. >> or << leads to segfault. check out lexer-> handle token
-3. by given ", syntax error will be printing nonstop.... 
+2. >> or << or > ' leads to segfault. check out lexer-> handle token
+3. by given ", syntax error will be printing nonstop....
+4. grep oi | ls cannot terminate after one ctrl + d but two??
+
+5. FIXED! echo hello > test/stljs,  prints hello anyway..
+6. export HELLO=123, why this does not show up in env??

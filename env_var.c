@@ -125,11 +125,11 @@ int	env_find_and_replace(t_list *env, char *to_find, char *to_replace)
 	{
 		env_content = (char **)tmp->content;
 		len = ft_strlen(env_content[0]);
-		if (is_same_str(env_content[0], to_find) == 1)
+		if (len == ft_strlen(to_find) && ft_strncmp(to_find, env_content[0],
+				len) == 0)
 		{
 			if (ft_strlen(to_replace) > ft_strlen(env_content[1]))
-				env_content[1] = ft_realloc(env_content[1], len + 1,
-						ft_strlen(to_replace) + 1);
+				env_content[1] = ft_realloc(env_content[1], len + 1, ft_strlen(to_replace) + 1);
 			ft_strlcpy(env_content[1], to_replace, ft_strlen(to_replace) + 1);
 			return (1);
 		}

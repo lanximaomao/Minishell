@@ -51,7 +51,7 @@ int	get_infile_fd(t_token *token)
 		token->fd_in = open(token->infile[i], O_RDONLY);
 		if (token->fd_in == -1)
 		{
-			perror("minishell: infile");
+			perror("minishell");
 			g_exitcode = 1;
 			return (-1);
 		}
