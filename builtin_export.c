@@ -30,9 +30,11 @@ static int	is_valid_argument(char *arg, t_list *env)
 static int	add_argument(t_list *env, char *arg)
 {
 	int		sign;
+	int		sign;
 	t_list	*node;
 	char	**env_content;
 
+	sign = 0;
 	sign = 0;
 	env_content = env_split(arg, '=');
 	while (*arg)
@@ -81,6 +83,10 @@ void	my_export(char **arg, t_list *env)
 		is_valid = is_valid_argument(arg[i], env);
 		if (is_valid == 0)
 			add_argument(env, arg[i]);
+		if (is_valid == 0)
+			g_exitcode = 0;
+		else
+			g_exitcode = 1;
 		if (is_valid == 0)
 			g_exitcode = 0;
 		else

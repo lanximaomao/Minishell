@@ -36,6 +36,7 @@ to do list:
 /*
 export TEST --> no change
 export TEST= --> TEST=
+export TEST= --> TEST=
 export TEST=WHATEVER --> TEST=WHATEVER
 export TEST=YES,MINIHELL --> TEST=YES,MINIHELL
 export TEST=YES MINIHELL --> TEST=YES
