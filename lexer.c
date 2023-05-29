@@ -47,7 +47,10 @@ int   handle_token(t_input *input, char *line, int i, int *len)
 		else if (((line[i] == '\'' && (input->quote_type = 1))
 				|| (line[i] == '\"' && (input->quote_type = 2)))
 				&& ((i = handle_quote(line, i, len)) == -1)) // handle error: unclosed quote // Add by Lin: why handel the quote here, "|" should not be valid
-				ft_error("Syntax error: unclosed quote.", SYNTAX, 1);
+		{
+			ft_error("Syntax error: unclosed quote.", SYNTAX, 1);
+			return(-1);
+		}
 		i++;
 	}
 	return i;
@@ -94,6 +97,8 @@ t_list *get_linelst(char *line, t_list *line_lst, int i) // i = -1
 				ft_error("Malloc failed", MALLOC, 1);
 			init_input(input);
 			i = handle_token(input, line, i, &len);
+			if (i == -1)
+				return(NULL);
 			if (!(input->temp_line = ft_substr(line, i - len, len))) // Extract the substring and store it into the data structure of a lst node.
 				ft_error("Malloc failed", MALLOC, 1);
 			if (input->quote_type)

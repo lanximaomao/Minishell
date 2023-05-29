@@ -53,6 +53,7 @@ bug:
 1. running cat and ctrl + \ results prints ^\^\Quit: 3 in terminal
 2. >> or << or > ' leads to segfault. check out lexer-> handle token
 3. by given ", syntax error will be printing nonstop....
+4. handle oldpwd
 
 
 Note:

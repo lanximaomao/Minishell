@@ -7,7 +7,7 @@
 //check for unclosed pipe
 //check for incomplete redir
 
-int is_valid_input(t_list *line_lst)
+int validator(t_list *line_lst)
 {
 	t_list *tmp;
 	t_input *input;

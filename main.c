@@ -59,6 +59,8 @@ void	minishell(t_mini *mini, char *line)
 	line_lst = get_linelst(line, line_lst, -1);
 	free(line);
 	line = NULL;
+	if (line_lst == NULL)//lin
+		return ; //lin
 	if (handle_args_expand(line_lst, mini->env) == -1)
 		return ;
 	mini->cmd_lst = parse_cmds(line_lst, mini->env);

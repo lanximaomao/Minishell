@@ -83,6 +83,9 @@ int			env_find_and_replace(t_list *env, char *to_find, char *to_replace);
 // lexer.c
 t_list		*get_linelst(char *line, t_list *line_lst, int i);
 
+// validator.c
+int validator(t_list *line_lst);
+
 // parser.c
 t_list		*parse_cmds(t_list *line_lst, t_list *env_lst);
 
