@@ -34,7 +34,7 @@ to do list:
 
 /*
 export TEST --> no change
-export TEST --> TEST=
+export TEST= --> TEST=
 export TEST=WHATEVER --> TEST=WHATEVER
 export TEST=YES,MINIHELL --> TEST=YES,MINIHELL
 export TEST=YES MINIHELL --> TEST=YES
@@ -45,14 +45,10 @@ valid arg for export:
 first character should be a letter or _
 - is not allowed anywhere
  no space before or after equal sign?
- first character should be a letter or _
  */
 
 bug:
 1. running cat and ctrl + \ results prints ^\^\Quit: 3 in terminal
-2. >> or << or > ' leads to segfault. check out lexer-> handle token
-3. by given ", syntax error will be printing nonstop....
-4. grep oi | ls cannot terminate after one ctrl + d but two??
-
-5. FIXED! echo hello > test/stljs,  prints hello anyway..
-6. export HELLO=123, why this does not show up in env??
+2. grep oi | ls cannot terminate after one ctrl + d but two??
+3. >> or << or > ' leads to segfault. check out lexer-> handle token
+4. by given ", syntax error will be printing nonstop....
