@@ -149,11 +149,9 @@ static t_list *iterate_cmds(t_token *cmd_tokens, t_list *line_lst, t_list *env_l
 	i = 0; // for num_infile
 	j = 0; // for num_outfile
 	while (line_lst)
-	{ // no handle the <>/<>>/></><</<<>/<<>>/>></>><</>>>/>>>>, should be syntax error or
+	{
 		if (((t_input *)line_lst->content)->redir_sign != 0)
 		{
-			if (line_lst->next == NULL) // handle error: each redirection file cannot be empty, parse error
-				ft_error("Syntax error: no redirection argument.", SYNTAX, 1); // modify later by Lin's signal_handler
 			if (((t_input *)line_lst->content)->redir_sign == 1
 				|| ((t_input *)line_lst->content)->redir_sign == 2) // < >
 				parse_redir12(cmd_tokens, line_lst, env_lst, i++);

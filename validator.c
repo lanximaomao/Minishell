@@ -39,7 +39,15 @@ int validator(t_list *line_lst)
 				}
 			}
 		}
+		// redirect
+		//// no handle the <>/<>>/></><</<<>/<<>>/>></>><</>>>/>>>>, should be syntax error or
+		if (((t_input *)line_lst->content)->redir_sign != 0)
+		{
+			if (line_lst->next == NULL) // handle error: each redirection file cannot be empty, parse error
+				ft_error("Syntax error: no redirection argument.", SYNTAX, 1); // modify later by Lin's signal_handler
+		}
 		tmp = tmp->next;
+
 	}
 	return (0);
 }
