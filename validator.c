@@ -1,4 +1,5 @@
-# include "minishell.h"
+#include "minishell.h"
+#include "validator.h"
 
 // part of code is from handle_args_expand
 
@@ -10,48 +11,80 @@
 // segfault: << f1 >
 
 
-int validator(t_list *line_lst)
+int	validator(t_list *line_lst)
 {
-	t_list *tmp;
-	t_input *input;
+	t_list	*current;
+	t_list	*subsequent;
+	t_input	*current_input;
+	t_input	*subsequent_input;
 
-	tmp = line_lst;
-	while (tmp)
+	current = line_lst;
+	while (current)
 	{
-		input = (t_input *)(tmp->content);
-		// ls |
-		if (input->pipe_sign == 1 && tmp->next && ((t_input*)(tmp->next->content))->pipe_sign == 1)
+		subsequent = current->next;
+		current_input = (t_input *)(current->content);
+		if (subsequent)
+			subsequent_input = (t_input *)(current->next->content);
+		if (current_input->quote_type == 0)
 		{
-			ft_error("Syntax error 01", SYNTAX, 1);
+			if (subsequent && check_pipe(current_input, subsequent_input, subsequent) == -1)
+				return (-1);
+			if (subsequent && check_double(current_input, subsequent_input, subsequent) == -1)
+				return (-1);
+			if (check_redir(current_input, subsequent) == -1)
+				return (-1);
+		}
+		current = current->next;
+	}
+	return (0);
+}
+
+//quote
+int	check_pipe(t_input *in1, t_input *in2, t_list *subsequent)
+{
+	// ls |
+	if (in1->pipe_sign == 1 && subsequent == NULL)
+	{
+		ft_error("Syntax error 01", SYNTAX, 1);
+		return (-1);
+	}
+	return (0);
+}
+
+//02: <>, ||,
+// ls|pwd|
+int	check_double(t_input *in1, t_input *in2, t_list *subsequent)
+{
+	if (in1->temp_line || ft_strncmp(in1->temp_line, "", 1) == 0) // in1->temp_line is null in case of ls||
+	{
+		if (subsequent && (in2->temp_line || ft_strncmp(in2->temp_line, "", 1) == 0))
+		{
+			ft_error("Syntax error 02", SYNTAX, 1);
 			return (-1);
 		}
-		// check '| |' '< >>'
-		if (ft_strncmp(input->temp_line, "", 1) == 0) // same
+		else
 		{
-			if(tmp->next && ft_strncmp(((t_input*)(tmp->next->content))->temp_line, "", 1)==0)
+			if (subsequent && ft_strncmp(in2->temp_line, "", 1) == 0)
 			{
-				ft_error("Syntax error 02", SYNTAX, 1);
+				ft_error("Syntax error 03", SYNTAX, 1);
 				return (-1);
 			}
-			else
-			{
-				if (tmp->next && ft_strncmp(((t_input *)tmp->next->content)->temp_line, "", 1)==0)
-				{
-					ft_error("Syntax error 03", SYNTAX, 1);
-					return (-1);
-				}
-			}
 		}
-		// <, >, <<, >>,
-		if (((t_input *)line_lst->content)->redir_sign != 0)
+	}
+	return (0);
+}
+
+// quote
+// error if no filename is found after redirection sign
+int	check_redir(t_input *in1, t_list *subsequent)
+{
+	if (in1->redir_sign != 0)
+	{
+		if (subsequent == NULL)
 		{
-			if (line_lst->next == NULL) // handle error: each redirection file cannot be empty, parse error
-			{
-				ft_error("Syntax error 04", SYNTAX, 1); // modify later by Lin's signal_handler
-				return(-1);
-			}
+			ft_error("Syntax error 04", SYNTAX, 1); // > or < or << or >> or < >
+			return (-1);
 		}
-		tmp = tmp->next;
 	}
 	return (0);
 }
