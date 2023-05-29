@@ -5,7 +5,7 @@ int	create_child(int *pid, int i)
 {
 	pid[i] = fork();
 	if (pid[i] == -1)
-		ft_error(" fork failed", 4);
+		ft_error(" fork failed", 4, 0);
 	return (pid[i]);
 }
 
@@ -39,7 +39,7 @@ char	*get_path_cmd(char *str, t_list *env)
 	{
 		path_cmd = ft_strjoin(path_env[i], str);
 		if (!path_cmd)
-			ft_error(" string join failed. \n", 1);
+			ft_error(" string join failed. \n", 1, 0);
 		if (access(path_cmd, X_OK) == 0)
 			break ;
 		if (path_cmd)
@@ -71,6 +71,6 @@ char	**get_path_env(t_list *env)
 	}
 	path_env = ft_split(env_content[1], ':');
 	if (!path_env)
-		ft_error(" malloc fail or PATH is NULL.\n", 1);
+		ft_error(" malloc fail or PATH is NULL.\n", 1, 0);
 	return (path_env);
 }

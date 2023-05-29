@@ -26,7 +26,7 @@ static void handle_heredoc(t_list *env_lst, t_input *input, char *num_heredoc)
 
 	file_name = ft_strjoin("heredoc_name", num_heredoc);
 	if ((fd = open(file_name, O_WRONLY|O_CREAT|O_TRUNC, 0644)) < 0) // 读写/读/读
-		ft_error_minishell("Open heredoc_name failed", FILE_OP, 1); // Pls remember free_str(file_name);!!!!!
+		ft_error("Open heredoc_name failed", FILE_OP, 1); // Pls remember free_str(file_name);!!!!!
 	free_str(file_name);
 	while(g_exitcode != -2)
 	{
@@ -47,9 +47,9 @@ static void handle_heredoc(t_list *env_lst, t_input *input, char *num_heredoc)
 			if (ft_strchr(line, '$') && !input->quote_type)
 				line = replace_env_expand(line, env_lst);
 			if (!(heredoc = ft_strjoin(line, "\n"))) // line no need free
-				ft_error_minishell("Malloc failed", MALLOC, 2);
+				ft_error("Malloc failed", MALLOC, 1);
 			if (write(fd, heredoc, ft_strlen(heredoc)) == -1)
-				ft_error_minishell("Open heredoc_name failed", FILE_OP, 1);
+				ft_error("Open heredoc_name failed", FILE_OP, 1);
 			free_str(heredoc);
 		}
 	}
@@ -68,14 +68,14 @@ static void parse_redir12(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst
 		if (!cmd_tokens->infile)
 		{
 			if (!(cmd_tokens->infile = (char **)ft_calloc(sizeof(char *), 1)))
-				ft_error_minishell("Malloc failed", MALLOC, 2);
+				ft_error("Malloc failed", MALLOC, 1);
 		}
 		else
 			cmd_tokens->infile = (char **)ft_realloc(cmd_tokens->infile, sizeof(char *) * (i + 1), sizeof(char *) * (i + 2));
 		if (line_lst->next)
 			cmd_tokens->infile[i] = ft_strdup(((t_input *)line_lst->next->content)->temp_line);
 		if (!cmd_tokens->infile[i])
-			ft_error_minishell("Malloc failed", MALLOC, 2);
+			ft_error("Malloc failed", MALLOC, 1);
 	}
 	else if (((t_input *)line_lst->content)->redir_sign == 2) // <<
 	{
@@ -84,7 +84,7 @@ static void parse_redir12(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst
 		cmd_tokens->infile = (char **)ft_realloc(cmd_tokens->infile, sizeof(char *) * (i + 1), sizeof(char *) * (i + 2));
 		cmd_tokens->infile[i] = ft_strjoin("heredoc_name", num_heredoc); // tmp_file_name same with in handle_heredoc
 		if (!cmd_tokens->infile[i])
-			ft_error_minishell("Malloc failed", MALLOC, 2);
+			ft_error("Malloc failed", MALLOC, 1);
 		free_str(num_heredoc);
 	}
 	cmd_tokens->num_infile = ++i;
@@ -96,17 +96,17 @@ static void parse_redir34(t_token *cmd_tokens, t_input *input, int redir_sign, i
 	if (!cmd_tokens->outfile)
 	{
 		if (!(cmd_tokens->outfile = (char **)ft_calloc(sizeof(char *), 1)))
-			ft_error_minishell("Malloc failed", MALLOC, 2);
+			ft_error("Malloc failed", MALLOC, 1);
 	}
 	else
 		cmd_tokens->outfile = (char **)ft_realloc(cmd_tokens->outfile, sizeof(char *) * (i + 1), sizeof(char *) * (i + 2));
 	cmd_tokens->outfile[i] = ft_strdup(input->temp_line);
 	if (!cmd_tokens->outfile[i])
-		ft_error_minishell("Malloc failed", MALLOC, 2);
+		ft_error("Malloc failed", MALLOC, 1);
 	if (!cmd_tokens->output_type)
 	{
 		if (!(cmd_tokens->output_type = (int *)ft_calloc(sizeof(int), 1)))
-			ft_error_minishell("Malloc failed", MALLOC, 2);
+			ft_error("Malloc failed", MALLOC, 1);
 	}
 	else
 		cmd_tokens->output_type = (int *)ft_realloc(cmd_tokens->output_type, sizeof(int) * (i + 1), sizeof(int) * (i + 2));
@@ -122,18 +122,18 @@ static void parse_cmd_args(t_token *cmd_tokens, t_input *input, int *k)
 	if (!cmd_tokens->cmd) // cmd
 	{
 		if (!(cmd_tokens->cmd = ft_strdup(input->temp_line)))
-			ft_error_minishell("Malloc failed", MALLOC, 2);
+			ft_error("Malloc failed", MALLOC, 1);
 	}
 	if (!cmd_tokens->args) // add the cmd in front of args
 	{
 		if (!(cmd_tokens->args = (char **)ft_calloc(sizeof(char *), 2)))
-			ft_error_minishell("Malloc failed", MALLOC, 2);
+			ft_error("Malloc failed", MALLOC, 1);
 	}
 	else
 		cmd_tokens->args = (char **)ft_realloc(cmd_tokens->args, sizeof(char *) * (*k + 1), sizeof(char *) * (*k + 2));
 	cmd_tokens->args[*k] = ft_strdup(input->temp_line);
 	if (!cmd_tokens->args[*k])
-		ft_error_minishell("Malloc failed", MALLOC, 2);
+		ft_error("Malloc failed", MALLOC, 1);
 	*k += 1;
 	cmd_tokens->num_args = *k;
 }
@@ -153,7 +153,7 @@ static t_list *iterate_cmds(t_token *cmd_tokens, t_list *line_lst, t_list *env_l
 		if (((t_input *)line_lst->content)->redir_sign != 0)
 		{
 			if (line_lst->next == NULL) // handle error: each redirection file cannot be empty, parse error
-				ft_error_minishell("Syntax error: no redirection argument.", SYNTAX, 2); // modify later by Lin's signal_handler
+				ft_error("Syntax error: no redirection argument.", SYNTAX, 1); // modify later by Lin's signal_handler
 			if (((t_input *)line_lst->content)->redir_sign == 1
 				|| ((t_input *)line_lst->content)->redir_sign == 2) // < >
 				parse_redir12(cmd_tokens, line_lst, env_lst, i++);
@@ -193,12 +193,12 @@ t_list *parse_cmds(t_list *line_lst, t_list *env_lst)
 	{
 		k = 0; // for num_args, k = 0 for cmd in front of args
 		if (!(cmd_tokens = (t_token *)ft_calloc(sizeof(t_token), 1)))
-			ft_error_minishell("Malloc failed", MALLOC, 2);
+			ft_error("Malloc failed", MALLOC, 1);
 		init_tokens(cmd_tokens, num_cmd);
 		line_lst = iterate_cmds(cmd_tokens, line_lst, env_lst, &k);
 		node = ft_lstnew((t_token *)cmd_tokens);
 		if (!node)
-			ft_error_minishell("Malloc failed", MALLOC, 2);
+			ft_error("Malloc failed", MALLOC, 1);
 		ft_lstadd_back(&cmd_lst, node);
 		if (!line_lst) // 上面的redir会向下遍历一位，所以在这里判断一下是否最后，以防止segfault
 			break;

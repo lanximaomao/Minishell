@@ -47,7 +47,7 @@ static int	add_argument(t_list *env, char *arg)
 	{
 		node = ft_lstnew(env_content);
 		if (!node)
-			ft_error("cann't create a new node", 1);
+			ft_error("cann't create a new node", 1, 0);
 		ft_lstadd_back(&env, node);
 		return (0);
 	}

@@ -26,10 +26,10 @@ static char *replace_env(char *tmp_exp, t_list *env_lst, char *tmp_substr, int l
 			 && !ft_isalnum(tmp_exp[len_envp])) // 判断下一个是否是特殊字符（！数字！字母）
 		{
 			if (!(tmp_substr = ft_substr(tmp_exp, len_envp, ft_strlen(tmp_exp))))
-				ft_error_minishell("Malloc failed", MALLOC, 2);
+				ft_error("Malloc failed", MALLOC, 1);
 			free_str(tmp_exp);
 			if (!(tmp_exp = ft_strdup(ft_strjoin(((char **)env_lst->content)[1], tmp_substr))))
-				ft_error_minishell("Malloc failed", MALLOC, 2);
+				ft_error("Malloc failed", MALLOC, 1);
 			free_str(tmp_substr);
 			len_envp = -1; // 复用， for norm
 			break;
@@ -66,12 +66,12 @@ static char *ft_mulstrjoin(char **tmp_exp, int len) // len is the length of tmp_
 	tmp_join = NULL; // for free， strjoin的第一个参数
 	res = NULL;
 	if (!(res = ft_strdup("")))
-		ft_error_minishell("Malloc failed", MALLOC, 2);
+		ft_error("Malloc failed", MALLOC, 1);
 	while (i < len)
 	{
 		tmp_join = res;
 		if (!(res = ft_strjoin(tmp_join, tmp_exp[i])))
-			ft_error_minishell("Malloc failed", MALLOC, 2);
+			ft_error("Malloc failed", MALLOC, 1);
 		free_str(tmp_join);
 		i++;
 	}
@@ -88,7 +88,7 @@ char *replace_env_expand(char *temp_line, t_list *env_lst)
 
 	i = -1;
 	if (!(tmp_exp = ft_split(temp_line, '$')))
-		ft_error_minishell("Malloc failed", MALLOC, 2);
+		ft_error("Malloc failed", MALLOC, 1);
 	if (temp_line[0] != '$')
 		i = 0; // the first arg no need to handle
 	while (tmp_exp[++i])
@@ -129,7 +129,7 @@ int handle_args_expand(t_list *line_lst, t_list *env_lst)
 		{
 			if (((t_input *)line_lst->content)->pipe_sign == 1)
 			{
-				ft_error_minishell("Syntax error: parse error456.", SYNTAX, 2);
+				ft_error("Syntax error: parse error456.", SYNTAX, 1);
 				return (-1);
 			}
 		}
@@ -141,7 +141,7 @@ int handle_args_expand(t_list *line_lst, t_list *env_lst)
 				if (line_lst->next->next && !ft_strncmp(((t_input *)line_lst->next->content)->temp_line, "", 1)
 					&& !ft_strncmp(((t_input *)line_lst->next->next->content)->temp_line, "", 1))
 					{
-						ft_error_minishell("Syntax error: parse error123.", SYNTAX, 2);
+						ft_error("Syntax error: parse error123.", SYNTAX, 1);
 						return (-1);
 					}
 			}
@@ -149,7 +149,7 @@ int handle_args_expand(t_list *line_lst, t_list *env_lst)
 			{
 				if (line_lst->next && !ft_strncmp(((t_input *)line_lst->next->content)->temp_line, "", 1))
 					{
-						ft_error_minishell("Syntax error: parse error1.", SYNTAX, 2);
+						ft_error("Syntax error: parse error1.", SYNTAX, 1);
 						return (-1);
 					}
 			}

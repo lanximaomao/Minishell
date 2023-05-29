@@ -11,7 +11,7 @@
  others for the mini_error(syntax, parse_err)
 */
 
-void ft_error(char* msg, int error_code)
+void ft_error(char* msg, int error_code, int flag) // flag 0 means exit, flag 2 means return
 {
 	if (error_code <= 2)
 		perror(msg);
@@ -20,17 +20,11 @@ void ft_error(char* msg, int error_code)
 		ft_putstr_fd(msg, 2);
 		write(2, "\n", 1);
 	}
-	g_exitcode = error_code;
-	exit(g_exitcode);
-}
-
-/* handle error in parent process */
-void ft_error_minishell(char* msg, int error_code, int sig)
-{
-	if (error_code <= 2)
-		perror(msg);
-	else
-		ft_printf("%s\n", msg); // Add by Lin: should this print to fd 1 or 2??
+	if (flag == 0)
+	{
+		g_exitcode = error_code;
+		exit(g_exitcode);
+	}
 }
 
 int free_str(char *str)

@@ -99,8 +99,7 @@ void		handle_signal_heredoc(int sig);
 int			event(void);
 
 // mini_utils.c
-void		ft_error(char *msg, int error_code);
-void		ft_error_minishell(char *msg, int error_code, int sig);
+void		ft_error(char *msg, int error_code, int flag);
 int			free_str(char *str);
 void		free_char(char **str);
 void		free_input(t_input *input);

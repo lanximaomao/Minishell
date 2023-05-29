@@ -15,7 +15,7 @@ int	handle_io(t_token *token, int cmd_order, int size, int *fd_pipe)
 	if (cmd_order != 0)
 		token->fd_in = fd_pipe[0];
 	if (cmd_order != size - 1 && pipe(fd_pipe) == -1)
-		ft_error(" error in creating pipes.\n", 4);
+		ft_error(" error in creating pipes.\n", 4, 0);
 	if (cmd_order == 0)
 	{
 		token->fd_in = dup(0);

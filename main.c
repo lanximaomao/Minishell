@@ -9,10 +9,10 @@ int	main(int argc, char **argv, char **env)
 	t_mini	*mini;
 
 	if (argc != 1 || argv[1])
-		ft_error("Wrong input!", FUNC);
+		ft_error("Wrong input!", FUNC, 0);
 	mini = malloc(sizeof(t_mini) * 1);
 	if (!mini)
-		ft_error("malloc fail.\n", 1);
+		ft_error("malloc fail.\n", 1, 0);
 	env_init(mini, env);
 	readline_prompt(mini);
 	//free_char((char *)mini); // why?
