@@ -61,6 +61,8 @@ void	minishell(t_mini *mini, char *line)
 	line = NULL;
 	if (line_lst == NULL)//lin
 		return ; //lin
+	if (validator(line_lst) == -1)//lin
+		return ; //lin
 	if (handle_args_expand(line_lst, mini->env) == -1)
 		return ;
 	mini->cmd_lst = parse_cmds(line_lst, mini->env);
