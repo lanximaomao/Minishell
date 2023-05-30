@@ -23,11 +23,29 @@ int	validator(t_list *line_lst)
 	{
 		subsequent = current->next;
 		current_input = (t_input *)(current->content);
+		printf("line=%s", current_input->temp_line);
+		if (current_input->temp_line == NULL)
+			printf(" !NULL LINE\n");
+		else
+			printf(" !NOT NULL\n");
+		printf("pipe=%d\n", current_input->pipe_sign);
+		printf("redir=%d\n", current_input->redir_sign);
+		//printf("quote=%d\n", current_input->quote_type);
 		if (subsequent)
-			subsequent_input = (t_input *)(current->next->content);
+		{
+			subsequent_input = (t_input *)(subsequent->content);
+			printf("sub_line=%s", subsequent_input->temp_line);
+			if (current_input->temp_line == NULL)
+				printf(" !NULL LINE\n");
+			else
+				printf(" !NOT NULL\n");
+			printf("sub_pipe=%d\n", subsequent_input->pipe_sign);
+			printf("sub_redir=%d\n", subsequent_input->redir_sign);
+			//printf("quote=%d\n", current_input->quote_type);
+		}
 		if (current_input->quote_type == 0)
 		{
-			if (subsequent && check_pipe(current_input, subsequent_input, subsequent) == -1)
+			if (check_pipe(current_input, subsequent_input, subsequent) == -1)
 				return (-1);
 			if (subsequent && check_double(current_input, subsequent_input, subsequent) == -1)
 				return (-1);
@@ -40,12 +58,16 @@ int	validator(t_list *line_lst)
 }
 
 //quote
-int	check_pipe(t_input *in1, t_input *in2, t_list *subsequent)
+int	check_pipe(t_input *in1, t_input *in2, t_list *subsequent) // to cover | or ls|
 {
-	// ls |
 	if (in1->pipe_sign == 1 && subsequent == NULL)
 	{
-		ft_error("Syntax error 01", SYNTAX, 1);
+		ft_error("Syntax error 01-1", SYNTAX, 1);
+		return (-1);
+	}
+	if (in1->pipe_sign == 1 && ft_strncmp(in1->temp_line, "", 1) == 0)// to cover |pwd
+	{
+		ft_error("Syntax error 01-2", SYNTAX, 1);
 		return (-1);
 	}
 	return (0);
@@ -55,30 +77,21 @@ int	check_pipe(t_input *in1, t_input *in2, t_list *subsequent)
 // ls|pwd|
 int	check_double(t_input *in1, t_input *in2, t_list *subsequent)
 {
-	if (in1->temp_line || ft_strncmp(in1->temp_line, "", 1) == 0) // in1->temp_line is null in case of ls||
+	if (ft_strncmp(in1->temp_line, "", 1) == 0)
 	{
-		if (subsequent && (in2->temp_line || ft_strncmp(in2->temp_line, "", 1) == 0))
+		if (subsequent && ft_strncmp(in2->temp_line, "", 1) == 0) // to cover ls <> pwd
 		{
-			ft_error("Syntax error 02", SYNTAX, 1);
+			ft_error("Syntax error 02-1", SYNTAX, 1);
 			return (-1);
-		}
-		else
-		{
-			if (subsequent && ft_strncmp(in2->temp_line, "", 1) == 0)
-			{
-				ft_error("Syntax error 03", SYNTAX, 1);
-				return (-1);
-			}
 		}
 	}
 	return (0);
 }
 
-// quote
-// error if no filename is found after redirection sign
-int	check_redir(t_input *in1, t_list *subsequent)
+// error if no filename is found after redirection sign//
+int	check_redir(t_input *in1, t_list *subsequent)//
 {
-	if (in1->redir_sign != 0)
+	if (in1->redir_sign != 0)//
 	{
 		if (subsequent == NULL)
 		{
