@@ -36,6 +36,7 @@ char	**env_split(char const *s, char c)
 void	env_init(t_mini *mini, char **env)
 {
 	int		i;
+	int		is_OLDPWD;
 	char	**env_content;
 	t_list	*node;
 
@@ -46,10 +47,14 @@ void	env_init(t_mini *mini, char **env)
 		env_content = env_split(env[i], '=');
 		if (!env_content)
 			ft_error("malloc fail or null input?\n", 1, 0);
-		node = ft_lstnew(env_content);
-		if (!node)
-			ft_error("fail to init a node\n", 1, 0);
-		ft_lstadd_back(&mini->env, node);
+		is_OLDPWD = ft_strncmp(env_content[0], "OLDPWD", 6);
+		if (is_OLDPWD != 0)
+		{
+			node = ft_lstnew(env_content);
+			if (!node)
+				ft_error("fail to init a node\n", 1, 0);
+			ft_lstadd_back(&mini->env, node);
+		}
 		i++;
 	}
 }
