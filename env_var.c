@@ -36,7 +36,7 @@ char	**env_split(char const *s, char c)
 void	env_init(t_mini *mini, char **env)
 {
 	int		i;
-	int		is_OLDPWD;
+	int		is_oldpwd;
 	char	**env_content;
 	t_list	*node;
 
@@ -47,8 +47,8 @@ void	env_init(t_mini *mini, char **env)
 		env_content = env_split(env[i], '=');
 		if (!env_content)
 			ft_error("malloc fail or null input?\n", 1, 0);
-		is_OLDPWD = ft_strncmp(env_content[0], "OLDPWD", 6);
-		if (is_OLDPWD != 0)
+		is_oldpwd = ft_strncmp(env_content[0], "OLDPWD", 6);
+		if (is_oldpwd != 0)
 		{
 			node = ft_lstnew(env_content);
 			if (!node)
@@ -134,7 +134,8 @@ int	env_find_and_replace(t_list *env, char *to_find, char *to_replace)
 				len) == 0)
 		{
 			if (ft_strlen(to_replace) > ft_strlen(env_content[1]))
-				env_content[1] = ft_realloc(env_content[1], len + 1, ft_strlen(to_replace) + 1);
+				env_content[1] = ft_realloc(env_content[1], len + 1,
+						ft_strlen(to_replace) + 1);
 			ft_strlcpy(env_content[1], to_replace, ft_strlen(to_replace) + 1);
 			return (1);
 		}
