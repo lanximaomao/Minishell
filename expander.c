@@ -67,14 +67,19 @@ int expander_args(t_list *line_lst, t_list *env_lst)
 	{
 		input = (t_input *)line_lst->content;
 		if (!(line_lst->next))
-			handle_parse_error(line_lst, 1);
+			if (handle_parse_error(line_lst, 1) == -1)
+				return (-1);
 		// 连续两个node为空，报错newline with prompt
 		if (!ft_strncmp(input->temp_line, "", 1))
 		{
 			if (input->pipe_sign == 1)
-				handle_parse_error(line_lst, 2);
+			{
+				if (handle_parse_error(line_lst, 2) == -1)
+					return (-1);
+			}
 			else
-				handle_parse_error(line_lst, 3);
+				if (handle_parse_error(line_lst, 3))
+					return (-1);
 		}
 		if (input->quote_type != 1 && ft_strchr(input->temp_line, '$'))
 			input->temp_line = replace_env_expand(input->temp_line, env_lst);
