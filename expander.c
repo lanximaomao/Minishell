@@ -1,81 +1,31 @@
 
 #include "minishell.h"
 
-// handle $?, use the waitpid() status of process, tips: WEXITSTATUS(), WIFEXITED(), WIFSIGNALED()
-static char *handle_exitcode(char *str) // test$?-test => test0-test
+static int handle_parse_error(t_list *line_lst, int sign)
 {
-	char *str_status = NULL; // itoa(status)
-	char *res = NULL;
-
-	str_status = ft_itoa(g_exitcode); //unsigned char
-	res = ft_strjoin(str_status, str + 1); // 去掉'?'
-	free(str_status);
-	str_status = NULL;
-	free(str);
-	str = NULL;
-	return (res);
-}
-
-// find the env_name and replace it with env_value
-static char *replace_env(char *tmp_exp, t_list *env_lst, char *tmp_substr, int len_envp) // tmp_substr, 找到环境变量之后，去除env_name的子串
-{
-	while (env_lst) // iterate the all the env names
+	// the | or < is the last character
+	if (sign == 1 && (((t_input *)line_lst->content)->pipe_sign == 1
+		|| ((t_input *)line_lst->content)->redir_sign != 0))
 	{
-		len_envp = ft_strlen(((char **)env_lst->content)[0]);
-		if (ft_strnstr(tmp_exp, ((char **)env_lst->content)[0], len_envp)
-			 && !ft_isalnum(tmp_exp[len_envp])) // 判断下一个是否是特殊字符（！数字！字母）
-		{
-			if (!(tmp_substr = ft_substr(tmp_exp, len_envp, ft_strlen(tmp_exp))))
-				ft_error("Malloc failed", MALLOC, 1);
-			free_str(tmp_exp);
-			if (!(tmp_exp = ft_strdup(ft_strjoin(((char **)env_lst->content)[1], tmp_substr))))
-				ft_error("Malloc failed", MALLOC, 1);
-			free_str(tmp_substr);
-			len_envp = -1; // 复用， for norm
-			break;
-		}
-		env_lst = env_lst->next;
+		ft_error("Syntax error: parse error", SYNTAX, 1);
+		return (-1);
 	}
-	char *trim_str = NULL; // trim_str for "$ABS=dss", output: "=dss"
-	trim_str = tmp_exp;
-	if (len_envp != -1)
+	// 当前是pipe则需要考虑下一个和下下个是否连续为空
+	else if (sign == 2 && line_lst->next->next
+		&& !ft_strncmp(((t_input *)line_lst->next->content)->temp_line, "", 1)
+		&& !ft_strncmp(((t_input *)line_lst->next->next->content)->temp_line, "", 1))
 	{
-		len_envp = 0; // reuse, as index
-		while (tmp_exp)
-		{
-			if (!ft_isalnum(*tmp_exp))
-			{
-				tmp_exp = ft_strdup(tmp_exp);
-				free_str(trim_str);
-				break;
-			}
-			tmp_exp++;
-		}
+		ft_error("Syntax error: parse error", SYNTAX, 1);
+		return (-1);
 	}
-	return (tmp_exp);
-}
-
-// 展开后的tmp_exp，又重新连接起来，形成新的temp_line后续parser使用，并且free原来的temp_line
-static char *ft_mulstrjoin(char **tmp_exp, int len) // len is the length of tmp_exp
-{
-	int i;
-	char *tmp_join;
-	char *res;
-
-	i = 0;
-	tmp_join = NULL; // for free， strjoin的第一个参数
-	res = NULL;
-	if (!(res = ft_strdup("")))
-		ft_error("Malloc failed", MALLOC, 1);
-	while (i < len)
+	// 当前不是pipe，只需要考虑这个和下一个是否连续为空
+	else if (sign == 3 && line_lst->next
+		&& !ft_strncmp(((t_input *)line_lst->next->content)->temp_line, "", 1))
 	{
-		tmp_join = res;
-		if (!(res = ft_strjoin(tmp_join, tmp_exp[i])))
-			ft_error("Malloc failed", MALLOC, 1);
-		free_str(tmp_join);
-		i++;
+		ft_error("Syntax error: parse error", SYNTAX, 1);
+		return (-1);
 	}
-	return res;
+	return (0);
 }
 
 // split, replace, joint, return
@@ -84,26 +34,15 @@ char *replace_env_expand(char *temp_line, t_list *env_lst)
 {
 	int i;
 	char **tmp_exp; // $ split每个temp_line
-	char *tmp_str; // split出来的最后一个字符串，用于连接$
+	char *tmp_str;
 
 	i = -1;
-	if (!(tmp_exp = ft_split(temp_line, '$')))
-		ft_error("Malloc failed", MALLOC, 1);
+	tmp_exp = ft_split(temp_line, '$');
+	if (!tmp_exp)
+		ft_error("Malloc failed", MALLOC, 0);
 	if (temp_line[0] != '$')
 		i = 0; // the first arg no need to handle
-	while (tmp_exp[++i])
-	{
-		if (tmp_exp[i][0] == '?')
-			tmp_exp[i] = handle_exitcode(tmp_exp[i]);
-		else if (tmp_exp[i][0] == ' ')
-		{
-			tmp_str = tmp_exp[i]; // 复用
-			tmp_exp[i] = ft_strjoin("$", tmp_str);
-			free_str(tmp_str);
-		}
-		else
-			tmp_exp[i] = replace_env(tmp_exp[i], env_lst, NULL, -1);
-	}
+	tmp_exp = split_replace(tmp_exp, &i, env_lst);
 	// the last char is $
 	if (i && temp_line[ft_strlen(temp_line) - 1] == '$')
 	{
@@ -120,14 +59,25 @@ char *replace_env_expand(char *temp_line, t_list *env_lst)
 	return temp_line;
 }
 
-/* by given ", syntax error will be printing nonstop...."*/
-int handle_args_expand(t_list *line_lst, t_list *env_lst)
+int expander_args(t_list *line_lst, t_list *env_lst)
 {
+	t_input		*input;
+
 	while (line_lst)
 	{
-		if (((t_input *)line_lst->content)->quote_type != 1
-			 && ft_strchr(((t_input *)line_lst->content)->temp_line, '$'))
-			((t_input *)line_lst->content)->temp_line = replace_env_expand(((t_input *)line_lst->content)->temp_line, env_lst);
+		input = (t_input *)line_lst->content;
+		if (!(line_lst->next))
+			handle_parse_error(line_lst, 1);
+		// 连续两个node为空，报错newline with prompt
+		if (!ft_strncmp(input->temp_line, "", 1))
+		{
+			if (input->pipe_sign == 1)
+				handle_parse_error(line_lst, 2);
+			else
+				handle_parse_error(line_lst, 3);
+		}
+		if (input->quote_type != 1 && ft_strchr(input->temp_line, '$'))
+			input->temp_line = replace_env_expand(input->temp_line, env_lst);
 		line_lst = line_lst->next;
 	}
 	return (0);

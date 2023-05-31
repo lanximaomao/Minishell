@@ -51,21 +51,20 @@ int	readline_prompt(t_mini *mini)
 
 void	minishell(t_mini *mini, char *line)
 {
-	int		i;
 	int		size;
 	t_list	*line_lst;
 
 	line_lst = NULL;
-	line_lst = get_linelst(line, line_lst, -1);
+	line_lst = lexer_get_linelst(line, line_lst, -1);
 	free(line);
 	line = NULL;
 	if (line_lst == NULL) //lin
 		return ;           //lin
 	//if (validator(line_lst) == -1)
 	//	return ;
-	if (handle_args_expand(line_lst, mini->env) == -1)
+	if (expander_args(line_lst, mini->env) == -1)
 		return ;
-	mini->cmd_lst = parse_cmds(line_lst, mini->env);
+	mini->cmd_lst = parser_cmds(line_lst, mini->env);
 	ft_lstfree(line_lst);
 	signal(SIGQUIT, handle_cmd);
 	signal(SIGINT, handle_cmd);

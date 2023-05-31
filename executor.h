@@ -17,9 +17,9 @@ void	cmd_with_full_path(t_token *token, t_mini *mini, char **env_exe);
 
 //files
 int		handle_io(t_token *token, int cmd_order, int size, int *fd_pipe);
-int		get_file_fd(t_token *token);
-int		get_infile_fd(t_token *token);
-int		get_outfile_fd(t_token *token);
+int		get_file_fd(t_token *tokens);
+int		get_infile_fd(t_token *tokens,int i, int *count_in);
+int		get_outfile_fd(t_token *tokens, int i, int *count_out);
 
 //utils
 int		create_child(int *pid, int i);
