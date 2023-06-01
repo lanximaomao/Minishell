@@ -28,18 +28,18 @@ int	handle_io(t_token *token, int cmd_order, int size, int *fd_pipe)
 	return (get_file_fd(token));
 }
 
-int get_file_fd(t_token *tokens)
+int	get_file_fd(t_token *tokens)
 {
-	int		i;
-	int		count_in;
-	int		count_out;
+	int	i;
+	int	count_in;
+	int	count_out;
 
 	i = -1;
 	count_in = 0;
 	count_out = 0;
 	while (tokens->file_redir && tokens->file_redir[++i])
 	{
-		if (tokens->file_type[i] == 3) // infile
+		if (tokens->file_type[i] == 3)
 		{
 			if (get_infile_fd(tokens, i, &count_in) == -1)
 				return (-1);
@@ -71,9 +71,11 @@ int	get_infile_fd(t_token *tokens, int i, int *count_in)
 int	get_outfile_fd(t_token *tokens, int i, int *count_out)
 {
 	if (tokens->file_type[i] == 1)
-		tokens->fd_out = open(tokens->file_redir[i], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		tokens->fd_out = open(tokens->file_redir[i],
+				O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	else if (tokens->file_type[i] == 2)
-		tokens->fd_out = open(tokens->file_redir[i], O_WRONLY | O_CREAT | O_APPEND, 0644);
+		tokens->fd_out = open(tokens->file_redir[i],
+				O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (tokens->fd_out < 0)
 	{
 		ft_error("minishell: outfile", FILE_OP, 1);

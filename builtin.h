@@ -2,6 +2,7 @@
 # define BUILTIN_H
 
 # include "minishell.h"
+# include "libft_42/inc/ft_printf.h"
 
 //builtin
 int		is_builtin(t_token *token, t_list *env);

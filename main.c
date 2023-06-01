@@ -15,7 +15,6 @@ int	main(int argc, char **argv, char **env)
 		ft_error("malloc fail.\n", 1, 0);
 	env_init(mini, env);
 	readline_prompt(mini);
-	//free_char((char *)mini); // why?
 	ft_lstfree(mini->env);
 	free(mini);
 	return (0);
@@ -58,10 +57,10 @@ void	minishell(t_mini *mini, char *line)
 	line_lst = lexer_get_linelst(line, line_lst, -1);
 	free(line);
 	line = NULL;
-	if (line_lst == NULL) //lin
-		return ;           //lin
-	//if (validator(line_lst) == -1)
-	//	return ;
+	if (line_lst == NULL)
+		return ;
+	if (validator(line_lst) == -1)
+		return ;
 	if (expander_args(line_lst, mini->env) == -1)
 		return ;
 	mini->cmd_lst = parser_cmds(line_lst, mini->env);

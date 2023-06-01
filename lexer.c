@@ -5,13 +5,13 @@ static void	init_input(t_input **input)
 	*input = (t_input *)ft_calloc(sizeof(t_input), 1);
 	if (!input)
 		ft_error("Malloc failed", MALLOC, 0);
-	(*input)->temp_line = NULL;
+	(*input)->tmp_line = NULL;
 	(*input)->quote_type = 0;
 	(*input)->pipe_sign = 0;
 	(*input)->redir_sign = 0;
 }
 
-// check if the quote is closed or not
+/* check if the quote is closed or not */
 static int	handle_quote(t_input *input, char *line, int i, int *len)
 {
 	int		count;
@@ -65,8 +65,7 @@ static int	handle_token(t_input *input, char *line, int i, int *len)
 	return (i);
 }
 
-// after split, trim the quotes in input->temp_line
-static char	*trim_quote(char *temp_line, int quote_type)
+static char	*trim_quote(char *tmp_line, int quote_type)
 {
 	char	quote;
 	char	*trim_line;
@@ -80,25 +79,25 @@ static char	*trim_quote(char *temp_line, int quote_type)
 	else if (quote_type == 2)
 		quote = '\"';
 	else
-		return (temp_line);
-	trim_line = (char *)malloc(sizeof(char) * (ft_strlen(temp_line) - 1));
+		return (tmp_line);
+	trim_line = (char *)malloc(sizeof(char) * (ft_strlen(tmp_line) - 1));
 	if (!trim_line)
 		ft_error("Malloc failed", MALLOC, 0);
-	while (temp_line[++i])
+	while (tmp_line[++i])
 	{
-		if (temp_line[i] != quote)
-			trim_line[len++] = temp_line[i];
+		if (tmp_line[i] != quote)
+			trim_line[len++] = tmp_line[i];
 	}
-	free(temp_line);
-	temp_line = NULL;
+	free(tmp_line);
+	tmp_line = NULL;
 	trim_line[len] = '\0';
 	return (trim_line);
 }
 
 t_list	*lexer_get_linelst(char *line, t_list *line_lst, int i)
 {
-	int			len;
-	t_input		*input;
+	int		len;
+	t_input	*input;
 
 	while (line[++i])
 	{
@@ -108,10 +107,10 @@ t_list	*lexer_get_linelst(char *line, t_list *line_lst, int i)
 			i = handle_token(input, line, i, &len);
 			if (i == -1)
 				return (NULL);
-			input->temp_line = ft_substr(line, i - len, len);
-			if (!input->temp_line)
+			input->tmp_line = ft_substr(line, i - len, len);
+			if (!input->tmp_line)
 				ft_error("Malloc failed", MALLOC, 0);
-			input->temp_line = trim_quote(input->temp_line, input->quote_type);
+			input->tmp_line = trim_quote(input->tmp_line, input->quote_type);
 			if (input->redir_sign == 2 || input->redir_sign == 4)
 				i += 1;
 			create_lst(&line_lst, (t_input *)input);

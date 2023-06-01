@@ -1,7 +1,6 @@
 #include "minishell.h"
 
 /*
- combine this error function
  exit(error_code)
  # define MALLOC 1
  # define FILE_OP 2
@@ -9,9 +8,10 @@
  # define FUNC 4
  error_code: <= 2 for system perror(malloc, file_err...)
  others for the mini_error(syntax, parse_err)
+ flag 0 means exit, flag 1 means return
 */
 
-void ft_error(char* msg, int error_code, int flag) // flag 0 means exit, flag 2 means return
+void	ft_error(char *msg, int error_code, int flag)
 {
 	if (error_code <= 2)
 		perror(msg);
@@ -27,16 +27,16 @@ void ft_error(char* msg, int error_code, int flag) // flag 0 means exit, flag 2 
 	}
 }
 
-int free_str(char *str)
+int	free_str(char *str)
 {
 	free(str);
 	str = NULL;
 	return (1);
 }
 
-void free_char(char **str)
+void	free_char(char **str)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (str[i])
@@ -49,14 +49,14 @@ void free_char(char **str)
 	str = NULL;
 }
 
-void free_input(t_input *input)
+void	free_input(t_input *input)
 {
 	if (input != NULL)
 	{
-		if (input->temp_line != NULL)
+		if (input->tmp_line != NULL)
 		{
-			free(input->temp_line);
-			input->temp_line = NULL;
+			free(input->tmp_line);
+			input->tmp_line = NULL;
 		}
 		input->quote_type = 0;
 		input->pipe_sign = 0;
@@ -66,7 +66,7 @@ void free_input(t_input *input)
 	}
 }
 
-void free_tokens(t_token *tokens)
+void	free_tokens(t_token *tokens)
 {
 	if (tokens != NULL)
 	{
