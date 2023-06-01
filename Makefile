@@ -12,7 +12,7 @@ WHITE		=	\033[0;97m
 
 ECHO		= echo
 
-SRCS = 			main.c mini_utils.c	validator.c	\
+SRCS = 			main.c mini_utils.c	mini_utils2.c validator.c	\
 				lexer.c expander.c expander_utils.c parser.c parser_utils.c			\
 				env_var.c signal.c			\
 				builtin_echo.c			\

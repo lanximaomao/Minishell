@@ -29,8 +29,7 @@ to do list:
 5. remove printf in the signal handeler
 6. env_convert returned char** to be freed!
 7. update the error code for malloc fail etc, since it will be overlapping with other erros?
-8. memory?
-9. function name?
+8. function name? comment?
 
 
 /*

@@ -63,7 +63,7 @@ static void	handle_heredoc(t_list *env_lst, t_input *input, char *num_heredoc)
 	char	*line;
 	char	*file_name;
 
-	file_name = ft_strjoin("heredoc_name", num_heredoc);
+	file_name = ft_strjoin("tmp_file", num_heredoc);
 	fd = open(file_name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
 		ft_error("Open tmp_file failed", FILE_OP, 0);
@@ -88,7 +88,7 @@ void	redir_heredoc(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst,
 
 	num_heredoc = ft_itoa(cmd_tokens->cmd_id);
 	handle_heredoc(env_lst, ((t_input *)line_lst->next->content), num_heredoc);
-	cmd_tokens->file_redir[i] = ft_strjoin("heredoc_name", num_heredoc);
+	cmd_tokens->file_redir[i] = ft_strjoin("tmp_file", num_heredoc);
 	if (!cmd_tokens->file_redir[i])
 		ft_error("Malloc failed", MALLOC, 0);
 	free_str(num_heredoc);

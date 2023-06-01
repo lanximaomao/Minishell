@@ -71,20 +71,5 @@ void	minishell(t_mini *mini, char *line)
 	if (size == 0)
 		return ;
 	executor(mini, size);
-}
-
-void	ascii_art_pattern(void)
-{
-	printf("\n\n*********************************************************");
-	printf("\n*                                                       *");
-	printf("\n*               Enter Minishell's Charm!                *");
-	printf("\n*                                                       *");
-	printf("\n*********************************************************\n\n");
-}
-
-void	exit_with_empty_line(char *msg, int exit_code)
-{
-	ft_putstr_fd(msg, 0);
-	g_exitcode = exit_code;
-	exit(g_exitcode);
+	remove_tmp_file(mini->cmd_lst, size);
 }
