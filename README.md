@@ -22,7 +22,7 @@ cd minishell_tester && ./tester
 
 to do list:
 
-1. remove the heredoc file
+1. remove the heredoc file --> done!
 2. test the signals
 3. check for memory leak
 4. error handel

@@ -2,11 +2,11 @@
 
 void	ascii_art_pattern(void)
 {
-	printf("\n\n*********************************************************");
-	printf("\n*                                                       *");
-	printf("\n*               Enter Minishell's Charm!                *");
-	printf("\n*                                                       *");
-	printf("\n*********************************************************\n\n");
+	ft_printf("\n\n*********************************************************");
+	ft_printf("\n*                                                       *");
+	ft_printf("\n*               Enter Minishell's Charm!                *");
+	ft_printf("\n*                                                       *");
+	ft_printf("\n*********************************************************\n\n");
 }
 
 void	exit_with_empty_line(char *msg, int exit_code)
@@ -16,10 +16,10 @@ void	exit_with_empty_line(char *msg, int exit_code)
 	exit(g_exitcode);
 }
 
-void remove_tmp_file(t_list *cmd_lst, int size)
+void	remove_tmp_file(t_list *cmd_lst, int size)
 {
-	int	i;
-	char* tmp_file;
+	int		i;
+	char	*tmp_file;
 
 	i = 0;
 	while (i < size)

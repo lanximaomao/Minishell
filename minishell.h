@@ -1,7 +1,7 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# include "printf.h"
+# include "libft_42/inc/ft_printf.h"
 # include "libft.h"
 # include <dirent.h>
 # include <errno.h>
@@ -87,6 +87,7 @@ t_list		*lexer_get_linelst(char *line, t_list *line_lst, int i);
 
 /* validator.c */
 int			validator(t_list *line_lst);
+
 /* expander.c */
 int			expander_args(t_list *line_lst, t_list *env_lst);
 char		*replace_env_expand(char *tmp_line, t_list *env_lst);

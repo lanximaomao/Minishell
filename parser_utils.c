@@ -35,7 +35,7 @@ static int	store_heredoc(char *line, t_input *input, t_list *env_lst, int fd)
 	if (!line && !errno)
 	{
 		g_exitcode = 256;
-		printf("\033[1A");
+		ft_printf("\033[1A");
 		rl_redisplay();
 		return (1);
 	}

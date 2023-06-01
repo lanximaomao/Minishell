@@ -14,7 +14,7 @@ void	handle_signal(int sig)
 			g_exitcode = 386;
 		else
 		{
-			printf("\n");
+			ft_printf("\n");
 			g_exitcode = 1;
 		}
 		rl_on_new_line();
@@ -30,11 +30,11 @@ void	handle_cmd(int sig)
 {
 	if (sig == SIGINT)
 	{
-		printf("\n");
+		ft_printf("\n");
 		(void)sig;
 	}
 	else if (sig == SIGQUIT)
-		printf("^\\Quit: %d\n", sig);
+		ft_printf("^\\Quit: %d\n", sig);
 	return ;
 }
 
@@ -50,7 +50,7 @@ void	handle_signal_heredoc(int sig)
 	if (sig == SIGINT)
 	{
 		ioctl(0, TIOCSTI, "\n");
-		printf("\033[1A");
+		ft_printf("\033[1A");
 		g_exitcode = -2;
 	}
 	else
