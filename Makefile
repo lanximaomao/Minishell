@@ -12,8 +12,8 @@ WHITE		=	\033[0;97m
 
 ECHO		= echo
 
-SRCS = 			main.c mini_utils.c			\
-				lexer.c expander.c parser.c			\
+SRCS = 			main.c mini_utils.c		\
+				lexer.c expander.c expander_utils.c parser.c parser_utils.c			\
 				env_var.c signal.c			\
 				builtin_echo.c			\
 				builtin_exit.c builtin_export.c		\
@@ -38,8 +38,8 @@ READLINE_DIR = $(shell brew --prefix readline)
 RL_L = -lreadline -L $(READLINE_DIR)/lib
 RL_I = -lreadline -lhistory -I $(READLINE_DIR)/include/readline
 
-#  RL_L = -lreadline -L /Users/lsun/.brew/opt/readline/lib
-#  RL_I = -lreadline -lhistory -I /Users/lsun/.brew/opt/readline/include/readline
+#   RL_L = -lreadline -L /Users/lsun/.brew/opt/readline/lib
+#   RL_I = -lreadline -lhistory -I /Users/lsun/.brew/opt/readline/include/readline
 
 
 

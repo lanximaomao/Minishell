@@ -15,7 +15,7 @@ int	handle_io(t_token *token, int cmd_order, int size, int *fd_pipe)
 	if (cmd_order != 0)
 		token->fd_in = fd_pipe[0];
 	if (cmd_order != size - 1 && pipe(fd_pipe) == -1)
-		ft_error(" error in creating pipes.\n", 4);
+		ft_error(" error in creating pipes.\n", 4, 0);
 	if (cmd_order == 0)
 	{
 		token->fd_in = dup(0);
@@ -28,62 +28,60 @@ int	handle_io(t_token *token, int cmd_order, int size, int *fd_pipe)
 	return (get_file_fd(token));
 }
 
-/*
-** -1 means problem occured with infile
-** -2 means problem occured with outfile
-*/
-int	get_file_fd(t_token *token)
+int get_file_fd(t_token *tokens)
 {
-	if (get_infile_fd(token) == -1)
-		return (-1);
-	if (get_outfile_fd(token) == -2)
-		return (-2);
-	return (0);
-}
+	int		i;
+	int		count_in;
+	int		count_out;
 
-int	get_infile_fd(t_token *token)
-{
-	int	i;
-
-	i = 0;
-	while (i < token->num_infile)
+	i = -1;
+	count_in = 0;
+	count_out = 0;
+	while (tokens->file_redir && tokens->file_redir[++i])
 	{
-		token->fd_in = open(token->infile[i], O_RDONLY);
-		if (token->fd_in == -1)
+		if (tokens->file_type[i] == 3) // infile
 		{
-			perror("minishell");
-			g_exitcode = 1;
-			return (-1);
+			if (get_infile_fd(tokens, i, &count_in) == -1)
+				return (-1);
 		}
-		if (i + 1 < token->num_infile)
-			close(token->fd_in);
-		i++;
-	}
-	return (0);
-}
-
-int	get_outfile_fd(t_token *token)
-{
-	int	i;
-
-	i = 0;
-	while (i < token->num_outfile_type)
-	{
-		if (token->output_type[i] == 2)
-			token->fd_out = open(token->outfile[i],
-					O_WRONLY | O_CREAT | O_APPEND, 0644);
 		else
-			token->fd_out = open(token->outfile[i],
-					O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		if (token->fd_out == -1)
 		{
-			perror("fail to create or open outfile");
-			g_exitcode = 1;
-			return (-2);
+			if (get_outfile_fd(tokens, i, &count_out))
+				return (-2);
 		}
-		if (i + 1 < token->num_outfile_type)
-			close(token->fd_out);
-		i++;
 	}
+	return (0);
+}
+
+int	get_infile_fd(t_token *tokens, int i, int *count_in)
+{
+	tokens->fd_in = open(tokens->file_redir[i], O_RDONLY);
+	if (tokens->fd_in < 0)
+	{
+		ft_error("minishell: infile", FILE_OP, 1);
+		g_exitcode = 1;
+		return (-1);
+	}
+	(*count_in)++;
+	if ((*count_in) != tokens->num_infile)
+		close(tokens->fd_in);
+	return (0);
+}
+
+int	get_outfile_fd(t_token *tokens, int i, int *count_out)
+{
+	if (tokens->file_type[i] == 1)
+		tokens->fd_out = open(tokens->file_redir[i], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	else if (tokens->file_type[i] == 2)
+		tokens->fd_out = open(tokens->file_redir[i], O_WRONLY | O_CREAT | O_APPEND, 0644);
+	if (tokens->fd_out < 0)
+	{
+		ft_error("minishell: outfile", FILE_OP, 1);
+		g_exitcode = 1;
+		return (-2);
+	}
+	(*count_out)++;
+	if ((*count_out) != tokens->num_outfile)
+		close(tokens->fd_out);
 	return (0);
 }

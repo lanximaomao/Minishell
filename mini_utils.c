@@ -11,7 +11,7 @@
  others for the mini_error(syntax, parse_err)
 */
 
-void ft_error(char* msg, int error_code)
+void ft_error(char* msg, int error_code, int flag) // flag 0 means exit, flag 2 means return
 {
 	if (error_code <= 2)
 		perror(msg);
@@ -20,17 +20,11 @@ void ft_error(char* msg, int error_code)
 		ft_putstr_fd(msg, 2);
 		write(2, "\n", 1);
 	}
-	g_exitcode = error_code;
-	exit(g_exitcode);
-}
-
-/* handle error in parent process */
-void ft_error_minishell(char* msg, int error_code, int sig)
-{
-	if (error_code <= 2)
-		perror(msg);
-	else
-		ft_printf("%s\n", msg); // Add by Lin: should this print to fd 1 or 2??
+	if (flag == 0)
+	{
+		g_exitcode = error_code;
+		exit(g_exitcode);
+	}
 }
 
 int free_str(char *str)
@@ -72,7 +66,7 @@ void free_input(t_input *input)
 	}
 }
 
-void free_tokens(t_token *tokens, int num_args, int num_infile, int num_outfile_type)
+void free_tokens(t_token *tokens)
 {
 	if (tokens != NULL)
 	{
@@ -83,18 +77,13 @@ void free_tokens(t_token *tokens, int num_args, int num_infile, int num_outfile_
 		}
 		if (tokens->args != NULL)
 			free_char(tokens->args);
-		if (tokens->infile != NULL)
-			free_char(tokens->infile);
-		if (tokens->outfile != NULL)
-			free_char(tokens->outfile);
-		if (tokens->output_type != NULL)
+		if (tokens->file_redir != NULL)
+			free_char(tokens->file_redir);
+		if (tokens->file_type != NULL)
 		{
-			free(tokens->output_type);
-			tokens->output_type = NULL;
+			free(tokens->file_type);
+			tokens->file_type = NULL;
 		}
-		num_args = 0;
-		num_infile = 0;
-		num_outfile_type = 0;
 		free(tokens);
 		tokens = NULL;
 	}

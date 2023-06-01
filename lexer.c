@@ -1,73 +1,89 @@
 #include "minishell.h"
 
-void init_input(t_input *input)
+static void	init_input(t_input **input)
 {
-	input->temp_line = NULL;
-	input->quote_type = 0;
-	input->pipe_sign = 0;
-	input->redir_sign = 0;
+	*input = (t_input *)ft_calloc(sizeof(t_input), 1);
+	if (!input)
+		ft_error("Malloc failed", MALLOC, 0);
+	(*input)->temp_line = NULL;
+	(*input)->quote_type = 0;
+	(*input)->pipe_sign = 0;
+	(*input)->redir_sign = 0;
 }
 
 // check if the quote is closed or not
-int handle_quote(char *line, int i, int *len)
+static int	handle_quote(t_input *input, char *line, int i, int *len)
 {
-	int count = 1;
-	char quote = line[i];
+	int		count;
+	char	quote;
+
+	count = 1;
+	quote = line[i];
+	if (quote == '\'')
+		input->quote_type = 1;
+	else if (quote == '\"')
+		input->quote_type = 2;
 	while (line[++i] != quote)
 	{
 		if (!line[i])
-			return (-1); // no cloced quote
+		{
+			ft_error("Syntax error: quote not closed", SYNTAX, 1);
+			return (-1);
+		}
 		count++;
 	}
 	*len += count;
 	return (i);
 }
 
-/* need to handel segfault in case >> or << */
-int   handle_token(t_input *input, char *line, int i, int *len)
+static int	handle_token(t_input *input, char *line, int i, int *len)
 {
-	*len = 0; //  length of the substring that needs to be extracted currently.
-	while (!(line[i] == ' ' || (line[i] > 8 && line[i] < 14)) && line[i] && ++(*len))
+	*len = 0;
+	while (line[i] != ' ' && line[i] && ++(*len))
 	{
 		if ((line[i] == '|' || line[i] == '<' || line[i] == '>'))
 		{
 			if (line[i] == '|')
-				input->pipe_sign = 1; // left pipe
+				input->pipe_sign = 1;
 			else if (line[i] == '<' && line[i + 1] != '<')
-				input->redir_sign = 1; // infile, <
-			else if (line[i] == '<' && line[i + 1] == '<') // 函数内部可以直接判断后面有没有东西，没有的话syntax error，或者在parser上做
-				input->redir_sign = 2; // heredoc, <<
+				input->redir_sign = 1;
+			else if (line[i] == '<' && line[i + 1] == '<')
+				input->redir_sign = 2;
 			else if (line[i] == '>' && line[i + 1] != '>')
-				input->redir_sign = 3; // outfile, >
+				input->redir_sign = 3;
 			else if (line[i] == '>' && line[i + 1] == '>')
-				input->redir_sign = 4; // append, >>
+				input->redir_sign = 4;
 			(*len)--;
-			break;
+			break ;
 		}
-		else if (((line[i] == '\'' && (input->quote_type = 1))
-				|| (line[i] == '\"' && (input->quote_type = 2)))
-				&& ((i = handle_quote(line, i, len)) == -1)) // handle error: unclosed quote // Add by Lin: why handel the quote here, "|" should not be valid
-				ft_error_minishell("Syntax error: unclosed quote.", SYNTAX, 2);
+		else if (line[i] == '\'' || line[i] == '\"')
+			i = handle_quote(input, line, i, len);
+		if (i == -1)
+			return (-1);
 		i++;
 	}
-	return i;
+	return (i);
 }
 
 // after split, trim the quotes in input->temp_line
-char *trim_quote(char *temp_line, int quote_type)
+static char	*trim_quote(char *temp_line, int quote_type)
 {
-	char quote;
-	char *trim_line;
-	int i = -1;
-	int len = 0;
+	char	quote;
+	char	*trim_line;
+	int		i;
+	int		len;
 
+	i = -1;
+	len = 0;
 	if (quote_type == 1)
 		quote = '\'';
-	else
+	else if (quote_type == 2)
 		quote = '\"';
+	else
+		return (temp_line);
 	trim_line = (char *)malloc(sizeof(char) * (ft_strlen(temp_line) - 1));
 	if (!trim_line)
-		ft_error_minishell("Malloc failed", MALLOC, 2);
+		ft_error("Malloc failed", MALLOC, 0);
 	while (temp_line[++i])
 	{
 		if (temp_line[i] != quote)
@@ -79,34 +95,29 @@ char *trim_quote(char *temp_line, int quote_type)
 	return (trim_line);
 }
 
-/* ascii 8 - 14 represents nl, tab etc */
-t_list *get_linelst(char *line, t_list *line_lst, int i) // i = -1
+t_list	*lexer_get_linelst(char *line, t_list *line_lst, int i)
 {
-	int len;
-	t_input *input;
-	t_list *node;
+	int			len;
+	t_input		*input;
 
 	while (line[++i])
 	{
 		if (!(line[i] == ' ' || (line[i] > 8 && line[i] < 14)))
 		{
-			if (!(input = (t_input *)ft_calloc(sizeof(t_input), 1)))
-				ft_error_minishell("Malloc failed", MALLOC, 2);
-			init_input(input);
+			init_input(&input);
 			i = handle_token(input, line, i, &len);
-			if (!(input->temp_line = ft_substr(line, i - len, len))) // Extract the substring and store it into the data structure of a lst node.
-				ft_error_minishell("Malloc failed", MALLOC, 2);
-			if (input->quote_type)
-				input->temp_line = trim_quote(input->temp_line, input->quote_type); // trim the quote & dquote, free the 1st argument temp_line in this function.
+			if (i == -1)
+				return (NULL);
+			input->temp_line = ft_substr(line, i - len, len);
+			if (!input->temp_line)
+				ft_error("Malloc failed", MALLOC, 0);
+			input->temp_line = trim_quote(input->temp_line, input->quote_type);
 			if (input->redir_sign == 2 || input->redir_sign == 4)
-				i += 1; // skip two characters, the other++ in the condition of while loop
-			if (!(node = ft_lstnew((t_input *)input)))
-				ft_error_minishell("Malloc failed", MALLOC, 2);
-			ft_lstadd_back(&line_lst, node);
+				i += 1;
+			create_lst(&line_lst, (t_input *)input);
 		}
 		if (!line[i])
-			break;
+			break ;
 	}
 	return (line_lst);
 }
-
