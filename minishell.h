@@ -6,8 +6,6 @@
 # include <dirent.h>
 # include <errno.h>
 # include <fcntl.h>
-# include <readline/history.h>
-# include <readline/readline.h>
 # include <signal.h>
 # include <stdarg.h>
 # include <stdio.h>
@@ -19,6 +17,8 @@
 # include <sys/wait.h>
 # include <termios.h>
 # include <unistd.h>
+# include <readline/history.h>
+# include <readline/readline.h>
 
 # define FILE_OP 1
 # define MALLOC 2
@@ -73,7 +73,7 @@ int			readline_prompt(t_mini *mini);
 void		minishell(t_mini *mini, char *line);
 void		ascii_art_pattern(void);
 void		exit_with_empty_line(char *msg, int exit_code);
-void		remove_tmp_file(t_list *cmd_lst, int size);
+void		remove_tmp_file(int size);
 
 /* env_var */
 void		env_init(t_mini *mini, char **env);

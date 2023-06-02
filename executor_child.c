@@ -1,7 +1,7 @@
 #include "builtin.h"
 #include "executor.h"
 
-int	cmd_execution_in_child(t_token *token, int size, t_mini *mini,
+int	cmd_execution_in_child(t_token *token, t_mini *mini,
 		char **env_exe)
 {
 	if (token->cmd == NULL)
@@ -43,7 +43,7 @@ void	cmd_with_no_path(t_token *token, t_mini *mini, char **env_exe)
 	free(path_cmd);
 }
 
-void	cmd_with_full_path(t_token *token, t_mini *mini, char **env_exe)
+void	cmd_with_full_path(t_token *token, char **env_exe)
 {
 	struct stat	file_stat;
 

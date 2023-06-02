@@ -54,12 +54,10 @@ char	*get_path_cmd(char *str, t_list *env)
 
 char	**get_path_env(t_list *env)
 {
-	int		i;
 	t_list	*tmp;
 	char	**env_content;
 	char	**path_env;
 
-	i = 0;
 	tmp = env;
 	while (tmp)
 	{

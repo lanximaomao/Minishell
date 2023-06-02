@@ -13,7 +13,7 @@ void	get_exitcode(int size, int *pid, int *status);
 int		cmd_execution_in_child(t_token *token, int size, t_mini *mini,
 			char **env_exe);
 void	cmd_with_no_path(t_token *token, t_mini *mini, char **env_exe);
-void	cmd_with_full_path(t_token *token, t_mini *mini, char **env_exe);
+void	cmd_with_full_path(t_token *token, char **env_exe);
 
 //files
 int		handle_io(t_token *token, int cmd_order, int size, int *fd_pipe);

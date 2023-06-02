@@ -16,7 +16,7 @@ void	exit_with_empty_line(char *msg, int exit_code)
 	exit(g_exitcode);
 }
 
-void	remove_tmp_file(t_list *cmd_lst, int size)
+void	remove_tmp_file(int size)
 {
 	int		i;
 	char	*tmp_file;

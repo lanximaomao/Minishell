@@ -29,7 +29,7 @@ SRCS_TEST =		main.c minishell.c mini_utils.c			\
 
 NAME = minishell
 CC = cc
-CFLAGS = -I./libft_42/inc
+CFLAGS = -Werror -Wall -Wextra -I./libft_42/inc
 LDFLAGS = -L./libft_42 -lft
 FSANITIZE	= -fsanitize=address -g3
 
@@ -67,7 +67,7 @@ debug:
 	@git submodule update --init --recursive
 	@cd libft_42 && git pull origin main
 	@make -C libft_42
-	$(CC)  -I./libft_42/inc $(LDFLAGS)  $(RL_L) $(RL_I) $(SRCS_TEST) -g -o test
+	$(CC) $(CFLAGS) $(FSANITIZE) $(LDFLAGS)  $(RL_L) $(RL_I) $(SRCS) -g -o test
 
 .PHONY : all clean fclean re norm debug
 

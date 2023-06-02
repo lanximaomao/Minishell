@@ -3,9 +3,6 @@
 
 int	handle_io(t_token *token, int cmd_order, int size, int *fd_pipe)
 {
-	int	in;
-	int	out;
-
 	if (size == 1)
 	{
 		token->fd_in = dup(0);

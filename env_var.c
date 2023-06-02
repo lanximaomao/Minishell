@@ -67,7 +67,7 @@ char	*env_handler(t_list *env, char *str)
 {
 	char	**env_content;
 	t_list	*tmp;
-	int		len;
+	size_t		len;
 
 	tmp = env;
 	env_content = (char **)env->content;
@@ -75,7 +75,7 @@ char	*env_handler(t_list *env, char *str)
 	{
 		env_content = (char **)tmp->content;
 		len = ft_strlen(env_content[0]);
-		if (len == ft_strlen(str) && ft_strncmp(str, env_content[0], len) == 0)
+		if (len == ft_strlen(str) && ft_strncmp(str, env_content[0], (int)len) == 0)
 			return (env_content[1]);
 		tmp = tmp->next;
 	}
