@@ -64,6 +64,12 @@ void	minishell(t_mini *mini, char *line)
 	if (expander_args(line_lst, mini->env) == -1)
 		return ;
 	mini->cmd_lst = parser_cmds(line_lst, mini->env);
+	t_list	*tmp_lst = line_lst;
+	while (tmp_lst)
+	{
+		free_input((t_input *)tmp_lst->content);
+		tmp_lst = tmp_lst->next;
+	}
 	ft_lstfree(line_lst);
 	signal(SIGQUIT, handle_cmd);
 	signal(SIGINT, handle_cmd);

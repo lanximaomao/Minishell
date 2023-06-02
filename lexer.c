@@ -88,8 +88,7 @@ static char	*trim_quote(char *tmp_line, int quote_type)
 		if (tmp_line[i] != quote)
 			trim_line[len++] = tmp_line[i];
 	}
-	free(tmp_line);
-	tmp_line = NULL;
+	free_str(tmp_line);
 	trim_line[len] = '\0';
 	return (trim_line);
 }

@@ -55,6 +55,8 @@ void	env_init(t_mini *mini, char **env)
 				ft_error("fail to init a node\n", 1, 0);
 			ft_lstadd_back(&mini->env, node);
 		}
+		else
+			free_char(env_content);
 		i++;
 	}
 }
