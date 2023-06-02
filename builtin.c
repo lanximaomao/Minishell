@@ -4,7 +4,7 @@
 ** if no cmd is given, just return.
 ** this is to avoide the segfault by doing << f1
 */
-int	is_builtin(t_token *token, t_list *env)
+int	is_builtin(t_token *token)
 {
 	int	len;
 
@@ -32,7 +32,7 @@ int	run_builtin(t_token *token, t_list **env)
 {
 	int	ret;
 
-	ret = is_builtin(token, *env);
+	ret = is_builtin(token);
 	if (token->fd_in < 0 || token->fd_out < 0)
 		return (-1);
 	if (ret == 0)
@@ -40,13 +40,13 @@ int	run_builtin(t_token *token, t_list **env)
 	if (ret == 1)
 		my_cd(++token->args, *env);
 	if (ret == 2)
-		my_pwd(*env);
+		my_pwd();
 	if (ret == 3)
 		my_env(*env);
 	if (ret == 4)
 		my_exit(++token->args);
 	if (ret == 5)
-		my_echo(++token->args, *env);
+		my_echo(++token->args);
 	if (ret == 6)
 		my_unset(++token->args, env);
 	if (ret == 7)

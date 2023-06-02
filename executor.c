@@ -17,14 +17,14 @@ int	executor(t_mini *mini, int size)
 	status = malloc(sizeof(int) * size);
 	if (!status)
 		ft_error("status malloc fail", 1, 0);
-	if (loop(mini, size, pid, status) != 1)
+	if (loop(mini, size, pid) != 1)
 		get_exitcode(size, pid, status);
 	free(pid);
 	free(status);
 	return (0);
 }
 
-int	loop(t_mini *mini, int size, int *pid, int *status)
+int	loop(t_mini *mini, int size, int *pid)
 {
 	int		i;
 	t_list	*tmp;
@@ -45,7 +45,7 @@ int	loop(t_mini *mini, int size, int *pid, int *status)
 		{
 			if (i < size - 1)
 				close(fd_pipe[0]);
-			cmd_execution_in_child(token, size, mini, env_exe);
+			cmd_execution_in_child(token, mini, env_exe);
 		}
 		free_and_close(env_exe, token->fd_in, token->fd_out);
 		tmp = tmp->next;
@@ -58,7 +58,7 @@ int	cmd_in_main(int size, t_token *token, t_list *env)
 	int	in;
 	int	out;
 
-	if (size == 1 && is_builtin(token, env) > 0)
+	if (size == 1 && is_builtin(token) > 0)
 	{
 		in = dup(0);
 		out = dup(1);

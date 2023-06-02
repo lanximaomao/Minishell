@@ -24,7 +24,7 @@ static int	check_n(char **arg)
 /*
 ** create echo with option -n
 */
-void	my_echo(char **arg, t_list *env)
+void	my_echo(char **arg)
 {
 	int	i;
 	int	nl;

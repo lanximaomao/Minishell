@@ -16,7 +16,9 @@ static void	handle_oldpwd(char *buf, t_list *env)
 		arg = ft_split(ex_arg, '$');
 		if (!arg)
 			ft_error("Split function fail", MALLOC, 0);
+		free_str(ex_arg);
 		my_export(arg, env);
+		free_char(arg);
 	}
 	env_find_and_replace(env, "OLDPWD", buf);
 }

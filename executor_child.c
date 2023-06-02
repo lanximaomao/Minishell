@@ -17,7 +17,7 @@ int	cmd_execution_in_child(t_token *token, t_mini *mini,
 	if (contains_slash(token->cmd) == 0)
 		cmd_with_no_path(token, mini, env_exe);
 	else
-		cmd_with_full_path(token, mini, env_exe);
+		cmd_with_full_path(token, env_exe);
 	exit(g_exitcode);
 }
 

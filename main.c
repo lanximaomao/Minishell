@@ -71,5 +71,5 @@ void	minishell(t_mini *mini, char *line)
 	if (size == 0)
 		return ;
 	executor(mini, size);
-	remove_tmp_file(mini->cmd_lst, size);
+	remove_tmp_file(size);
 }

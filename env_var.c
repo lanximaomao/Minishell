@@ -122,7 +122,7 @@ int	env_find_and_replace(t_list *env, char *to_find, char *to_replace)
 {
 	char	**env_content;
 	t_list	*tmp;
-	int		len;
+	size_t		len;
 
 	tmp = env;
 	env_content = (char **)env->content;
@@ -131,7 +131,7 @@ int	env_find_and_replace(t_list *env, char *to_find, char *to_replace)
 		env_content = (char **)tmp->content;
 		len = ft_strlen(env_content[0]);
 		if (len == ft_strlen(to_find) && ft_strncmp(to_find, env_content[0],
-				len) == 0)
+				(int)len) == 0)
 		{
 			if (ft_strlen(to_replace) > ft_strlen(env_content[1]))
 				env_content[1] = ft_realloc(env_content[1], len + 1,

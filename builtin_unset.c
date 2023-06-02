@@ -1,9 +1,8 @@
 #include "builtin.h"
 
-static int	is_valid_argument(char *arg, t_list *env)
+static int	is_valid_argument(char *arg)
 {
 	int	i;
-	int	ret;
 
 	i = 0;
 	if (ft_isalpha(arg[0]) == 0 && arg[0] != '_')
@@ -75,7 +74,7 @@ void	my_unset(char **arg, t_list **env)
 		previous = NULL;
 		while (current)
 		{
-			if (is_valid_argument(arg[i], *env) == 1)
+			if (is_valid_argument(arg[i]) == 1)
 				break ;
 			if (find_argument(arg[i], &current, &previous, &is_found) == 1)
 				break ;

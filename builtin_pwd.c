@@ -1,7 +1,7 @@
 #include "builtin.h"
 
 /* pwd with no options */
-void	my_pwd(t_list *env)
+void	my_pwd(void)
 {
 	char	buf[1024];
 

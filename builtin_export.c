@@ -1,9 +1,8 @@
 #include "builtin.h"
 
-static int	is_valid_argument(char *arg, t_list *env)
+static int	is_valid_argument(char *arg)
 {
 	int	i;
-	int	ret;
 
 	i = 0;
 	if (ft_isalpha(arg[0]) == 0 && arg[0] != '_')
@@ -72,13 +71,12 @@ static int	empty_aguments(t_list *env)
 void	my_export(char **arg, t_list *env)
 {
 	int		i;
-	char	**env_content;
 	int		is_valid;
 
 	i = 0;
 	while (arg[i])
 	{
-		is_valid = is_valid_argument(arg[i], env);
+		is_valid = is_valid_argument(arg[i]);
 		if (is_valid == 0)
 			add_argument(env, arg[i]);
 		if (is_valid == 0)

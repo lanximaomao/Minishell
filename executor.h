@@ -5,12 +5,12 @@
 
 //executor
 int		executor(t_mini *mini, int size);
-int		loop(t_mini *mini, int size, int *pid, int *status);
+int		loop(t_mini *mini, int size, int *pid);
 int		cmd_in_main(int size, t_token *token, t_list *env);
 void	get_exitcode(int size, int *pid, int *status);
 
 //child
-int		cmd_execution_in_child(t_token *token, int size, t_mini *mini,
+int		cmd_execution_in_child(t_token *token, t_mini *mini,
 			char **env_exe);
 void	cmd_with_no_path(t_token *token, t_mini *mini, char **env_exe);
 void	cmd_with_full_path(t_token *token, char **env_exe);
