@@ -1,90 +1,37 @@
 #include "minishell.h"
 
-/*
- exit(error_code)
- # define MALLOC 1
- # define FILE_OP 2
- # define SYNTAX 3
- # define FUNC 4
- error_code: <= 2 for system perror(malloc, file_err...)
- others for the mini_error(syntax, parse_err)
- flag 0 means exit, flag 1 means return
-*/
-
-void	ft_error(char *msg, int error_code, int flag)
+void	ascii_art_pattern(void)
 {
-	if (error_code <= 2)
-		perror(msg);
-	else
-	{
-		ft_putstr_fd(msg, 2);
-		write(2, "\n", 1);
-	}
-	if (flag == 0)
-	{
-		g_exitcode = error_code;
-		exit(g_exitcode);
-	}
+	ft_printf("\n\n*********************************************************");
+	ft_printf("\n*                                                       *");
+	ft_printf("\n*               Enter Minishell's Charm!                *");
+	ft_printf("\n*                                                       *");
+	ft_printf("\n*********************************************************\n\n");
 }
 
-int	free_str(char *str)
+void	exit_with_empty_line(char *msg, int exit_code)
 {
-	free(str);
-	str = NULL;
-	return (1);
+	ft_putstr_fd(msg, 0);
+	g_exitcode = exit_code;
+	exit(g_exitcode);
 }
 
-void	free_char(char **str)
+void	remove_tmp_file(int size)
 {
-	int	i;
+	int		i;
+	char	*tmp_itoa;
+	char	*tmp_file;
 
 	i = 0;
-	while (str[i])
+	while (i < size)
 	{
-		free(str[i]);
-		str[i] = NULL;
+		tmp_itoa = ft_itoa(i);
+		tmp_file = ft_strjoin("tmp_file", tmp_itoa);
+		if (!tmp_file)
+			ft_error("strjoin fail", MALLOC, 0);
+		unlink(tmp_file);
+		free_str(tmp_itoa);
+		free_str(tmp_file);
 		i++;
-	}
-	free(str);
-	str = NULL;
-}
-
-void	free_input(t_input *input)
-{
-	if (input != NULL)
-	{
-		if (input->tmp_line != NULL)
-		{
-			free(input->tmp_line);
-			input->tmp_line = NULL;
-		}
-		input->quote_type = 0;
-		input->pipe_sign = 0;
-		input->redir_sign = 0;
-		free(input);
-		input = NULL;
-	}
-}
-
-void	free_tokens(t_token *tokens)
-{
-	if (tokens != NULL)
-	{
-		if (tokens->cmd != NULL)
-		{
-			free(tokens->cmd);
-			tokens->cmd = NULL;
-		}
-		if (tokens->args != NULL)
-			free_char(tokens->args);
-		if (tokens->file_redir != NULL)
-			free_char(tokens->file_redir);
-		if (tokens->file_type != NULL)
-		{
-			free(tokens->file_type);
-			tokens->file_type = NULL;
-		}
-		free(tokens);
-		tokens = NULL;
 	}
 }

@@ -1,5 +1,5 @@
 #include "builtin.h"
-
+/*
 static int	is_valid_argument(char *arg)
 {
 	int	i;
@@ -66,7 +66,7 @@ void	my_unset(char **arg, t_list **env)
 	t_list	*current;
 	t_list	*previous;
 
-	i = 0;
+	i = 1;
 	while (arg[i])
 	{
 		is_found = 0;
@@ -85,4 +85,59 @@ void	my_unset(char **arg, t_list **env)
 	}
 	if (!arg[0])
 		g_exitcode = 0;
+}
+ */
+
+
+static int	isinvalid(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (!ft_isalnum(str[i]) && str[i] != '_')
+		{
+			perror(" not a valid identifier\n");
+			g_exitcode = 1;
+			return (1);
+		}
+		i++;
+	}
+	return (0);
+}
+
+void	my_unset(char **args, t_list **env)
+{
+	int		i;
+	t_list	*pre;
+	t_list	*tmp;
+
+	i = 1;
+	pre = NULL;
+	while (args[i])
+	{
+		tmp = *env;
+		if (isinvalid(args[i]))
+			return ;
+		while (tmp)
+		{
+			if (!ft_strncmp(((char **)tmp->content)[0], args[i],
+					ft_strlen(args[i]) + 1))
+				break ;
+			pre = tmp;
+			tmp = tmp->next;
+		}
+		if (tmp)
+		{
+			if (!pre)
+				(*env) = (*env)->next;
+			else
+				pre->next = tmp->next;
+			free_char((char **)tmp->content);
+			free(tmp);
+			tmp = NULL;
+		}
+		i++;
+	}
 }

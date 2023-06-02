@@ -1,5 +1,21 @@
 #include "minishell.h"
 
+void	ft_error(char *msg, int error_code, int flag)
+{
+	if (error_code <= 2)
+		perror(msg);
+	else
+	{
+		ft_putstr_fd(msg, 2);
+		write(2, "\n", 1);
+	}
+	if (flag == 0)
+	{
+		g_exitcode = error_code;
+		exit(g_exitcode);
+	}
+}
+
 /*
 ** if: the | or < is the last character
 ** else if: if current is pipe, error occurs
@@ -7,6 +23,7 @@
 ** else if: if current does not contain a pipe
 ** error occurs when this and the next are both empty lines
 */
+
 static int	handle_parse_error(int cmd_order, t_list *line_lst, int sign)
 {
 	if (sign == 1 && (((t_input *)line_lst->content)->pipe_sign == 1

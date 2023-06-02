@@ -3,7 +3,7 @@
 /*
 ** split function is used here to create a char**
 */
-static void	handle_oldpwd(char *buf, t_list *env)
+/* static void	handle_oldpwd(char *buf, t_list *env)
 {
 	char	*ex_arg;
 	char	**arg;
@@ -27,17 +27,17 @@ void	my_cd(char **arg, t_list *env)
 {
 	char	buf[1024];
 	char	*home;
-	int		is_null;
+	// int		is_null;
 
 	if (getcwd(buf, sizeof(buf)) != NULL)
 		handle_oldpwd(buf, env);
 	if (arg[0] == NULL)
 	{
-		is_null = 1;
+		// is_null = 1;
 		home = env_handler(env, "HOME");
-		arg[0] = ft_strdup(home);
+		// tmp = ft_strdup(home);
 	}
-	if (chdir(arg[0]) != 0)
+	if (chdir(home) != 0)
 	{
 		g_exitcode = 1;
 		ft_putstr_fd(" No such file or directory\n", 2);
@@ -45,7 +45,46 @@ void	my_cd(char **arg, t_list *env)
 	}
 	if (getcwd(buf, sizeof(buf)) != NULL)
 		env_find_and_replace(env, "PWD", buf);
-	if (is_null == 1)
-		free(arg[0]);
+	// if (is_null == 1)
+	// 	free_str(tmp);
 	g_exitcode = 0;
+} */
+
+void	my_cd(char **args, t_list **env)
+{
+	char *tmp_str;
+	char *old_pwd;
+	char **oldpwd_envp;
+	t_list	*tmp_lst;
+
+	tmp_str = getcwd(NULL, 0);
+	old_pwd = ft_strjoin("export OLDPWD=", tmp_str);
+	free_str(tmp_str);
+	if (!old_pwd)
+		ft_error("Malloc failed", MALLOC, 0);
+	if (args[1] == NULL)
+		chdir(getenv("HOME"));
+	else if (chdir(args[1]) == -1)
+	{
+		g_exitcode = 1;
+		ft_error(" No such file or directory\n", FILE_OP, 1);
+		return ;
+	}
+	tmp_lst = *env;
+	while (tmp_lst)
+	{
+		if (!ft_strncmp(((char **)tmp_lst->content)[0], "PWD", 4))
+		{
+			free_str(((char **)tmp_lst->content)[1]);
+			((char **)tmp_lst->content)[1] = ft_strdup(getenv("PWD"));
+		}
+		tmp_lst = tmp_lst->next;
+	}
+	oldpwd_envp = ft_split(old_pwd, ' ');
+	if (!oldpwd_envp)
+		ft_error("Malloc failed", MALLOC, 0);
+	free_str(old_pwd);
+	my_export(oldpwd_envp, env);
+	free_char(oldpwd_envp);
+	return ;
 }

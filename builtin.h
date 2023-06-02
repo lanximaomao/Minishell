@@ -12,11 +12,11 @@ int		printf_error(char *msg, int code);
 
 //functions
 int		my_env(t_list *env);
-void	my_exit(char **arg);
+void	my_exit(char** args, int num_args);
 void	my_pwd(void);
-void	my_cd(char **arg, t_list *env);
+void	my_cd(char **args, t_list **env);
 void	my_echo(char **arg);
-void	my_export(char **arg, t_list *env);
+void	my_export(char **arg, t_list **env);
 void	my_unset(char **arg, t_list **env);
 
 #endif

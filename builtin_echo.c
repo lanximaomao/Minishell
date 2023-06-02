@@ -21,9 +21,6 @@ static int	check_n(char **arg)
 	return (0);
 }
 
-/*
-** create echo with option -n
-*/
 void	my_echo(char **arg)
 {
 	int	i;
@@ -36,9 +33,9 @@ void	my_echo(char **arg)
 		return ;
 	}
 	if (check_n(arg) == 0 && ++nl)
-		i = 0;
-	else
 		i = 1;
+	else
+		i = 2;
 	while (arg[i])
 	{
 		ft_printf("%s", arg[i]);
@@ -50,3 +47,5 @@ void	my_echo(char **arg)
 		ft_printf("\n");
 	g_exitcode = 0;
 }
+
+

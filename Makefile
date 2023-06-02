@@ -12,7 +12,7 @@ WHITE		=	\033[0;97m
 
 ECHO		= echo
 
-SRCS = 			main.c mini_utils.c	mini_utils2.c validator.c	\
+SRCS = 			main.c mini_utils.c	free.c validator.c	\
 				lexer.c expander.c expander_utils.c parser.c parser_utils.c			\
 				env_var.c signal.c			\
 				builtin_echo.c			\
@@ -23,15 +23,11 @@ SRCS = 			main.c mini_utils.c	mini_utils2.c validator.c	\
 				executor_utils.c
 OBJS = $(SRCS:.c=.o)
 
-SRCS_TEST =		main.c minishell.c mini_utils.c			\
-				lexer.c expander.c parser.c				\
-				builtin.c env.c	executor.c signal.c # test_lliu.c
-
 NAME = minishell
 CC = cc
 CFLAGS = -Werror -Wall -Wextra -I./libft_42/inc
 LDFLAGS = -L./libft_42 -lft
-FSANITIZE	= -fsanitize=address -g3
+FSANITIZE	= -g #-fsanitize=address -g3
 
 
 READLINE_DIR = $(shell brew --prefix readline)
@@ -67,7 +63,7 @@ debug:
 	@git submodule update --init --recursive
 	@cd libft_42 && git pull origin main
 	@make -C libft_42
-	$(CC) $(CFLAGS) $(FSANITIZE) $(LDFLAGS)  $(RL_L) $(RL_I) $(SRCS) -g -o test
+	@$(CC) $(CFLAGS) $(FSANITIZE) $(LDFLAGS)  $(RL_L) $(RL_I) $(SRCS) -o $(NAME)
 
 .PHONY : all clean fclean re norm debug
 

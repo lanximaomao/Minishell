@@ -38,19 +38,19 @@ int	run_builtin(t_token *token, t_list **env)
 	if (ret == 0)
 		return (0);
 	if (ret == 1)
-		my_cd(++token->args, *env);
+		my_cd(token->args, env);
 	if (ret == 2)
 		my_pwd();
 	if (ret == 3)
 		my_env(*env);
 	if (ret == 4)
-		my_exit(++token->args);
+		my_exit(token->args, token->num_args);
 	if (ret == 5)
-		my_echo(++token->args);
+		my_echo(token->args);
 	if (ret == 6)
-		my_unset(++token->args, env);
+		my_unset(token->args, env);
 	if (ret == 7)
-		my_export(++token->args, *env);
+		my_export(token->args, env);
 	return (1);
 }
 

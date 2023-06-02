@@ -25,7 +25,7 @@ static void	handle_error(char *str)
 	}
 }
 
-void	my_exit(char **args)
+/* void	my_exit(char **args)
 {
 	long long	ret;
 	int			i;
@@ -35,11 +35,11 @@ void	my_exit(char **args)
 	sign = 1;
 	ret = 0;
 	ft_printf("exit\n");
-	handle_error(args[0]);
-	if (args[1])
+	if (args[1]) // it will be segfault, that why I use the num_args
 		ft_error(" too many arguments", 1, 0);
 	if (args[0] == NULL)
 		exit(0);
+	handle_error(args[0]);
 	if (args[0][0] == '-')
 		sign = -1;
 	if (args[0][0] == '-' || args[0][0] == '+')
@@ -49,6 +49,33 @@ void	my_exit(char **args)
 		if (args[0][i] >= '0' && args[0][i] <= '9')
 			ret = ret * 10 + (args[0][i] - '0');
 		i++;
+	}
+	exit((unsigned char)ret * sign);
+} */
+
+void my_exit(char** args, int num_args)
+{
+	long long ret;
+	int i;
+	int sign;
+
+	i = -1;
+	sign = 1;
+	ret = 0;
+	printf("exit\n");
+	if (num_args > 2)
+		ft_error(" too many arguments", 1, 0);
+	if (args[1] == NULL)
+		exit(0);
+	handle_error(args[1]);
+	if (args[1][0] == '-')
+		sign = -1;
+	if (args[1][0] == '-' || args[0][0] == '+')
+		i++;
+	while (args[1][++i])
+	{
+		if (args[1][i] >= '0' && args[1][i] <= '9')
+			ret = ret * 10 + (args[1][i] - '0');
 	}
 	exit((unsigned char)ret * sign);
 }

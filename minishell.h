@@ -86,10 +86,11 @@ int			env_find_and_replace(t_list *env, char *to_find, char *to_replace);
 t_list		*lexer_get_linelst(char *line, t_list *line_lst, int i);
 
 /* validator.c */
+void		ft_error(char *msg, int error_code, int flag);
 int			validator(t_list *line_lst);
 
 /* expander.c */
-int			expander_args(t_list *line_lst, t_list *env_lst);
+void		expander_args(t_list *line_lst, t_list *env_lst);
 char		*replace_env_expand(char *tmp_line, t_list *env_lst);
 
 /* expander_utils.c */
@@ -114,10 +115,9 @@ void		handle_cmd(int sig);
 void		handle_signal_heredoc(int sig);
 
 /* mini_utils.c */
-void		ft_error(char *msg, int error_code, int flag);
 int			free_str(char *str);
 void		free_char(char **str);
 void		free_input(t_input *input);
 void		free_tokens(t_token *tokens);
-
+void		free_lst_content(t_list *lst, int sign);
 #endif

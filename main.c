@@ -2,6 +2,7 @@
 #include "executor.h"
 #include "minishell.h"
 
+
 int		g_exitcode = 0;
 
 int	main(int argc, char **argv, char **env)
@@ -15,8 +16,9 @@ int	main(int argc, char **argv, char **env)
 		ft_error("malloc fail.\n", 1, 0);
 	env_init(mini, env);
 	readline_prompt(mini);
-	ft_lstfree(mini->env);
+	free_lst_content(mini->env, 2);
 	free(mini);
+	mini = NULL;
 	return (0);
 }
 
@@ -40,6 +42,7 @@ int	readline_prompt(t_mini *mini)
 			exit_with_empty_line("exit\n", 0);
 		add_history(line);
 		minishell(mini, line);
+
 	}
 	tcgetattr(0, &t);
 	t.c_lflag |= ECHOCTL;
@@ -55,27 +58,23 @@ void	minishell(t_mini *mini, char *line)
 
 	line_lst = NULL;
 	line_lst = lexer_get_linelst(line, line_lst, -1);
-	free(line);
-	line = NULL;
+	free_str(line);
 	if (line_lst == NULL)
 		return ;
 	if (validator(line_lst) == -1)
-		return ;
-	if (expander_args(line_lst, mini->env) == -1)
-		return ;
-	mini->cmd_lst = parser_cmds(line_lst, mini->env);
-	t_list	*tmp_lst = line_lst;
-	while (tmp_lst)
 	{
-		free_input((t_input *)tmp_lst->content);
-		tmp_lst = tmp_lst->next;
+		free_lst_content(line_lst, 0);
+		return ;
 	}
-	ft_lstfree(line_lst);
+	expander_args(line_lst, mini->env);
+	mini->cmd_lst = parser_cmds(line_lst, mini->env);
+	free_lst_content(line_lst, 0);
 	signal(SIGQUIT, handle_cmd);
 	signal(SIGINT, handle_cmd);
 	size = ft_lstsize(mini->cmd_lst);
 	if (size == 0)
 		return ;
 	executor(mini, size);
+	free_lst_content(mini->cmd_lst, 1);
 	remove_tmp_file(size);
 }

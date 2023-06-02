@@ -28,7 +28,7 @@ char	*replace_env_expand(char *tmp_line, t_list *env_lst)
 	return (tmp_line);
 }
 
-int	expander_args(t_list *line_lst, t_list *env_lst)
+void	expander_args(t_list *line_lst, t_list *env_lst)
 {
 	t_input	*input;
 
@@ -39,5 +39,5 @@ int	expander_args(t_list *line_lst, t_list *env_lst)
 			input->tmp_line = replace_env_expand(input->tmp_line, env_lst);
 		line_lst = line_lst->next;
 	}
-	return (0);
+	return ;
 }
