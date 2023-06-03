@@ -27,12 +27,12 @@ NAME = minishell
 CC = cc
 CFLAGS = -Werror -Wall -Wextra -I./libft_42/inc
 LDFLAGS = -L./libft_42 -lft
-FSANITIZE	= -g #-fsanitize=address -g3
+FSANITIZE	= -fsanitize=address -g
 
 
 READLINE_DIR = $(shell brew --prefix readline)
-RL_L = -lreadline -L $(READLINE_DIR)/lib
-RL_I = -lreadline -lhistory -I $(READLINE_DIR)/include/readline
+RL_L = -lreadline -lhistory -L $(READLINE_DIR)/lib
+RL_I = -I $(READLINE_DIR)/include/readline
 
 #   RL_L = -lreadline -L /Users/lsun/.brew/opt/readline/lib
 #   RL_I = -lreadline -lhistory -I /Users/lsun/.brew/opt/readline/include/readline

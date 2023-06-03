@@ -34,7 +34,7 @@ void	handle_cmd(int sig)
 		(void)sig;
 	}
 	else if (sig == SIGQUIT)
-		ft_printf("^\\Quit: %d\n", sig);
+		ft_printf("Quit: %d\n", sig);
 	return ;
 }
 
