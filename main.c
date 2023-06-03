@@ -40,7 +40,8 @@ int	readline_prompt(t_mini *mini)
 		line = readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ");
 		if (!line)
 			exit_with_empty_line("exit\n", 0);
-		add_history(line);
+		if (ft_strncmp(line, "", 1))
+			add_history(line);
 		minishell(mini, line);
 
 	}
