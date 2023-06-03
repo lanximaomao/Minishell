@@ -25,11 +25,11 @@ static void	handle_error(char *str)
 	}
 }
 
-void my_exit(char** args, int num_args)
+void	my_exit(char **args, int num_args)
 {
-	long long ret;
-	int i;
-	int sign;
+	long long	ret;
+	int			i;
+	int			sign;
 
 	i = -1;
 	sign = 1;

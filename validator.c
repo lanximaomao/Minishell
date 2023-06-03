@@ -1,5 +1,16 @@
 #include "minishell.h"
 
+/*
+ exit(error_code)
+ # define MALLOC 1
+ # define FILE_OP 2
+ # define SYNTAX 3
+ # define FUNC 4
+ error_code: <= 2 for system perror(malloc, file_err...)
+ others for the mini_error(syntax, parse_err)
+ flag 0 means exit, flag 1 means return
+*/
+
 void	ft_error(char *msg, int error_code, int flag)
 {
 	if (error_code <= 2)

@@ -1,16 +1,5 @@
 #include "minishell.h"
 
-/*
- exit(error_code)
- # define MALLOC 1
- # define FILE_OP 2
- # define SYNTAX 3
- # define FUNC 4
- error_code: <= 2 for system perror(malloc, file_err...)
- others for the mini_error(syntax, parse_err)
- flag 0 means exit, flag 1 means return
-*/
-
 int	free_str(char *str)
 {
 	free(str);
@@ -70,9 +59,12 @@ void	free_tokens(t_token *tokens)
 	}
 }
 
-void free_lst_content(t_list *lst, int sign) // sign = 0 for line_list, 1 for cmd_lst, 2 for env_lst
+/*
+** sign = 0 for line_list, 1 for cmd_lst, 2 for env_lst
+*/
+void	free_lst_content(t_list *lst, int sign)
 {
-	t_list *tmp;
+	t_list	*tmp;
 
 	tmp = lst;
 	while (lst)

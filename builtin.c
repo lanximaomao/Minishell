@@ -54,11 +54,11 @@ int	run_builtin(t_token *token, t_list **env)
 	return (1);
 }
 
-int	is_equal_sign(char *arg, int i)
+int	is_equal_sign(char *arg, int i, char c)
 {
 	while (arg[i])
 	{
-		if (arg[i] == '=')
+		if (arg[i] == c)
 			return (1);
 		else
 			i--;

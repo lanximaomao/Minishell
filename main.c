@@ -2,7 +2,6 @@
 #include "executor.h"
 #include "minishell.h"
 
-
 int		g_exitcode = 0;
 
 int	main(int argc, char **argv, char **env)
@@ -43,7 +42,6 @@ int	readline_prompt(t_mini *mini)
 		if (ft_strncmp(line, "", 1))
 			add_history(line);
 		minishell(mini, line);
-
 	}
 	tcgetattr(0, &t);
 	t.c_lflag |= ECHOCTL;
