@@ -1,5 +1,5 @@
 #include "builtin.h"
-/*
+
 static int	is_valid_argument(char *arg)
 {
 	int	i;
@@ -34,8 +34,9 @@ static void	remove_argument(t_list **env, t_list *current, t_list *previous)
 		*env = (*env)->next;
 	else
 		previous->next = current->next;
-	free(env_content[0]);
-	free(env_content[1]);
+	//free(env_content[0]);
+	//free(env_content[1]);
+	free_char(env_content);
 	free(current);
 }
 
@@ -86,9 +87,9 @@ void	my_unset(char **arg, t_list **env)
 	if (!arg[0])
 		g_exitcode = 0;
 }
- */
 
 
+/*
 static int	isinvalid(char *str)
 {
 	int	i;
@@ -141,3 +142,4 @@ void	my_unset(char **args, t_list **env)
 		i++;
 	}
 }
+*/

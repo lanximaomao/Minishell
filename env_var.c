@@ -1,66 +1,67 @@
 #include "builtin.h"
 #include "minishell.h"
 
-// char	**env_split(char const *s, char c)
-// {
-// 	char	**str_arr;
-// 	size_t	len;
+ char	**env_split(char const *s, char c)
+ {
+ 	char	**str_arr;
+ 	size_t	len;
 
-// 	if (!s)
-// 		return (NULL);
-// 	str_arr = (char **)malloc(sizeof(char *) * (2 + 1));
-// 	if (!str_arr)
-// 		return (NULL);
-// 	while (*s)
-// 	{
-// 		if (*s != c)
-// 		{
-// 			len = 0;
-// 			while (*s && *s != c && ++len)
-// 				s++;
-// 			str_arr[0] = ft_substr(s - len, 0, len);
-// 			str_arr[1] = ft_substr(s - len, len + 1, ft_strlen(s));
-// 			break ;
-// 		}
-// 		else
-// 			s++;
-// 	}
-// 	str_arr[2] = 0;
-// 	return (str_arr);
-// }
+ 	if (!s)
+ 		return (NULL);
+ 	str_arr = (char **)malloc(sizeof(char *) * (2 + 1));
+ 	if (!str_arr)
+ 		return (NULL);
+ 	while (*s)
+ 	{
+ 		if (*s != c)
+ 		{
+ 			len = 0;
+ 			while (*s && *s != c && ++len)
+ 				s++;
+ 			str_arr[0] = ft_substr(s - len, 0, len);
+ 			str_arr[1] = ft_substr(s - len, len + 1, ft_strlen(s));
+			str_arr[2] = 0;
+ 			break ;
+ 		}
+ 		else
+ 			s++;
+ 	}
+ 	return (str_arr);
+ }
 
 /*
 ** this function create a linked list
 ** and each node contains a enviromental variable's name and value
 */
-// void	env_init(t_mini *mini, char **env)
-// {
-// 	int		i;
-// 	int		is_oldpwd;
-// 	char	**env_content;
-// 	t_list	*node;
+ void	env_init(t_mini *mini, char **env)
+ {
+ 	int		i;
+ 	int		is_oldpwd;
+ 	char	**env_content;
+ 	t_list	*node;
 
-// 	i = 0;
-// 	mini->env = NULL;
-// 	while (env[i])
-// 	{
-// 		env_content = env_split(env[i], '=');
-// 		if (!env_content)
-// 			ft_error("malloc fail or null input?\n", 1, 0);
-// 		is_oldpwd = ft_strncmp(env_content[0], "OLDPWD", 6);
-// 		if (is_oldpwd != 0)
-// 		{
-// 			node = ft_lstnew(env_content);
-// 			if (!node)
-// 				ft_error("fail to init a node\n", 1, 0);
-// 			ft_lstadd_back(&mini->env, node);
-// 		}
-// 		else
-// 			free_char(env_content);
-// 		i++;
-// 	}
-// }
+ 	i = 0;
+ 	mini->env = NULL;
+ 	while (env[i])
+ 	{
+ 		env_content = env_split(env[i], '=');
+ 		if (!env_content)
+ 			ft_error("malloc fail or null input?\n", 1, 0);
+ 		is_oldpwd = ft_strncmp(env_content[0], "OLDPWD", 6);
+ 		if (is_oldpwd != 0)
+ 		{
+ 			node = ft_lstnew(env_content);
+ 			if (!node)
+ 				ft_error("fail to init a node\n", 1, 0);
+ 			ft_lstadd_back(&mini->env, node);
+ 		}
+ 		else
+ 			free_char(env_content);
+ 		i++;
+ 	}
+ }
 
+/*
 void	env_init(t_mini *mini, char **env)
 {
 	int		i;
@@ -86,19 +87,20 @@ void	env_init(t_mini *mini, char **env)
 	free_char(old_pwd);
 	return ;
 }
+*/
 
 /*
 ** by giving the name of the enviromental varible, such as HOME
 ** it returns a string of its values.
 */
-char	*env_handler(t_list *env, char *str)
+char	*env_handler(t_list **env, char *str)
 {
 	char	**env_content;
 	t_list	*tmp;
 	size_t		len;
 
-	tmp = env;
-	env_content = (char **)env->content;
+	tmp = *env;
+	env_content = (char **)(*env)->content;
 	while (tmp)
 	{
 		env_content = (char **)tmp->content;
@@ -114,7 +116,7 @@ char	*env_handler(t_list *env, char *str)
 ** convert enviromental varible from a linked list to a double pointer, char**
 ** this could be used in execve function call.
 */
-char	**env_convert(t_list *env)
+char	**env_convert(t_list **env)
 {
 	int		i;
 	t_list	*tmp;
@@ -123,12 +125,12 @@ char	**env_convert(t_list *env)
 	char	**env_content;
 
 	i = -1;
-	tmp = env;
-	ret = (char **)malloc(sizeof(char *) * (ft_lstsize(env) + 1));
+	tmp = *env;
+	ret = (char **)malloc(sizeof(char *) * (ft_lstsize(*env) + 1));
 	if (!ret)
 		ft_error("malloc fail.\n", 1, 0);
-	ret[ft_lstsize(env)] = NULL;
-	while (++i < ft_lstsize(env))
+	ret[ft_lstsize(*env)] = NULL;
+	while (++i < ft_lstsize(*env))
 	{
 		env_content = (char **)tmp->content;
 		ret_tmp = ft_strjoin(env_content[0], "=");
@@ -146,14 +148,14 @@ char	**env_convert(t_list *env)
 /*
 ** this function is used to update the enviromental varible
 */
-int	env_find_and_replace(t_list *env, char *to_find, char *to_replace)
+int	env_find_and_replace(t_list **env, char *to_find, char *to_replace)
 {
 	char	**env_content;
 	t_list	*tmp;
 	size_t		len;
 
-	tmp = env;
-	env_content = (char **)env->content;
+	tmp = *env;
+	env_content = (char **)(*env)->content;
 	while (tmp)
 	{
 		env_content = (char **)tmp->content;

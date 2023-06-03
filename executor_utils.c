@@ -49,6 +49,7 @@ char	*get_path_cmd(char *str, t_list *env)
 		}
 		i++;
 	}
+	free_char(path_env);
 	return (path_cmd);
 }
 

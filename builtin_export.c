@@ -1,5 +1,5 @@
 #include "builtin.h"
-/*
+
 static int	is_valid_argument(char *arg)
 {
 	int	i;
@@ -26,7 +26,7 @@ static int	is_valid_argument(char *arg)
 	return (0);
 }
 
-static int	add_argument(t_list *env, char *arg)
+static int	add_argument(t_list **env, char *arg)
 {
 	int		sign;
 	t_list	*node;
@@ -47,33 +47,39 @@ static int	add_argument(t_list *env, char *arg)
 		node = ft_lstnew(env_content);
 		if (!node)
 			ft_error("cann't create a new node", 1, 0);
-		ft_lstadd_back(&env, node);
+		ft_lstadd_back(env, node);
 		return (0);
 	}
 	return (1);
 }
 
-static int	empty_aguments(t_list *env)
+static int	empty_aguments(t_list **env)
 {
+	int	sign;
 	t_list	*tmp;
 	char	**env_content;
 
-	tmp = env;
+	sign = 0;
+	tmp = *env;
 	while (tmp)
 	{
 		env_content = (char **)tmp->content;
+		if (!ft_strncmp(env_content[0], "OLDPWD", 6))
+			sign = 1;
 		ft_printf("declare -x %s=\"%s\"\n", env_content[0], env_content[1]);
 		tmp = tmp->next;
 	}
+	if (!sign)
+		printf("declare -x OLDPWD\n");
 	return (0);
 }
 
-void	my_export(char **arg, t_list *env)
+void	my_export(char **arg, t_list **env)
 {
 	int		i;
 	int		is_valid;
 
-	i = 0;
+	i = 1;
 	while (arg[i])
 	{
 		is_valid = is_valid_argument(arg[i]);
@@ -85,12 +91,12 @@ void	my_export(char **arg, t_list *env)
 			g_exitcode = 1;
 		i++;
 	}
-	if (!arg[0] && empty_aguments(env) == 0)
+	if (!arg[1] && empty_aguments(env) == 0)
 		g_exitcode = 0;
 }
- */
 
 
+/*
 static int	isinvalid_env(char *str)
 {
 	int	i;
@@ -221,4 +227,4 @@ void	my_export(char **arg, t_list **env)
 	}
 	return ;
 }
-
+*/

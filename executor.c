@@ -40,7 +40,7 @@ int	loop(t_mini *mini, int size, int *pid)
 		if (handle_io(token, i, size, fd_pipe) != -1 && cmd_in_main(size, token,
 				mini->env) == 0)
 			return (1);
-		env_exe = env_convert(mini->env);
+		env_exe = env_convert(&mini->env);
 		if (create_child(pid, i) == 0)
 		{
 			if (i < size - 1)
