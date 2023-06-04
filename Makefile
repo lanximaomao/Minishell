@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: lliu <lliu@student.42.fr>                  +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2023/06/04 15:36:56 by lliu              #+#    #+#              #
+#    Updated: 2023/06/04 15:43:44 by lliu             ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 # formatting
 DEF_COLOR	=	\033[0;39m
 ORANGE		=	\033[0;33m
@@ -34,15 +46,8 @@ READLINE_DIR = $(shell brew --prefix readline)
 RL_L = -lreadline -lhistory -L $(READLINE_DIR)/lib
 RL_I = -I $(READLINE_DIR)/include/readline
 
-#   RL_L = -lreadline -L /Users/lsun/.brew/opt/readline/lib
-#   RL_I = -lreadline -lhistory -I /Users/lsun/.brew/opt/readline/include/readline
-
-
-
 all: $(NAME)
 $(NAME): $(OBJS)
-	@git submodule update --init --recursive
-	@cd libft_42 && git pull origin main
 	@make -C libft_42
 	@$(CC) $(LDFLAGS) $(OBJS) -o $(NAME) $(RL_L) $(RL_I)
 	@$(ECHO) "$(YELLOW)[$(NAME)]:\t$(DEF_COLOR) $(GREEN) => Success!$(DEF_COLOR)"
@@ -60,8 +65,6 @@ re:	fclean all
 norm:
 	norminette $(SRCS) | grep -v Norme -B1 || true
 debug:
-	@git submodule update --init --recursive
-	@cd libft_42 && git pull origin main
 	@make -C libft_42
 	@$(CC) $(CFLAGS) $(FSANITIZE) $(LDFLAGS)  $(RL_L) $(RL_I) $(SRCS) -o $(NAME)
 
