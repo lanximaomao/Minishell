@@ -37,17 +37,18 @@ void	ft_error(char *msg, int error_code, int flag)
 
 static int	handle_parse_error(int cmd_order, t_list *line_lst, int sign)
 {
-	if (sign == 1 && (((t_input *)line_lst->content)->pipe_sign == 1
-			|| ((t_input *)line_lst->content)->redir_sign != 0))
+	if (sign == 1 && (((t_input *)line_lst->content)->pipe_sign == 1 // pwd |
+			|| ((t_input *)line_lst->content)->redir_sign != 0)) // pwd >
 	{
 		ft_error("Syntax error: parse error", SYNTAX, 1);
 		return (-1);
 	}
-	else if (sign == 2 && (cmd_order == 1 || (line_lst->next->next
-				&& !ft_strncmp(((t_input *)line_lst->next->content)->tmp_line,
-					"", 1)
-				&& !ft_strncmp(((t_input *)line_lst->next->next->content)
-					->tmp_line, "", 1))))
+	else if ((sign == 2 && ((t_input *)line_lst->next->content)->pipe_sign == 1) // | |
+		|| (sign == 2 && cmd_order == 1 // | pwd
+		&& ft_strncmp(((t_input *)line_lst->next->content)->tmp_line, "", 1))
+		|| (sign == 2 && line_lst->next->next // | < > pwd
+		&& !ft_strncmp(((t_input *)line_lst->next->content)->tmp_line, "", 1)
+		&& !ft_strncmp(((t_input *)line_lst->next->next->content)->tmp_line, "", 1)))
 	{
 		ft_error("Syntax error: parse error", SYNTAX, 1);
 		return (-1);

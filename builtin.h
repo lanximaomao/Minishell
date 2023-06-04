@@ -12,7 +12,7 @@ int		printf_error(char *msg, int code);
 
 /* functions */
 int		my_env(t_list *env);
-void	my_exit(char **args, int num_args);
+void	my_exit(char** args, int num_args, int cmd_id);
 void	my_pwd(void);
 void	my_cd(char **args, t_list **env);
 void	my_echo(char **arg);

@@ -44,7 +44,7 @@ int	run_builtin(t_token *token, t_list **env)
 	if (ret == 3)
 		my_env(*env);
 	if (ret == 4)
-		my_exit(token->args, token->num_args);
+		my_exit(token->args, token->num_args, token->cmd_id);
 	if (ret == 5)
 		my_echo(token->args);
 	if (ret == 6)

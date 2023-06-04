@@ -11,7 +11,7 @@ void	ascii_art_pattern(void)
 
 void	exit_with_empty_line(char *msg, int exit_code)
 {
-	ft_putstr_fd(msg, 0);
+	printf("\033[1A\033[32m\U0001F40C Minishell \033[31m$\033[0;39m %s", msg);
 	g_exitcode = exit_code;
 	exit(g_exitcode);
 }
