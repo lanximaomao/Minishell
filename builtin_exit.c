@@ -8,7 +8,7 @@ static void	handle_error(char *str)
 	if (str[0] == '-')
 	{
 		if ((ft_strlen(str) > 20) || (ft_strlen(str) == 20
-			&& ft_strncmp(str, "-9223372036854775808", 20)) > 0)
+			&& ft_strncmp(str, "-9223372036854775808", 20) > 0))
 			ft_error("minishell: exit: numeric argument required", 255, 0);
 	}
 	else if ((ft_strlen(str) > 19) || (ft_strlen(str) == 19 && ft_strncmp(str,
