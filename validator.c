@@ -43,19 +43,18 @@ static int	handle_parse_error(int cmd_order, t_list *line_lst, int sign)
 		ft_error("Syntax error: parse error", SYNTAX, 1);
 		return (-1);
 	}
-	else if ((sign == 2 && ((t_input *)line_lst->next->content)->pipe_sign == 1) // | |
-		|| (sign == 2 && cmd_order == 1 // | pwd
-		&& ft_strncmp(((t_input *)line_lst->next->content)->tmp_line, "", 1))
-		|| (sign == 2 && line_lst->next->next // | < > pwd
-		&& !ft_strncmp(((t_input *)line_lst->next->content)->tmp_line, "", 1)
-		&& !ft_strncmp(((t_input *)line_lst->next->next->content)->tmp_line, "", 1)))
+	else if ((sign == 2 && cmd_order == 0) // |pwd
+		|| (sign == 2 && line_lst->next->next // ** | < >
+		&& ((t_input *)line_lst->next->content)->redir_sign
+		&& ((t_input *)line_lst->next->next->content)->redir_sign)
+		|| (sign == 2 && ((t_input *)line_lst->next->content)->pipe_sign == 1)) // | |
 	{
 		ft_error("Syntax error: parse error", SYNTAX, 1);
 		return (-1);
 	}
-	else if (sign == 3 && line_lst->next
-		&& !ft_strncmp(((t_input *)line_lst->next->content)->tmp_line, "",
-			1))
+	else if (sign == 3 && (((t_input *)line_lst->next->content)->redir_sign
+		|| !(((t_input *)line_lst->content)->redir_sign == 3
+		&& ((t_input *)line_lst->next->content)->pipe_sign)))
 	{
 		ft_error("Syntax error: parse error", SYNTAX, 1);
 		return (-1);
@@ -63,30 +62,43 @@ static int	handle_parse_error(int cmd_order, t_list *line_lst, int sign)
 	return (0);
 }
 
-int	validator(t_list *line_lst)
+static void trim_pipe(t_list **line_lst)
 {
-	int		i;
-	t_input	*input;
+	t_list	*tmp;
 
-	i = 1;
-	while (line_lst)
+	tmp = (*line_lst)->next;
+	(*line_lst)->next = (*line_lst)->next->next;
+	tmp->next = NULL;
+	free_input((t_input *)tmp->content);
+	free(tmp);
+	tmp = NULL;
+	return ;
+}
+
+int	validator(t_list **line_lst)
+{
+	int			count;
+	t_input		*input;
+
+	count = 0;
+	while (*line_lst)
 	{
-		input = (t_input *)line_lst->content;
-		if (!(line_lst->next))
-			if (handle_parse_error(i, line_lst, 1) == -1)
+		input = (t_input *)(*line_lst)->content;
+		if (!((*line_lst)->next))
+			if (handle_parse_error(count, (*line_lst), 1) == -1)
 				return (-1);
-		if (!ft_strncmp(input->tmp_line, "", 1))
+		if (input->pipe_sign == 1)
 		{
-			if (input->pipe_sign == 1)
-			{
-				if (handle_parse_error(i, line_lst, 2) == -1)
-					return (-1);
-			}
-			else if (handle_parse_error(i, line_lst, 3))
+			if (handle_parse_error(count, (*line_lst), 2) == -1)
 				return (-1);
 		}
-		line_lst = line_lst->next;
-		i++;
+		else if (input->redir_sign)
+			if (handle_parse_error(count, (*line_lst), 3))
+				return (-1);
+		if (input->redir_sign == 3 && ((t_input *)(*line_lst)->next->content)->pipe_sign)
+			trim_pipe(line_lst);
+		count++;
+		(*line_lst) = (*line_lst)->next;
 	}
 	return (0);
 }

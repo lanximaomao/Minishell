@@ -87,7 +87,7 @@ t_list		*lexer_get_linelst(char *line, t_list *line_lst, int i);
 
 /* validator.c */
 void		ft_error(char *msg, int error_code, int flag);
-int			validator(t_list *line_lst);
+int			validator(t_list **line_lst);
 
 /* expander.c */
 void		expander_args(t_list *line_lst, t_list *env_lst);

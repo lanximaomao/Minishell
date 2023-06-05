@@ -54,15 +54,17 @@ void	minishell(t_mini *mini, char *line)
 {
 	int		size;
 	t_list	*line_lst;
+	t_list	*tmp;
 
 	line_lst = NULL;
 	line_lst = lexer_get_linelst(line, line_lst, -1);
 	free_str(line);
 	if (line_lst == NULL)
 		return ;
-	if (validator(line_lst) == -1)
+	tmp = line_lst;
+	if (validator(&tmp) == -1)
 	{
-		free_lst_content(line_lst, 0);
+		free_lst_content(tmp, 0);
 		return ;
 	}
 	expander_args(line_lst, mini->env);

@@ -84,9 +84,9 @@ After Eval by Carlos:
 7. export lin=world dsds; export should ouput dsds, env not ouput;
 8. unset OLDPWD, export not output OLDPWD;
 9.  unset $HOME -> cd -> HOME is not set;
-10. ./pipex "" "" "" ""; syntax error!!
+10. ~~./pipex "" "" "" ""; syntax error!!~~
 11. ~~ls | | echo hello; should syntax error;~~
 12. ls >outfile; fd leaks;
 13. ~~exit | exit shouldn't output exit;~~
-
+14. ~~<|, ignore the pipe;~~
 
