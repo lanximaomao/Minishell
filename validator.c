@@ -52,9 +52,11 @@ static int	handle_parse_error(int cmd_order, t_list *line_lst, int sign)
 		ft_error("Syntax error: parse error", SYNTAX, 1);
 		return (-1);
 	}
-	else if (sign == 3 && (((t_input *)line_lst->next->content)->redir_sign
-		|| !(((t_input *)line_lst->content)->redir_sign == 3
-		&& ((t_input *)line_lst->next->content)->pipe_sign)))
+	else if (sign == 3 && ((((t_input *)line_lst->next->content)->redir_sign // 空值且redir
+		&& !ft_strncmp(((t_input *)line_lst->next->content)->tmp_line, "", 1))
+		|| (((t_input *)line_lst->content)->redir_sign != 3 // error: 1 2 4/> >> << |
+		&& ((t_input *)line_lst->next->content)->pipe_sign // 空值且pipe
+		&& !ft_strncmp(((t_input *)line_lst->next->content)->tmp_line, "", 1))))
 	{
 		ft_error("Syntax error: parse error", SYNTAX, 1);
 		return (-1);
@@ -102,3 +104,4 @@ int	validator(t_list **line_lst)
 	}
 	return (0);
 }
+
