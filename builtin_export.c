@@ -25,14 +25,6 @@ static int	add_argument(t_list **env, char *arg)
 
 	sign = 0;
 	env_content = env_split(arg, '=');
-	while (*arg)
-	{
-		if (*arg == '=')
-			sign = 1;
-		arg++;
-	}
-	if (env_content[1][0] == 0 && sign == 0)
-		return (1);
 	if (env_find_and_replace(env, env_content[0], env_content[1]) == 0)
 	{
 		node = ft_lstnew(env_content);
