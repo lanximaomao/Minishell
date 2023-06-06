@@ -76,7 +76,7 @@ After Eval by Carlos:
 1. .vscode/.DS_store;
 2. ~~echo -nnnn -nnn hello;~~
 
-3. echo "he"'llo';
+3. ~~echo "he"'llo';~~
 
 4. ~~exit dshadk 254 / echo 254 dse; exit or not exit, exitcode = 255~~
 5. ~~^D, print exit after prompt not newline;~~

@@ -53,7 +53,7 @@ fclean: clean
 re:	fclean all
 
 norm:
-	norminette $(SRCS) | grep -v Norme -B1 || true
+	norminette builtin_exit.c | grep -v Norme -B1 || true
 debug:
 	@make -C libft_42
 	@$(CC) $(CFLAGS) $(FSANITIZE) $(LDFLAGS)  $(RL_L) $(RL_I) $(SRCS) -o $(NAME)

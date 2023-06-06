@@ -19,11 +19,9 @@ static int	is_valid_argument(char *arg)
 
 static int	add_argument(t_list **env, char *arg)
 {
-	int		sign;
 	t_list	*node;
 	char	**env_content;
 
-	sign = 0;
 	env_content = env_split(arg, '=');
 	if (env_find_and_replace(env, env_content[0], env_content[1]) == 0)
 	{

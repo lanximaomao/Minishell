@@ -65,33 +65,6 @@ static int	handle_token(t_input *input, char *line, int i, int *len)
 	return (i);
 }
 
-static char	*trim_quote(char *tmp_line, int quote_type)
-{
-	char	quote;
-	char	*trim_line;
-	int		i;
-	int		len;
-
-	i = -1;
-	len = 0;
-	if (quote_type == 1)
-		quote = '\'';
-	else if (quote_type == 2)
-		quote = '\"';
-	else
-		return (tmp_line);
-	trim_line = (char *)malloc(sizeof(char) * (ft_strlen(tmp_line) - 1));
-	if (!trim_line)
-		ft_error(" minishell: malloc fail", MALLOC, 0);
-	while (tmp_line[++i])
-	{
-		if (tmp_line[i] != quote)
-			trim_line[len++] = tmp_line[i];
-	}
-	free_str(tmp_line);
-	trim_line[len] = '\0';
-	return (trim_line);
-}
 
 t_list	*lexer_get_linelst(char *line, t_list *line_lst, int i)
 {
@@ -109,7 +82,7 @@ t_list	*lexer_get_linelst(char *line, t_list *line_lst, int i)
 			input->tmp_line = ft_substr(line, i - len, len);
 			if (!input->tmp_line)
 				ft_error(" minishell: malloc fail", MALLOC, 0);
-			input->tmp_line = trim_quote(input->tmp_line, input->quote_type);
+			// input->tmp_line = trim_quote(input->tmp_line, input->quote_type);
 			if (input->redir_sign == 2 || input->redir_sign == 4)
 				i += 1;
 			create_lst(&line_lst, (t_input *)input);

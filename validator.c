@@ -20,11 +20,9 @@ void	ft_error(char *msg, int error_code, int flag)
 		ft_putstr_fd(msg, 2);
 		write(2, "\n", 1);
 	}
+	g_exitcode = error_code;
 	if (flag == 0)
-	{
-		g_exitcode = error_code;
 		exit(g_exitcode);
-	}
 }
 
 /*
@@ -47,7 +45,8 @@ static int	handle_parse_error(int cmd_order, t_list *line_lst, int sign)
 		|| (sign == 2 && line_lst->next->next // ** | < >
 		&& ((t_input *)line_lst->next->content)->redir_sign
 		&& ((t_input *)line_lst->next->next->content)->redir_sign)
-		|| (sign == 2 && ((t_input *)line_lst->next->content)->pipe_sign == 1)) // | |
+		|| ((sign == 2 && ((t_input *)line_lst->next->content)->pipe_sign == 1)
+		&& !ft_strncmp(((t_input *)line_lst->next->content)->tmp_line, "", 1))) // | |
 	{
 		ft_error("Syntax error: parse error", SYNTAX, 1);
 		return (-1);
