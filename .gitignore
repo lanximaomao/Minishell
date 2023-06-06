@@ -7,6 +7,8 @@ out
 tmp_file_name
 minishell_test
 minishell_tester
+minishell
+
 
 # Prerequisites
 *.d

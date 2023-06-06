@@ -41,8 +41,7 @@ static int	handle_parse_error(int cmd_order, t_list *line_lst, int sign)
 		ft_error("Syntax error: parse error", SYNTAX, 1);
 		return (-1);
 	}
-	else if ((sign == 2 && cmd_order == 0) // |pwd
-		|| (sign == 2 && line_lst->next->next // ** | < >
+	else if ((sign == 2 && cmd_order == 0) || (sign == 2 && line_lst->next->next // ** | < >
 		&& ((t_input *)line_lst->next->content)->redir_sign
 		&& ((t_input *)line_lst->next->next->content)->redir_sign)
 		|| ((sign == 2 && ((t_input *)line_lst->next->content)->pipe_sign == 1)
@@ -96,7 +95,8 @@ int	validator(t_list **line_lst)
 		else if (input->redir_sign)
 			if (handle_parse_error(count, (*line_lst), 3))
 				return (-1);
-		if (input->redir_sign == 3 && ((t_input *)(*line_lst)->next->content)->pipe_sign)
+		if (input->redir_sign == 3
+			&& ((t_input *)(*line_lst)->next->content)->pipe_sign)
 			trim_pipe(line_lst);
 		count++;
 		(*line_lst) = (*line_lst)->next;
