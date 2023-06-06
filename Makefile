@@ -1,15 +1,3 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: lliu <lliu@student.42.fr>                  +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2023/06/04 15:36:56 by lliu              #+#    #+#              #
-#    Updated: 2023/06/04 15:43:44 by lliu             ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
 # formatting
 DEF_COLOR	=	\033[0;39m
 ORANGE		=	\033[0;33m
@@ -41,10 +29,12 @@ CFLAGS = -Werror -Wall -Wextra -I./libft_42/inc
 LDFLAGS = -L./libft_42 -lft
 FSANITIZE	= -fsanitize=address -g
 
-
 READLINE_DIR = $(shell brew --prefix readline)
 RL_L = -lreadline -lhistory -L $(READLINE_DIR)/lib
 RL_I = -I $(READLINE_DIR)/include/readline
+
+#RL_L = -lreadline -L /Users/lsun/.brew/opt/readline/lib
+#RL_I = -lreadline -lhistory -I /Users/lsun/.brew/opt/readline/include/readline
 
 all: $(NAME)
 $(NAME): $(OBJS)

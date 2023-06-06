@@ -36,6 +36,8 @@ void my_exit(char** args, int num_args, int cmd_id)
 	ret = 0;
 	if (cmd_id == 0)
 		printf("exit\n");
+	if (args[1] == NULL)
+		exit(0);
 	handle_error(args[1]);
 	if (num_args > 2)
 	{
@@ -43,8 +45,6 @@ void my_exit(char** args, int num_args, int cmd_id)
 		g_exitcode = 1;
 		return ;
 	}
-	if (args[1] == NULL)
-		exit(0);
 	if ((args[1][0] == '-' && (sign = -1)) || args[1][0] == '+')
 		i++;
 	while (args[1][++i])
