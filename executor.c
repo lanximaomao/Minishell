@@ -13,10 +13,10 @@ int	executor(t_mini *mini, int size)
 	tcsetattr(0, TCSANOW, &t);
 	pid = malloc(sizeof(int) * size);
 	if (!pid)
-		ft_error(" pid malloc fail", 1, 0);
+		ft_error(" minishell: pid malloc fail", 1, 0);
 	status = malloc(sizeof(int) * size);
 	if (!status)
-		ft_error("status malloc fail", 1, 0);
+		ft_error(" minishell: status malloc fail", 1, 0);
 	if (loop(mini, size, pid) != 1)
 		get_exitcode(size, pid, status);
 	free(pid);

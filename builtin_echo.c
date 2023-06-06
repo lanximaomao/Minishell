@@ -1,24 +1,27 @@
 #include "builtin.h"
 
-/* return (0) means does not satisfy -n condition */
-static int	check_n(char **arg)
+/*
+** return -1 means does not satisfy -n condition
+*/
+
+static int	check_n(char *arg)
 {
 	int	i;
 
 	i = 2;
-	if (arg[1][0] && arg[1][1] && arg[1][0] == '-' && arg[1][1] == 'n')
+	if (arg[0] && arg[1] && arg[0] == '-' && arg[1] == 'n')
 	{
-		while (arg[1][i] != '\0')
+		while (arg[i] != '\0')
 		{
-			if (arg[1][i] == ' ')
+			if (arg[i] == ' ')
 				break ;
-			if (arg[1][i] != 'n')
-				return (0);
+			if (arg[i] != 'n')
+				return (-1);
 			i++;
 		}
-		return (i + 1);
+		return (1);
 	}
-	return (0);
+	return (-1);
 }
 
 void	my_echo(char **arg)
@@ -26,16 +29,16 @@ void	my_echo(char **arg)
 	int	i;
 	int	nl;
 
+	i = 1;
 	nl = 0;
-	if (!arg[1])
+	while (arg[i])
 	{
-		ft_printf("\n");
-		return ;
+		if (check_n(arg[i]) == -1)
+			break ;
+		else
+			++nl;
+		i++;
 	}
-	if (check_n(arg) == 0 && ++nl)
-		i = 1;
-	else
-		i = 2;
 	while (arg[i])
 	{
 		ft_printf("%s", arg[i]);
@@ -43,7 +46,7 @@ void	my_echo(char **arg)
 			ft_printf(" ");
 		i++;
 	}
-	if (nl == 1)
+	if (nl == 0)
 		ft_printf("\n");
 	g_exitcode = 0;
 }

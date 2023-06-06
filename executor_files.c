@@ -12,7 +12,7 @@ int	handle_io(t_token *token, int cmd_order, int size, int *fd_pipe)
 	if (cmd_order != 0)
 		token->fd_in = fd_pipe[0];
 	if (cmd_order != size - 1 && pipe(fd_pipe) == -1)
-		ft_error(" error in creating pipes.\n", 4, 0);
+		ft_error(" minishell: error in creating pipes.\n", 4, 0);
 	if (cmd_order == 0)
 	{
 		token->fd_in = dup(0);
@@ -52,12 +52,19 @@ int	get_file_fd(t_token *tokens)
 
 int	get_infile_fd(t_token *tokens, int i, int *count_in)
 {
-	tokens->fd_in = open(tokens->file_redir[i], O_RDONLY);
-	if (tokens->fd_in < 0)
+	int	in;
+
+	in = open(tokens->file_redir[i], O_RDONLY);
+	if (in < 0)
 	{
-		ft_error("minishell: infile", FILE_OP, 1);
+		ft_error(" minishell:", FILE_OP, 1);
 		g_exitcode = 1;
 		return (-1);
+	}
+	else
+	{
+		close(tokens->fd_in);
+		tokens->fd_in = in;
 	}
 	(*count_in)++;
 	if ((*count_in) != tokens->num_infile)
@@ -67,17 +74,24 @@ int	get_infile_fd(t_token *tokens, int i, int *count_in)
 
 int	get_outfile_fd(t_token *tokens, int i, int *count_out)
 {
+	int	out;
+
 	if (tokens->file_type[i] == 1)
-		tokens->fd_out = open(tokens->file_redir[i],
+		out = open(tokens->file_redir[i],
 				O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	else if (tokens->file_type[i] == 2)
-		tokens->fd_out = open(tokens->file_redir[i],
+	else
+		out = open(tokens->file_redir[i],
 				O_WRONLY | O_CREAT | O_APPEND, 0644);
-	if (tokens->fd_out < 0)
+	if (out < 0)
 	{
-		ft_error("minishell: outfile", FILE_OP, 1);
+		ft_error(" minishell:", FILE_OP, 1);
 		g_exitcode = 1;
 		return (-2);
+	}
+	else
+	{
+		close(tokens->fd_out);
+		tokens->fd_out = out;
 	}
 	(*count_out)++;
 	if ((*count_out) != tokens->num_outfile)

@@ -28,7 +28,7 @@ void	remove_tmp_file(int size)
 		tmp_itoa = ft_itoa(i);
 		tmp_file = ft_strjoin("tmp_file", tmp_itoa);
 		if (!tmp_file)
-			ft_error("strjoin fail", MALLOC, 0);
+			ft_error(" minishell: strjoin fail", MALLOC, 0);
 		unlink(tmp_file);
 		free_str(tmp_itoa);
 		free_str(tmp_file);

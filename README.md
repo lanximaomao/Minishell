@@ -74,19 +74,21 @@ used exit status codes that are generally not used by Bash itself:
 After Eval by Carlos:
 
 1. .vscode/.DS_store;
-2. echo -nnnn -nnn hello;
+2. ~~echo -nnnn -nnn hello;~~
 
 3. echo "he"'llo';
 
 4. ~~exit dshadk 254 / echo 254 dse; exit or not exit, exitcode = 255~~
 5. ~~^D, print exit after prompt not newline;~~
+
 6. export PATH+=$HOME, append the value;
 7. export lin=world dsds; export should ouput dsds, env not ouput;
-8. unset OLDPWD, export not output OLDPWD;
-9.  unset $HOME -> cd -> HOME is not set;
+
+8. ~~unset OLDPWD, export not output OLDPWD;~~
+9.  ~~unset $HOME -> cd -> HOME is not set;~~
 10. ~~./pipex "" "" "" ""; syntax error!!~~
 11. ~~ls | | echo hello; should syntax error;~~
-12. ls >outfile; fd leaks;
+12. ~~ls >outfile; fd leaks;~~
 13. ~~exit | exit shouldn't output exit;~~
 14. ~~<|, ignore the pipe;~~
 

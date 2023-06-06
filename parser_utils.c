@@ -6,11 +6,11 @@ void	malloc_redir(t_token **cmd_tokens, int i)
 	{
 		(*cmd_tokens)->file_redir = (char **)ft_calloc(sizeof(char *), 2);
 		if (!(*cmd_tokens)->file_redir)
-			ft_error("Malloc failed", MALLOC, 0);
+			ft_error(" minishell: malloc fail", MALLOC, 0);
 		(*cmd_tokens)->file_redir[1] = NULL;
 		(*cmd_tokens)->file_type = (int *)ft_calloc(sizeof(int), 2);
 		if (!(*cmd_tokens)->file_type)
-			ft_error("Malloc failed", MALLOC, 0);
+			ft_error(" minishell: malloc fail", MALLOC, 0);
 		(*cmd_tokens)->file_type[1] = 0;
 	}
 	else
@@ -48,10 +48,10 @@ static int	store_heredoc(char *line, t_input *input, t_list *env_lst, int fd)
 			line = replace_env_expand(line, env_lst);
 		heredoc = ft_strjoin(line, "\n");
 		if (!heredoc)
-			ft_error("Malloc failed", MALLOC, 0);
+			ft_error(" minishell: malloc fail", MALLOC, 0);
 		free_str(line);
 		if (write(fd, heredoc, ft_strlen(heredoc)) == -1)
-			ft_error("Open tmp_file failed", FILE_OP, 0);
+			ft_error(" minishell: open tmp_file failed", FILE_OP, 0);
 		free_str(heredoc);
 	}
 	return (0);
@@ -66,7 +66,7 @@ static void	handle_heredoc(t_list *env_lst, t_input *input, char *num_heredoc)
 	file_name = ft_strjoin("tmp_file", num_heredoc);
 	fd = open(file_name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
-		ft_error("Open tmp_file failed", FILE_OP, 0);
+		ft_error(" minishell: open tmp_file failed", FILE_OP, 0);
 	free_str(file_name);
 	while (g_exitcode != -2)
 	{
@@ -90,7 +90,7 @@ void	redir_heredoc(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst,
 	handle_heredoc(env_lst, ((t_input *)line_lst->next->content), num_heredoc);
 	cmd_tokens->file_redir[i] = ft_strjoin("tmp_file", num_heredoc);
 	if (!cmd_tokens->file_redir[i])
-		ft_error("Malloc failed", MALLOC, 0);
+		ft_error(" minishell: malloc fail", MALLOC, 0);
 	free_str(num_heredoc);
 	cmd_tokens->file_type[i] = 3;
 	cmd_tokens->num_infile += 1;
@@ -102,6 +102,6 @@ void	create_lst(t_list **lst, void *content)
 
 	node = ft_lstnew(content);
 	if (!node)
-		ft_error("Malloc failed", MALLOC, 0);
+		ft_error(" minishell: malloc fail", MALLOC, 0);
 	ft_lstadd_back(lst, node);
 }

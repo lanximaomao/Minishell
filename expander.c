@@ -9,7 +9,7 @@ char	*replace_env_expand(char *tmp_line, t_list *env_lst)
 	i = -1;
 	tmp_exp = ft_split(tmp_line, '$');
 	if (!tmp_exp)
-		ft_error("Malloc failed", MALLOC, 0);
+		ft_error(" minishell: malloc fail", MALLOC, 0);
 	if (tmp_line[0] != '$')
 		i = 0;
 	tmp_exp = split_replace(tmp_exp, &i, env_lst);

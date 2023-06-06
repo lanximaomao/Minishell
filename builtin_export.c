@@ -14,15 +14,6 @@ static int	is_valid_argument(char *arg)
 			return (printf_error(" not a valid identifier\n", 1));
 		i++;
 	}
-	i = 0;
-	while ((arg[i]))
-	{
-		if (arg[i] == '=')
-			return (0);
-		else
-			i++;
-	}
-	g_exitcode = 0;
 	return (0);
 }
 
@@ -46,7 +37,7 @@ static int	add_argument(t_list **env, char *arg)
 	{
 		node = ft_lstnew(env_content);
 		if (!node)
-			ft_error("cann't create a new node", 1, 0);
+			ft_error(" minishell: cann't create a new node", 1, 0);
 		ft_lstadd_back(env, node);
 		return (0);
 	}
@@ -55,22 +46,20 @@ static int	add_argument(t_list **env, char *arg)
 
 static int	empty_aguments(t_list **env)
 {
-	int		sign;
 	t_list	*tmp;
 	char	**env_content;
 
-	sign = 0;
 	tmp = *env;
 	while (tmp)
 	{
 		env_content = (char **)tmp->content;
-		if (!ft_strncmp(env_content[0], "OLDPWD", 6))
-			sign = 1;
-		ft_printf("declare -x %s=\"%s\"\n", env_content[0], env_content[1]);
+		ft_printf("declare -x %s", env_content[0]);
+		if (ft_strncmp(env_content[1], "", 1))
+			ft_printf("=\"%s\"\n", env_content[1]);
+		else
+			ft_printf("\n");
 		tmp = tmp->next;
 	}
-	if (!sign)
-		printf("declare -x OLDPWD\n");
 	return (0);
 }
 

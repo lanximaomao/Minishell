@@ -4,7 +4,7 @@ static void	init_input(t_input **input)
 {
 	*input = (t_input *)ft_calloc(sizeof(t_input), 1);
 	if (!input)
-		ft_error("Malloc failed", MALLOC, 0);
+		ft_error(" minishell: malloc fail", MALLOC, 0);
 	(*input)->tmp_line = NULL;
 	(*input)->quote_type = 0;
 	(*input)->pipe_sign = 0;
@@ -82,7 +82,7 @@ static char	*trim_quote(char *tmp_line, int quote_type)
 		return (tmp_line);
 	trim_line = (char *)malloc(sizeof(char) * (ft_strlen(tmp_line) - 1));
 	if (!trim_line)
-		ft_error("Malloc failed", MALLOC, 0);
+		ft_error(" minishell: malloc fail", MALLOC, 0);
 	while (tmp_line[++i])
 	{
 		if (tmp_line[i] != quote)
@@ -108,7 +108,7 @@ t_list	*lexer_get_linelst(char *line, t_list *line_lst, int i)
 				return (NULL);
 			input->tmp_line = ft_substr(line, i - len, len);
 			if (!input->tmp_line)
-				ft_error("Malloc failed", MALLOC, 0);
+				ft_error(" minishell: malloc fail", MALLOC, 0);
 			input->tmp_line = trim_quote(input->tmp_line, input->quote_type);
 			if (input->redir_sign == 2 || input->redir_sign == 4)
 				i += 1;

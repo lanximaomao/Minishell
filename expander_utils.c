@@ -34,11 +34,11 @@ char	*replace_env_value(char *tmp_exp, t_list *env_lst, int *sign)
 		{
 			tmp_substr = ft_substr(tmp_exp, len_envp, ft_strlen(tmp_exp));
 			if (!tmp_substr)
-				ft_error("Malloc failed", MALLOC, 0);
+				ft_error(" minishell: malloc fail", MALLOC, 0);
 			free_str(tmp_exp);
 			tmp_exp = ft_strjoin(((char **)env_lst->content)[1], tmp_substr);
 			if (!tmp_exp)
-				ft_error("Malloc failed", MALLOC, 0);
+				ft_error(" minishell: malloc fail", MALLOC, 0);
 			free_str(tmp_substr);
 			*sign = 1;
 			break ;
@@ -110,13 +110,13 @@ char	*ft_mulstrjoin(char **tmp_exp, int len)
 	res = NULL;
 	res = ft_strdup("");
 	if (!res)
-		ft_error("Malloc failed", MALLOC, 0);
+		ft_error(" minishell: malloc fail", MALLOC, 0);
 	while (i < len)
 	{
 		tmp_join = res;
 		res = ft_strjoin(tmp_join, tmp_exp[i]);
 		if (!res)
-			ft_error("Malloc failed", MALLOC, 0);
+			ft_error(" minishell: malloc fail", MALLOC, 0);
 		free_str(tmp_join);
 		i++;
 	}
