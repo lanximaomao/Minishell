@@ -84,10 +84,16 @@ char	**split_replace(char **tmp_exp, int *i, t_list *env_lst)
 	{
 		if (tmp_exp[*i][0] == '?')
 			tmp_exp[*i] = handle_exitcode(tmp_exp[*i]);
-		else if (tmp_exp[*i][0] == ' ')
+		else if (!ft_isalnum(tmp_exp[*i][0]))
 		{
 			tmp_str = tmp_exp[*i];
 			tmp_exp[*i] = ft_strjoin("$", tmp_str);
+			free_str(tmp_str);
+		}
+		else if (ft_isdigit(tmp_exp[*i][0]))
+		{
+			tmp_str = tmp_exp[*i];
+			tmp_exp[*i] = ft_substr(tmp_str, 1, ft_strlen(tmp_str));
 			free_str(tmp_str);
 		}
 		else

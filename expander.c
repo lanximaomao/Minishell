@@ -93,7 +93,7 @@ static int	handle_multiquote(t_list *line_lst, t_list *env_lst, int i,
 	i = ft_strlen(tmp_str[0]) + ft_strlen(tmp_str[1]) - 1;
 	free_str(input->tmp_line);
 	input->tmp_line = ft_mulstrjoin(tmp_str, 3);
-	free_char(tmp_str);
+	free(tmp_str);
 	return (i);
 }
 

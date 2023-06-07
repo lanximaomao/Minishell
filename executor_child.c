@@ -58,7 +58,7 @@ void	cmd_with_full_path(t_token *token, char **env_exe)
 			else if (S_ISREG(file_stat.st_mode))
 			{
 				if (execve(token->cmd, token->args, env_exe) == -1)
-					ft_error(" minishell: no such file or directory", 126, 0);
+					ft_error(" minishell: no such file or directory", 127, 0);
 			}
 		}
 	}

@@ -73,8 +73,11 @@ void	minishell(t_mini *mini, char *line)
 	signal(SIGQUIT, handle_cmd);
 	signal(SIGINT, handle_cmd);
 	size = ft_lstsize(mini->cmd_lst);
-	if (size == 0)
+	if (size == 0 || g_exitcode == 513)
+	{
+		g_exitcode = 1;
 		return ;
+	}
 	executor(mini, size);
 	free_lst_content(mini->cmd_lst, 1);
 	remove_tmp_file(size);

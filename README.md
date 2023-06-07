@@ -92,3 +92,5 @@ After Eval by Carlos:
 13. ~~exit | exit shouldn't output exit;~~
 14. ~~<|, ignore the pipe;~~
 
+1. contrl + c exit heredoc should give error code 1
+2. cat << a | ls --> by hittiing ctrl + c, ls should not execute

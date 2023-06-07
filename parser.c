@@ -84,7 +84,7 @@ static t_list	*iterate_cmds(t_token *cmd_tokens, t_list *line_lst,
 
 	i = 0;
 	j = 0;
-	while (line_lst)
+	while (line_lst && g_exitcode != 513)
 	{
 		if (((t_input *)line_lst->content)->redir_sign != 0)
 		{
@@ -93,9 +93,9 @@ static t_list	*iterate_cmds(t_token *cmd_tokens, t_list *line_lst,
 				parse_cmd_args(cmd_tokens, ((t_input *)line_lst->content), j++);
 			line_lst = line_lst->next;
 		}
-		else if (ft_strncmp(((t_input *)line_lst->content)->tmp_line, "", 1))
+		else if (((t_input *)line_lst->content)->pipe_sign == 0)
 			parse_cmd_args(cmd_tokens, ((t_input *)line_lst->content), j++);
-		if (((t_input *)line_lst->content)->pipe_sign == 1)
+		if (((t_input *)line_lst->content)->pipe_sign == 1 )
 			break ;
 		line_lst = line_lst->next;
 	}

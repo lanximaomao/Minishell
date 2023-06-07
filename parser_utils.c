@@ -77,7 +77,7 @@ static void	handle_heredoc(t_list *env_lst, t_input *input, char *num_heredoc)
 	}
 	close(fd);
 	if (g_exitcode == -2)
-		g_exitcode = 1;
+		g_exitcode = 513;
 	return ;
 }
 
