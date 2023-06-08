@@ -36,7 +36,7 @@ void	cmd_with_no_path(t_token *token, t_mini *mini, char **env_exe)
 	if (execve(path_cmd, token->args, env_exe) == -1)
 	{
 		if (errno == EACCES)
-			ft_error(" minishell: permission denied", 126, 0);
+			ft_error(" minishell: Permission denied", 126, 0);
 		else
 			ft_error(" minishell: command not found", 127, 0);
 	}
@@ -50,7 +50,7 @@ void	cmd_with_full_path(t_token *token, char **env_exe)
 	if (access(token->cmd, F_OK) == 0)
 	{
 		if (access(token->cmd, X_OK) != 0)
-			ft_error(" minishell: permission denied", 126, 0);
+			ft_error(" minishell: Permission denied", 126, 0);
 		if (stat(token->cmd, &file_stat) == 0)
 		{
 			if (S_ISDIR(file_stat.st_mode))
@@ -58,10 +58,10 @@ void	cmd_with_full_path(t_token *token, char **env_exe)
 			else if (S_ISREG(file_stat.st_mode))
 			{
 				if (execve(token->cmd, token->args, env_exe) == -1)
-					ft_error(" minishell: no such file or directory", 127, 0);
+					ft_error(" minishell: No such file or directory", 127, 0);
 			}
 		}
 	}
 	else
-		ft_error(" minishell: no such file or directory", 127, 0);
+		ft_error(" minishell: No such file or directory", 127, 0);
 }
