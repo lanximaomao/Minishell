@@ -70,31 +70,33 @@ static void	get_i_len(int quote_type, int *i, int *len, char *tmp_line)
 	}
 }
 
-static int	handle_multiquote(t_list *line_lst, t_list *env_lst, int i,
-		int quote_type)
+static void	handle_multiquote(t_input *input, t_list *env_lst, int *i, char quote)
 {
 	int		len;
 	int		start;
-	t_input	*input;
+	int 	quote_type;
 	char	**tmp_str;
 
 	len = 1;
-	start = i;
-	input = (t_input *)line_lst->content;
+	start = *i;
+	quote_type = 0;
 	tmp_str = (char **)ft_calloc(sizeof(char *), 3);
 	if (!tmp_str)
 		ft_error(" minishell: malloc fail", MALLOC, 0);
-	tmp_str[0] = ft_substr(input->tmp_line, 0, i);
-	get_i_len(quote_type, &i, &len, input->tmp_line);
+	if (quote == '\'')
+		quote_type = 1;
+	else if (quote == '\"')
+		quote_type = 2;
+	tmp_str[0] = ft_substr(input->tmp_line, 0, *i);
+	get_i_len(quote_type, i, &len, input->tmp_line);
 	tmp_str[1] = trim_quote(ft_substr(input->tmp_line, start, len), quote_type);
 	if (quote_type != 1 && ft_strchr(tmp_str[1], '$'))
 		tmp_str[1] = replace_env_expand(tmp_str[1], env_lst);
-	tmp_str[2] = ft_substr(input->tmp_line, i, ft_strlen(input->tmp_line));
-	i = ft_strlen(tmp_str[0]) + ft_strlen(tmp_str[1]) - 1;
+	tmp_str[2] = ft_substr(input->tmp_line, *i, ft_strlen(input->tmp_line));
+	*i = ft_strlen(tmp_str[0]) + ft_strlen(tmp_str[1]) - 1;
 	free_str(input->tmp_line);
 	input->tmp_line = ft_mulstrjoin(tmp_str, 3);
 	free(tmp_str);
-	return (i);
 }
 
 void	expander_args(t_list *line_lst, t_list *env_lst)
@@ -110,16 +112,17 @@ void	expander_args(t_list *line_lst, t_list *env_lst)
 		{
 			while (input->tmp_line[++i])
 			{
-				if (input->tmp_line[i] == '\"')
-					i = handle_multiquote(line_lst, env_lst, i, 2);
-				else if (input->tmp_line[i] == '\'')
-					i = handle_multiquote(line_lst, env_lst, i, 1);
-				else
-					i = handle_multiquote(line_lst, env_lst, i, 0);
+				handle_multiquote(input, env_lst, &i, input->tmp_line[i]);
+				if (i == -1)
+					break;
 			}
 		}
 		else if (ft_strchr(input->tmp_line, '$'))
+		{
 			input->tmp_line = replace_env_expand(input->tmp_line, env_lst);
+			if (!ft_strncmp(((t_input *)line_lst->content)->tmp_line, "", 1))
+				input->ignore_sign = 1;
+		}
 		line_lst = line_lst->next;
 	}
 	return ;

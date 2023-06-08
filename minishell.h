@@ -39,6 +39,7 @@ typedef struct s_input
 	int		quote_type;
 	int		pipe_sign;
 	int		redir_sign;
+	int		ignore_sign; // 0 for no ignore, 1 for ignore
 }			t_input;
 
 /*
