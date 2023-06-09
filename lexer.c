@@ -77,7 +77,11 @@ t_list	*lexer_get_linelst(char *line, t_list *line_lst, int i)
 			init_input(&input);
 			i = handle_token(input, line, i, &len);
 			if (i == -1)
+			{
+				free_input(input); // 当前的input已经在init_input创建
+				free_lst_content(line_lst, 0); // 过去创建好的lst
 				return (NULL);
+			}
 			input->tmp_line = ft_substr(line, i - len, len);
 			if (!input->tmp_line)
 				ft_error(" minishell: malloc fail", MALLOC, 0);

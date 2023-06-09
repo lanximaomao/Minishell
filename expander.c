@@ -96,7 +96,7 @@ static void	handle_multiquote(t_input *input, t_list *env_lst, int *i, char quot
 	*i = ft_strlen(tmp_str[0]) + ft_strlen(tmp_str[1]) - 1;
 	free_str(input->tmp_line);
 	input->tmp_line = ft_mulstrjoin(tmp_str, 3);
-	free(tmp_str);
+	free_char(tmp_str);
 }
 
 void	expander_args(t_list *line_lst, t_list *env_lst)
