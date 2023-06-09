@@ -65,6 +65,15 @@ static int	handle_token(t_input *input, char *line, int i, int *len)
 	return (i);
 }
 
+static void handle_input(t_input	*input, int *i)
+{
+	if (input->redir_sign == 2 || input->redir_sign == 4)
+		*i += 1;
+	if (!ft_strncmp(input->tmp_line, "", 1)
+		&& (input->redir_sign || input->pipe_sign))
+		input->ignore_sign = 1;
+}
+
 t_list	*lexer_get_linelst(char *line, t_list *line_lst, int i)
 {
 	int		len;
@@ -78,18 +87,14 @@ t_list	*lexer_get_linelst(char *line, t_list *line_lst, int i)
 			i = handle_token(input, line, i, &len);
 			if (i == -1)
 			{
-				free_input(input); // 当前的input已经在init_input创建
-				free_lst_content(line_lst, 0); // 过去创建好的lst
+				free_input(input);
+				free_lst_content(line_lst, 0);
 				return (NULL);
 			}
 			input->tmp_line = ft_substr(line, i - len, len);
 			if (!input->tmp_line)
 				ft_error(" minishell: malloc fail", MALLOC, 0);
-			if (input->redir_sign == 2 || input->redir_sign == 4)
-				i += 1;
-			if (!ft_strncmp(input->tmp_line, "", 1)
-				&& (input->redir_sign || input->pipe_sign))
-				input->ignore_sign = 1;
+			handle_input(input, &i);
 			create_lst(&line_lst, (t_input *)input);
 		}
 		if (!line[i])

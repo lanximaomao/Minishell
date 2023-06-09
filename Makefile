@@ -12,14 +12,15 @@ WHITE		=	\033[0;97m
 
 ECHO		= echo
 
-SRCS = 			main.c mini_utils.c	free.c validator.c	\
-				lexer.c expander.c expander_utils.c parser.c parser_utils.c			\
-				env_var.c signal.c			\
-				builtin_echo.c			\
-				builtin_exit.c builtin_export.c		\
-				builtin_unset.c builtin.c builtin_cd.c	\
-				builtin_env.c builtin_pwd.c \
-				executor.c executor_child.c executor_files.c	\
+SRCS = 			main.c mini_utils.c	free.c validator.c					\
+				lexer.c expander.c expander_utils.c expander_utils2.c	\
+				parser.c parser_utils.c									\
+				env_var.c signal.c										\
+				builtin_echo.c											\
+				builtin_exit.c builtin_export.c							\
+				builtin_unset.c builtin.c builtin_cd.c					\
+				builtin_env.c builtin_pwd.c								\
+				executor.c executor_child.c executor_files.c			\
 				executor_utils.c
 OBJS = $(SRCS:.c=.o)
 

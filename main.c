@@ -64,7 +64,7 @@ void	minishell(t_mini *mini, char *line)
 	tmp = line_lst;
 	if (validator(&tmp) == -1)
 	{
-		free_lst_content(tmp, 0);
+		free_lst_content(line_lst, 0);
 		return ;
 	}
 	expander_args(line_lst, mini->env);

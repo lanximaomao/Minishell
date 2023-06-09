@@ -82,10 +82,8 @@ char	*replace_env(char *tmp_exp, t_list *env_lst)
 	return (tmp_exp);
 }
 
-char	**split_replace(char **tmp_exp, int *i, t_list *env_lst)
+char	**split_replace(char **tmp_exp, int *i, t_list *env_lst, char *tmp_str)
 {
-	char	*tmp_str;
-
 	while (tmp_exp[++(*i)])
 	{
 		if (tmp_exp[*i][0] == '?')

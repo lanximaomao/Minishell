@@ -92,14 +92,15 @@ int			validator(t_list **line_lst);
 
 /* expander.c */
 void		expander_args(t_list *line_lst, t_list *env_lst);
-char		*replace_env_expand(char *tmp_line, t_list *env_lst);
 
 /* expander_utils.c */
 char		*handle_exitcode(char *str);
 char		*replace_env_value(char *tmp_exp, t_list *env_lst, int *sign);
 char		*replace_env(char *tmp_exp, t_list *env_lst);
 char		*ft_mulstrjoin(char **tmp_exp, int len);
-char		**split_replace(char **tmp_exp, int *i, t_list *env_lst);
+char		**split_replace(char **tmp_exp, int *i, t_list *env_lst, char *tmp_str);
+/* expander_utils2.c */
+char		*replace_env_expand(char *tmp_line, t_list *env_lst);
 
 /* parser.c */
 t_list		*parser_cmds(t_list *line_lst, t_list *env_lst);
