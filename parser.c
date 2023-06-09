@@ -26,8 +26,7 @@ static void	parse_redir(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst,
 	else
 	{
 		if (line_lst->next)
-			cmd_tokens->file_redir[i] = ft_strdup(((t_input *)
-						line_lst->next->content)->tmp_line);
+			cmd_tokens->file_redir[i] = ft_strdup(((t_input *)line_lst->next->content)->tmp_line);
 		if (!cmd_tokens->file_redir[i])
 			ft_error(" minishell: malloc fail", MALLOC, 0);
 		if (((t_input *)line_lst->content)->redir_sign == 1)
@@ -63,8 +62,12 @@ static void	parse_cmd_args(t_token *cmd_tokens, t_input *input, int j)
 		cmd_tokens->args[1] = NULL;
 	}
 	else
+	{
 		cmd_tokens->args = (char **)ft_realloc(cmd_tokens->args, sizeof(char *)
 				* (j + 1), sizeof(char *) * (j + 2));
+		if (!cmd_tokens->args)
+			ft_error(" minishell: malloc fail", MALLOC, 0);
+	}
 	cmd_tokens->args[j] = ft_strdup(input->tmp_line);
 	if (!cmd_tokens->args[j])
 		ft_error(" minishell: malloc fail", MALLOC, 0);

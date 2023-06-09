@@ -17,11 +17,17 @@ char	*replace_env_expand(char *tmp_line, t_list *env_lst)
 	{
 		tmp_str = tmp_exp[i - 1];
 		tmp_exp[i - 1] = ft_strjoin(tmp_str, "$");
+		if (!tmp_exp[i - 1])
+			ft_error(" minishell: malloc fail", MALLOC, 0);
 		free_str(tmp_str);
 	}
 	free_str(tmp_line);
 	if (i == 0)
+	{
 		tmp_line = ft_strdup("$");
+		if (!tmp_line)
+			ft_error(" minishell: malloc fail", MALLOC, 0);
+	}
 	else
 		tmp_line = ft_mulstrjoin(tmp_exp, i);
 	free_char(tmp_exp);
@@ -88,11 +94,19 @@ static void	handle_multiquote(t_input *input, t_list *env_lst, int *i, char quot
 	else if (quote == '\"')
 		quote_type = 2;
 	tmp_str[0] = ft_substr(input->tmp_line, 0, *i);
+	if (!tmp_str[0])
+		ft_error(" minishell: malloc fail", MALLOC, 0);
 	get_i_len(quote_type, i, &len, input->tmp_line);
-	tmp_str[1] = trim_quote(ft_substr(input->tmp_line, start, len), quote_type);
+	char *tmp_str_quote;
+	tmp_str_quote = ft_substr(input->tmp_line, start, len);
+	if (!tmp_str_quote)
+		ft_error(" minishell: malloc fail", MALLOC, 0);
+	tmp_str[1] = trim_quote(tmp_str_quote, quote_type);
 	if (quote_type != 1 && ft_strchr(tmp_str[1], '$'))
 		tmp_str[1] = replace_env_expand(tmp_str[1], env_lst);
 	tmp_str[2] = ft_substr(input->tmp_line, *i, ft_strlen(input->tmp_line));
+	if (!tmp_str[2])
+		ft_error(" minishell: malloc fail", MALLOC, 0);
 	*i = ft_strlen(tmp_str[0]) + ft_strlen(tmp_str[1]) - 1;
 	free_str(input->tmp_line);
 	input->tmp_line = ft_mulstrjoin(tmp_str, 3);

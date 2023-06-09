@@ -16,11 +16,14 @@ void	malloc_redir(t_token **cmd_tokens, int i)
 	else
 	{
 		(*cmd_tokens)->file_redir = (char **)ft_realloc((*cmd_tokens)
-				->file_redir, sizeof(char *) * (i + 1),
-				sizeof(char *) * (i + 2));
+				->file_redir, sizeof(char *) * (i + 1), sizeof(char *) * (i + 2));
+		if (!(*cmd_tokens)->file_redir)
+			ft_error(" minishell: malloc fail", MALLOC, 0);
 		(*cmd_tokens)->file_redir[i + 1] = NULL;
 		(*cmd_tokens)->file_type = (int *)ft_realloc((*cmd_tokens)->file_type,
 				sizeof(int) * (i + 1), sizeof(int) * (i + 2));
+		if (!(*cmd_tokens)->file_type)
+			ft_error(" minishell: malloc fail", MALLOC, 0);
 		(*cmd_tokens)->file_type[i + 1] = 0;
 	}
 }
@@ -64,6 +67,8 @@ static void	handle_heredoc(t_list *env_lst, t_input *input, char *num_heredoc)
 	char	*file_name;
 
 	file_name = ft_strjoin("tmp_file", num_heredoc);
+	if (!file_name)
+		ft_error(" minishell: malloc fail", MALLOC, 0);
 	fd = open(file_name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
 		ft_error(" minishell: open tmp_file failed", FILE_OP, 0);
@@ -87,6 +92,8 @@ void	redir_heredoc(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst,
 	char	*num_heredoc;
 
 	num_heredoc = ft_itoa(cmd_tokens->cmd_id);
+	if (!num_heredoc)
+		ft_error(" minishell: malloc fail", MALLOC, 0);
 	handle_heredoc(env_lst, ((t_input *)line_lst->next->content), num_heredoc);
 	cmd_tokens->file_redir[i] = ft_strjoin("tmp_file", num_heredoc);
 	if (!cmd_tokens->file_redir[i])

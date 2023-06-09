@@ -11,7 +11,11 @@ char	*handle_exitcode(char *str)
 	str_status = NULL;
 	res = NULL;
 	str_status = ft_itoa((unsigned int)g_exitcode);
+	if (!str_status)
+		ft_error(" minishell: malloc fail", MALLOC, 0);
 	res = ft_strjoin(str_status, str + 1);
+	if (!res)
+		ft_error(" minishell: malloc fail", MALLOC, 0);
 	free(str_status);
 	str_status = NULL;
 	free(str);
@@ -67,6 +71,8 @@ char	*replace_env(char *tmp_exp, t_list *env_lst)
 			if (!ft_isalnum(*tmp_exp))
 			{
 				tmp_exp = ft_strdup(tmp_exp);
+				if (!tmp_exp)
+					ft_error(" minishell: malloc fail", MALLOC, 0);
 				free_str(trim_str);
 				break ;
 			}
@@ -88,12 +94,16 @@ char	**split_replace(char **tmp_exp, int *i, t_list *env_lst)
 		{
 			tmp_str = tmp_exp[*i];
 			tmp_exp[*i] = ft_strjoin("$", tmp_str);
+			if (!tmp_exp[*i])
+				ft_error(" minishell: malloc fail", MALLOC, 0);
 			free_str(tmp_str);
 		}
 		else if (ft_isdigit(tmp_exp[*i][0]))
 		{
 			tmp_str = tmp_exp[*i];
 			tmp_exp[*i] = ft_substr(tmp_str, 1, ft_strlen(tmp_str));
+			if (!tmp_exp[*i])
+				ft_error(" minishell: malloc fail", MALLOC, 0);
 			free_str(tmp_str);
 		}
 		else
