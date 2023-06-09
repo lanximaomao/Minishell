@@ -12,7 +12,9 @@ void	free_char(char **str)
 	int	i;
 
 	i = 0;
-	while (str[i])
+	if (str == NULL)
+		return ;
+	while (str[i] != NULL)
 	{
 		free(str[i]);
 		str[i] = NULL;

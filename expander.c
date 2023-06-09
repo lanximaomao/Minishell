@@ -80,7 +80,7 @@ static void	handle_multiquote(t_input *input, t_list *env_lst, int *i, char quot
 	len = 1;
 	start = *i;
 	quote_type = 0;
-	tmp_str = (char **)ft_calloc(sizeof(char *), 3);
+	tmp_str = (char **)ft_calloc(sizeof(char *), 4);
 	if (!tmp_str)
 		ft_error(" minishell: malloc fail", MALLOC, 0);
 	if (quote == '\'')
