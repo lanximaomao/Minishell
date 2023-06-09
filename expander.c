@@ -71,13 +71,9 @@ static char **exp_each_part(int quote_type, t_input *input, t_list *env_lst, int
 
 static void	handle_multiquote(t_input *input, t_list *env_lst, int *i, char quote)
 {
-	int		len;
-	int		start;
 	int 	quote_type;
 	char	**tmp_str;
 
-	len = 1;
-	start = *i;
 	quote_type = 0;
 	if (quote == '\'')
 		quote_type = 1;

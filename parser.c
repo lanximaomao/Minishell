@@ -87,11 +87,13 @@ static t_list	*iterate_cmds(t_token *cmd_tokens, t_list *line_lst,
 
 	i = 0;
 	j = 0;
-	while (line_lst && g_exitcode != 513)
+	while (line_lst)
 	{
 		if (((t_input *)line_lst->content)->redir_sign != 0)
 		{
 			parse_redir(cmd_tokens, line_lst, env_lst, i++);
+			if (g_exitcode == 513)
+				return (NULL);
 			if (ft_strncmp(((t_input *)line_lst->content)->tmp_line, "", 1))
 				parse_cmd_args(cmd_tokens, ((t_input *)line_lst->content), j++);
 			line_lst = line_lst->next;
@@ -130,6 +132,12 @@ t_list	*parser_cmds(t_list *line_lst, t_list *env_lst)
 			ft_error(" minishell: malloc fail", MALLOC, 0);
 		init_tokens(cmd_tokens, num_cmd);
 		line_lst = iterate_cmds(cmd_tokens, line_lst, env_lst);
+		if (g_exitcode == 513)
+		{
+			free_tokens(cmd_tokens);
+			free_lst_content(cmd_lst, 1);
+			return (NULL);
+		}
 		create_lst(&cmd_lst, (t_token *)cmd_tokens);
 		if (!line_lst)
 			break ;

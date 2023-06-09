@@ -22,7 +22,7 @@ int	main(int argc, char **argv, char **env)
 }
 
 /* why the ECHOCTL is turned off after the while loop? */
-int	readline_prompt(t_mini *mini)
+void	readline_prompt(t_mini *mini)
 {
 	char			*line;
 	struct termios	t;
@@ -39,15 +39,16 @@ int	readline_prompt(t_mini *mini)
 		line = readline("\033[32m\U0001F40C Minishell \033[31m$\033[0;39m ");
 		if (!line)
 			exit_with_empty_line("exit\n", 0);
-		if (ft_strncmp(line, "", 1))
+		if (line && ft_strncmp(line, "", 1))
+		{
 			add_history(line);
-		minishell(mini, line);
+			minishell(mini, line);
+		}
 	}
 	tcgetattr(0, &t);
 	t.c_lflag |= ECHOCTL;
 	tcsetattr(0, TCSANOW, &t);
 	rl_clear_history();
-	return (0);
 }
 
 void	minishell(t_mini *mini, char *line)

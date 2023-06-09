@@ -60,7 +60,7 @@ static int	store_heredoc(char *line, t_input *input, t_list *env_lst, int fd)
 	return (0);
 }
 
-static void	handle_heredoc(t_list *env_lst, t_input *input, char *num_heredoc)
+static char	*handle_heredoc(t_list *env_lst, t_input *input, char *num_heredoc)
 {
 	int		fd;
 	char	*line;
@@ -69,10 +69,10 @@ static void	handle_heredoc(t_list *env_lst, t_input *input, char *num_heredoc)
 	file_name = ft_strjoin("tmp_file", num_heredoc);
 	if (!file_name)
 		ft_error(" minishell: malloc fail", MALLOC, 0);
+	free_str(num_heredoc);
 	fd = open(file_name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (fd < 0)
 		ft_error(" minishell: open tmp_file failed", FILE_OP, 0);
-	free_str(file_name);
 	while (g_exitcode != -2)
 	{
 		signal(SIGINT, handle_signal_heredoc);
@@ -83,22 +83,28 @@ static void	handle_heredoc(t_list *env_lst, t_input *input, char *num_heredoc)
 	close(fd);
 	if (g_exitcode == -2)
 		g_exitcode = 513;
-	return ;
+	return (file_name);
 }
 
 void	redir_heredoc(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst,
 		int i)
 {
 	char	*num_heredoc;
+	char	*file_name;
 
 	num_heredoc = ft_itoa(cmd_tokens->cmd_id);
 	if (!num_heredoc)
 		ft_error(" minishell: malloc fail", MALLOC, 0);
-	handle_heredoc(env_lst, ((t_input *)line_lst->next->content), num_heredoc);
-	cmd_tokens->file_redir[i] = ft_strjoin("tmp_file", num_heredoc);
+	file_name = handle_heredoc(env_lst, ((t_input *)line_lst->next->content), num_heredoc);
+	if (g_exitcode == 513)
+	{
+		free_str(file_name);
+		return ;
+	}
+	cmd_tokens->file_redir[i] = ft_strdup(file_name);
 	if (!cmd_tokens->file_redir[i])
 		ft_error(" minishell: malloc fail", MALLOC, 0);
-	free_str(num_heredoc);
+	free_str(file_name);
 	cmd_tokens->file_type[i] = 3;
 	cmd_tokens->num_infile += 1;
 }
