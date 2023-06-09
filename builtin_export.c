@@ -17,13 +17,21 @@ static int	is_valid_argument(char *arg)
 	return (0);
 }
 
+/* sign 0 means arg there isn't any equal sign in argument*/
 static int	add_argument(t_list **env, char *arg)
 {
+	int sign;
+	int status;
 	t_list	*node;
 	char	**env_content;
 
+	if (ft_strchr(arg, '='))
+		sign = 1;
+	else
+		sign = 0;
 	env_content = env_split(arg, '=');
-	if (env_find_and_replace(env, env_content[0], env_content[1]) == 0)
+	status = env_find_and_replace(env, env_content[0], env_content[1], sign);
+	if (status == 0)
 	{
 		node = ft_lstnew(env_content);
 		if (!node)
@@ -31,6 +39,7 @@ static int	add_argument(t_list **env, char *arg)
 		ft_lstadd_back(env, node);
 		return (0);
 	}
+	free_char(env_content);
 	return (1);
 }
 

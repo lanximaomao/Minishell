@@ -81,7 +81,7 @@ void		env_init(t_mini *mini, char **env);
 char		**env_split(char const *s, char c);
 char		*env_handler(t_list **env, char *str);
 char		**env_convert(t_list **env);
-int			env_find_and_replace(t_list **env, char *to_find, char *to_replace);
+int			env_find_and_replace(t_list **env, char *to_find, char *to_replace, int sign);
 
 /* lexer */
 t_list		*lexer_get_linelst(char *line, t_list *line_lst, int i);

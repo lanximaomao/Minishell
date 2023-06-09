@@ -6,11 +6,9 @@ char	**env_split(char const *s, char c)
 	char	**str_arr;
 	size_t	len;
 
-	if (!s)
-		return (NULL);
-	str_arr = (char **)malloc(sizeof(char *) * (2 + 1));
+	str_arr = (char **)ft_calloc(sizeof(char *), (2 + 1));
 	if (!str_arr)
-		return (NULL);
+		ft_error(" minishell: malloc fail or null input?\n", MALLOC, 0);
 	while (*s)
 	{
 		if (*s != c)
@@ -19,8 +17,11 @@ char	**env_split(char const *s, char c)
 			while (*s && *s != c && ++len)
 				s++;
 			str_arr[0] = ft_substr(s - len, 0, len);
+			if (!str_arr[0])
+				ft_error(" minishell: malloc fail", MALLOC, 0);
 			str_arr[1] = ft_substr(s - len, len + 1, ft_strlen(s));
-			str_arr[2] = 0;
+			if (!str_arr[1])
+				ft_error(" minishell: malloc fail", MALLOC, 0);
 			break ;
 		}
 		else
@@ -45,9 +46,7 @@ void	env_init(t_mini *mini, char **env)
 	while (env[i])
 	{
 		env_content = env_split(env[i], '=');
-		if (!env_content)
-			ft_error(" minishell: malloc fail or null input?\n", 1, 0);
-		is_oldpwd = ft_strncmp(env_content[0], "OLDPWD", 6);
+		is_oldpwd = ft_strncmp(env_content[0], "OLDPWD", ft_strlen(env_content[0]));
 		if (is_oldpwd == 0)
 			ft_bzero(env_content[1], ft_strlen(env_content[1]));
 		node = ft_lstnew(env_content);
@@ -119,7 +118,7 @@ char	**env_convert(t_list **env)
 /*
 ** this function is used to update the enviromental varible
 */
-int	env_find_and_replace(t_list **env, char *to_find, char *to_replace)
+int	env_find_and_replace(t_list **env, char *to_find, char *to_replace, int sign)
 {
 	char	**env_content;
 	t_list	*tmp;
@@ -134,6 +133,8 @@ int	env_find_and_replace(t_list **env, char *to_find, char *to_replace)
 		if (len == ft_strlen(to_find) && ft_strncmp(to_find, env_content[0],
 				(int)len) == 0)
 		{
+			if(ft_strncmp(to_replace, "", 1) == 0 && sign == 0)
+				return (-1);
 			if (ft_strlen(to_replace) > ft_strlen(env_content[1]))
 				env_content[1] = ft_realloc(env_content[1], len + 1,
 						ft_strlen(to_replace) + 1);

@@ -1,0 +1,320 @@
+diff --git a/Makefile b/Makefile
+index 6f801c1..ee9a880 100644
+--- a/Makefile
++++ b/Makefile
+@@ -29,12 +29,12 @@ CFLAGS = -Werror -Wall -Wextra -I./libft_42/inc
+ LDFLAGS = -L./libft_42 -lft
+ FSANITIZE	= -fsanitize=address -g
+ 
+-READLINE_DIR = $(shell brew --prefix readline)
+-RL_L = -lreadline -lhistory -L$(READLINE_DIR)/lib
+-RL_I = -I$(READLINE_DIR)/include/readline
++#READLINE_DIR = $(shell brew --prefix readline)
++#RL_L = -lreadline -lhistory -L$(READLINE_DIR)/lib
++#RL_I = -I$(READLINE_DIR)/include/readline
+ 
+-# RL_L = -lreadline -lhistory -L /Users/lsun/.brew/opt/readline/lib
+-# RL_I = -I /Users/lsun/.brew/opt/readline/include/readline
++ RL_L = -lreadline -lhistory -L /Users/lsun/.brew/opt/readline/lib
++ RL_I = -I /Users/lsun/.brew/opt/readline/include/readline
+ 
+ all: $(NAME)
+ $(NAME): $(OBJS)
+diff --git a/README.md b/README.md
+index d21d3f4..052496a 100644
+--- a/README.md
++++ b/README.md
+@@ -94,3 +94,9 @@ After Eval by Carlos:
+ 
+ 1. contrl + c exit heredoc should give error code 1
+ 2. cat << a | ls --> by hittiing ctrl + c, ls should not execute
++
++
++
++update:
++1. ft_substr function
++2. add ft_strjoin_gnl
+diff --git a/builtin_cd.c b/builtin_cd.c
+index 29947db..3dd65a0 100644
+--- a/builtin_cd.c
++++ b/builtin_cd.c
+@@ -28,7 +28,7 @@ void	my_cd(char **arg, t_list **env)
+ 	char	buf[1024];
+ 
+ 	if (getcwd(buf, sizeof(buf)) != NULL)
+-		env_find_and_replace(env, "OLDPWD", buf);
++		env_find_and_replace(env, "OLDPWD", buf, 1);
+ 	if (arg[1] == NULL)
+ 	{
+ 		if (chdir(env_handler(env, "HOME")) != 0)
+@@ -45,6 +45,6 @@ void	my_cd(char **arg, t_list **env)
+ 		return ;
+ 	}
+ 	if (getcwd(buf, sizeof(buf)) != NULL)
+-		env_find_and_replace(env, "PWD", buf);
++		env_find_and_replace(env, "PWD", buf, 1);
+ 	g_exitcode = 0;
+ }
+diff --git a/builtin_export.c b/builtin_export.c
+index edd0d4e..63aaa96 100644
+--- a/builtin_export.c
++++ b/builtin_export.c
+@@ -17,13 +17,21 @@ static int	is_valid_argument(char *arg)
+ 	return (0);
+ }
+ 
++/* sign 0 means arg there isn't any equal sign in argument*/
+ static int	add_argument(t_list **env, char *arg)
+ {
++	int sign;
++	int status;
+ 	t_list	*node;
+ 	char	**env_content;
+ 
++	if (ft_strchr(arg, '='))
++		sign = 1;
++	else
++		sign = 0;
+ 	env_content = env_split(arg, '=');
+-	if (env_find_and_replace(env, env_content[0], env_content[1]) == 0)
++	status = env_find_and_replace(env, env_content[0], env_content[1], sign);
++	if (status == 0)
+ 	{
+ 		node = ft_lstnew(env_content);
+ 		if (!node)
+@@ -31,6 +39,7 @@ static int	add_argument(t_list **env, char *arg)
+ 		ft_lstadd_back(env, node);
+ 		return (0);
+ 	}
++	free_char(env_content);//
+ 	return (1);
+ }
+ 
+diff --git a/echo b/echo
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/env_var.c b/env_var.c
+index ba91ca6..592908e 100644
+--- a/env_var.c
++++ b/env_var.c
+@@ -18,8 +18,8 @@ char	**env_split(char const *s, char c)
+ 			len = 0;
+ 			while (*s && *s != c && ++len)
+ 				s++;
+-			str_arr[0] = ft_substr(s - len, 0, len);
+-			str_arr[1] = ft_substr(s - len, len + 1, ft_strlen(s));
++			str_arr[0] = ft_substr(s - len, 0, len);//what if malloc fail
++			str_arr[1] = ft_substr(s - len, len + 1, ft_strlen(s));//what if malloc fail?
+ 			str_arr[2] = 0;
+ 			break ;
+ 		}
+@@ -47,7 +47,7 @@ void	env_init(t_mini *mini, char **env)
+ 		env_content = env_split(env[i], '=');
+ 		if (!env_content)
+ 			ft_error(" minishell: malloc fail or null input?\n", 1, 0);
+-		is_oldpwd = ft_strncmp(env_content[0], "OLDPWD", 6);
++		is_oldpwd = ft_strncmp(env_content[0], "OLDPWD", ft_strlen(env_content[0]));
+ 		if (is_oldpwd == 0)
+ 			ft_bzero(env_content[1], ft_strlen(env_content[1]));
+ 		node = ft_lstnew(env_content);
+@@ -119,7 +119,7 @@ char	**env_convert(t_list **env)
+ /*
+ ** this function is used to update the enviromental varible
+ */
+-int	env_find_and_replace(t_list **env, char *to_find, char *to_replace)
++int	env_find_and_replace(t_list **env, char *to_find, char *to_replace, int sign)
+ {
+ 	char	**env_content;
+ 	t_list	*tmp;
+@@ -134,6 +134,8 @@ int	env_find_and_replace(t_list **env, char *to_find, char *to_replace)
+ 		if (len == ft_strlen(to_find) && ft_strncmp(to_find, env_content[0],
+ 				(int)len) == 0)
+ 		{
++			if(ft_strncmp(to_replace, "", 1) == 0 && sign == 0) // if found, but if to_replace is null, and sign is 0 then don't replace
++				return (-1); // the caller function will then free to_find and to_replace
+ 			if (ft_strlen(to_replace) > ft_strlen(env_content[1]))
+ 				env_content[1] = ft_realloc(env_content[1], len + 1,
+ 						ft_strlen(to_replace) + 1);
+diff --git a/expander.c b/expander.c
+index b18ce5e..8fef150 100644
+--- a/expander.c
++++ b/expander.c
+@@ -16,14 +16,14 @@ char	*replace_env_expand(char *tmp_line, t_list *env_lst)
+ 	if (i && tmp_line[ft_strlen(tmp_line) - 1] == '$')
+ 	{
+ 		tmp_str = tmp_exp[i - 1];
+-		tmp_exp[i - 1] = ft_strjoin(tmp_str, "$");
++		tmp_exp[i - 1] = ft_strjoin(tmp_str, "$");//?
+ 		free_str(tmp_str);
+ 	}
+ 	free_str(tmp_line);
+ 	if (i == 0)
+-		tmp_line = ft_strdup("$");
++		tmp_line = ft_strdup("$");//malloc
+ 	else
+-		tmp_line = ft_mulstrjoin(tmp_exp, i);
++		tmp_line = ft_mulstrjoin(tmp_exp, i);//?
+ 	free_char(tmp_exp);
+ 	return (tmp_line);
+ }
+@@ -87,16 +87,16 @@ static void	handle_multiquote(t_input *input, t_list *env_lst, int *i, char quot
+ 		quote_type = 1;
+ 	else if (quote == '\"')
+ 		quote_type = 2;
+-	tmp_str[0] = ft_substr(input->tmp_line, 0, *i);
++	tmp_str[0] = ft_substr(input->tmp_line, 0, *i);// malloc fail
+ 	get_i_len(quote_type, i, &len, input->tmp_line);
+-	tmp_str[1] = trim_quote(ft_substr(input->tmp_line, start, len), quote_type);
+-	if (quote_type != 1 && ft_strchr(tmp_str[1], '$'))
++	tmp_str[1] = trim_quote(ft_substr(input->tmp_line, start, len), quote_type);// mallloc fail?
++	if (quote_type != 1 && ft_strchr(tmp_str[1], '$'))//malloc
+ 		tmp_str[1] = replace_env_expand(tmp_str[1], env_lst);
+-	tmp_str[2] = ft_substr(input->tmp_line, *i, ft_strlen(input->tmp_line));
++	tmp_str[2] = ft_substr(input->tmp_line, *i, ft_strlen(input->tmp_line));//malloc fail?
+ 	*i = ft_strlen(tmp_str[0]) + ft_strlen(tmp_str[1]) - 1;
+ 	free_str(input->tmp_line);
+ 	input->tmp_line = ft_mulstrjoin(tmp_str, 3);
+-	free_char(tmp_str);
++	free(tmp_str);
+ }
+ 
+ void	expander_args(t_list *line_lst, t_list *env_lst)
+diff --git a/expander_utils.c b/expander_utils.c
+index 6647ffb..5acaefb 100644
+--- a/expander_utils.c
++++ b/expander_utils.c
+@@ -66,7 +66,7 @@ char	*replace_env(char *tmp_exp, t_list *env_lst)
+ 		{
+ 			if (!ft_isalnum(*tmp_exp))
+ 			{
+-				tmp_exp = ft_strdup(tmp_exp);
++				tmp_exp = ft_strdup(tmp_exp); //malloc
+ 				free_str(trim_str);
+ 				break ;
+ 			}
+@@ -87,13 +87,13 @@ char	**split_replace(char **tmp_exp, int *i, t_list *env_lst)
+ 		else if (!ft_isalnum(tmp_exp[*i][0]))
+ 		{
+ 			tmp_str = tmp_exp[*i];
+-			tmp_exp[*i] = ft_strjoin("$", tmp_str);
++			tmp_exp[*i] = ft_strjoin("$", tmp_str);//malloc error hanle?
+ 			free_str(tmp_str);
+ 		}
+ 		else if (ft_isdigit(tmp_exp[*i][0]))
+ 		{
+ 			tmp_str = tmp_exp[*i];
+-			tmp_exp[*i] = ft_substr(tmp_str, 1, ft_strlen(tmp_str));
++			tmp_exp[*i] = ft_substr(tmp_str, 1, ft_strlen(tmp_str));//
+ 			free_str(tmp_str);
+ 		}
+ 		else
+diff --git a/libft_42 b/libft_42
+--- a/libft_42
++++ b/libft_42
+@@ -1 +1 @@
+-Subproject commit 6900a05f9ab820d397f4544916a23bc9dc818cc1
++Subproject commit 6900a05f9ab820d397f4544916a23bc9dc818cc1-dirty
+diff --git a/main.c b/main.c
+index b58f430..9e0572e 100644
+--- a/main.c
++++ b/main.c
+@@ -62,13 +62,13 @@ void	minishell(t_mini *mini, char *line)
+ 	if (line_lst == NULL)
+ 		return ;
+ 	tmp = line_lst;
+-	if (validator(&tmp) == -1)
++	if (validator(&tmp) == -1)//why &tmp?
+ 	{
+ 		free_lst_content(tmp, 0);
+ 		return ;
+ 	}
+ 	expander_args(line_lst, mini->env);
+-	mini->cmd_lst = parser_cmds(line_lst, mini->env);
++	mini->cmd_lst = parser_cmds(line_lst, mini->env);// error return?
+ 	free_lst_content(line_lst, 0);
+ 	signal(SIGQUIT, handle_cmd);
+ 	signal(SIGINT, handle_cmd);
+diff --git a/mini_utils.c b/mini_utils.c
+index a587ba5..e684a6d 100644
+--- a/mini_utils.c
++++ b/mini_utils.c
+@@ -35,3 +35,29 @@ void	remove_tmp_file(int size)
+ 		i++;
+ 	}
+ }
++
++char	*ft_strjoin_gnl(char *s1, char *s2)
++{
++	char	*joint_str;
++	size_t	i;
++	size_t	j;
++
++	if (!s1 && !s2)
++		return (NULL);
++	joint_str = (char *)malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2))
++			+ 1);
++	if (!joint_str)
++		return (NULL);
++	i = 0;
++	while (s1[i] != '\0')
++	{
++		joint_str[i] = s1[i];
++		i++;
++	}
++	j = 0;
++	while (s2[j] != '\0')
++		joint_str[i++] = s2[j++];
++	joint_str[i] = '\0';
++	free(s1);
++	return (joint_str);
++}
+diff --git a/minishell.h b/minishell.h
+index 8e46b2c..b7fea28 100644
+--- a/minishell.h
++++ b/minishell.h
+@@ -81,7 +81,7 @@ void		env_init(t_mini *mini, char **env);
+ char		**env_split(char const *s, char c);
+ char		*env_handler(t_list **env, char *str);
+ char		**env_convert(t_list **env);
+-int			env_find_and_replace(t_list **env, char *to_find, char *to_replace);
++int			env_find_and_replace(t_list **env, char *to_find, char *to_replace, int sign);
+ 
+ /* lexer */
+ t_list		*lexer_get_linelst(char *line, t_list *line_lst, int i);
+@@ -121,4 +121,5 @@ void		free_char(char **str);
+ void		free_input(t_input *input);
+ void		free_tokens(t_token *tokens);
+ void		free_lst_content(t_list *lst, int sign);
++char		*ft_strjoin_gnl(char *s1, char *s2);
+ #endif
+diff --git a/parser.c b/parser.c
+index 615d933..99f8f92 100644
+--- a/parser.c
++++ b/parser.c
+@@ -63,8 +63,12 @@ static void	parse_cmd_args(t_token *cmd_tokens, t_input *input, int j)
+ 		cmd_tokens->args[1] = NULL;
+ 	}
+ 	else
+-		cmd_tokens->args = (char **)ft_realloc(cmd_tokens->args, sizeof(char *)
++	{
++		cmd_tokens->args = (char **)ft_realloc(cmd_tokens->args, sizeof(char *)// malloc protection
+ 				* (j + 1), sizeof(char *) * (j + 2));
++		if (!cmd_tokens->args)
++			return; // Error catch in the calling function
++	}
+ 	cmd_tokens->args[j] = ft_strdup(input->tmp_line);
+ 	if (!cmd_tokens->args[j])
+ 		ft_error(" minishell: malloc fail", MALLOC, 0);
+diff --git a/parser_utils.c b/parser_utils.c
+index fe039b8..39a9be8 100644
+--- a/parser_utils.c
++++ b/parser_utils.c
+@@ -63,7 +63,7 @@ static void	handle_heredoc(t_list *env_lst, t_input *input, char *num_heredoc)
+ 	char	*line;
+ 	char	*file_name;
+ 
+-	file_name = ft_strjoin("tmp_file", num_heredoc);
++	file_name = ft_strjoin("tmp_file", num_heredoc);//malloc error
+ 	fd = open(file_name, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+ 	if (fd < 0)
+ 		ft_error(" minishell: open tmp_file failed", FILE_OP, 0);
