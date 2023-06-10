@@ -50,6 +50,15 @@ void	readline_prompt(t_mini *mini)
 	tcsetattr(0, TCSANOW, &t);
 	rl_clear_history();
 }
+static int	reset_exitcode(void)
+{
+	if (g_exitcode == 513)
+	{
+		g_exitcode = 1;
+		return (1);
+	}
+	return (0);
+}
 
 void	minishell(t_mini *mini, char *line)
 {
@@ -59,8 +68,7 @@ void	minishell(t_mini *mini, char *line)
 
 	line_lst = NULL;
 	line_lst = lexer_get_linelst(line, line_lst, -1);
-	free_str(line);
-	if (line_lst == NULL)
+	if (free_str(line) && line_lst == NULL)
 		return ;
 	tmp = line_lst;
 	if (validator(&tmp) == -1)
@@ -74,11 +82,8 @@ void	minishell(t_mini *mini, char *line)
 	signal(SIGQUIT, handle_cmd);
 	signal(SIGINT, handle_cmd);
 	size = ft_lstsize(mini->cmd_lst);
-	if (size == 0 || g_exitcode == 513)
-	{
-		g_exitcode = 1;
+	if (reset_exitcode() == 1)
 		return ;
-	}
 	executor(mini, size);
 	free_lst_content(mini->cmd_lst, 1);
 	remove_tmp_file(size);

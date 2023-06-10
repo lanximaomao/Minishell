@@ -124,13 +124,12 @@ t_list	*parser_cmds(t_list *line_lst, t_list *env_lst)
 
 	num_cmd = 0;
 	cmd_lst = NULL;
-	cmd_tokens = NULL;
 	while (line_lst)
 	{
 		cmd_tokens = (t_token *)ft_calloc(sizeof(t_token), 1);
 		if (!cmd_tokens)
 			ft_error(" minishell: malloc fail", MALLOC, 0);
-		init_tokens(cmd_tokens, num_cmd);
+		init_tokens(cmd_tokens, num_cmd++);
 		line_lst = iterate_cmds(cmd_tokens, line_lst, env_lst);
 		if (g_exitcode == 513)
 		{
@@ -141,7 +140,6 @@ t_list	*parser_cmds(t_list *line_lst, t_list *env_lst)
 		create_lst(&cmd_lst, (t_token *)cmd_tokens);
 		if (!line_lst)
 			break ;
-		num_cmd++;
 		line_lst = line_lst->next;
 	}
 	return (cmd_lst);
