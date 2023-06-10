@@ -41,7 +41,8 @@ static void	get_i_len(int quote_type, int *i, int *len, char *tmp_line)
 		(*len)++;
 	}
 }
-static char **exp_each_part(int quote_type, t_input *input, t_list *env_lst, int *i)
+static char **exp_each_part(int quote_type, t_input *input,
+	t_list *env_lst, int *i)
 {
 	int		len;
 	int		start;
@@ -69,7 +70,8 @@ static char **exp_each_part(int quote_type, t_input *input, t_list *env_lst, int
 	return (tmp_str);
 }
 
-static void	handle_multiquote(t_input *input, t_list *env_lst, int *i, char quote)
+static void	handle_multiquote(t_input *input, t_list *env_lst, int *i,
+	char quote)
 {
 	int 	quote_type;
 	char	**tmp_str;

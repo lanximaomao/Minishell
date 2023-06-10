@@ -32,38 +32,33 @@ void	ft_error(char *msg, int error_code, int flag)
 ** else if: if current does not contain a pipe
 ** error occurs when this and the next are both empty lines
 */
-
 static int	handle_parse_error(int cmd_order, t_list *line_lst, int sign)
 {
-	if (sign == 1 && (((t_input *)line_lst->content)->pipe_sign == 1 // pwd |
-			|| ((t_input *)line_lst->content)->redir_sign != 0)) // pwd >
-	{
-		ft_error("Syntax error: parse error", SYNTAX, 1);
-		return (-1);
-	}
+	int ret;
+
+	ret = 0;
+	if (sign == 1 && (((t_input *)line_lst->content)->pipe_sign == 1
+			|| ((t_input *)line_lst->content)->redir_sign != 0))
+		ret = -1;
 	else if ((sign == 2 && cmd_order == 0
-		&& !ft_strncmp(((t_input *)line_lst->next->content)->tmp_line, "", 1))
-		|| (sign == 2 && line_lst->next->next // ** | < >
-		&& ((t_input *)line_lst->next->content)->redir_sign
-		&& ((t_input *)line_lst->next->next->content)->redir_sign)
+			&& !ft_strncmp(((t_input *)line_lst->content)->tmp_line, "", 1))
 		|| ((sign == 2 && ((t_input *)line_lst->next->content)->pipe_sign == 1)
-		&& !ft_strncmp(((t_input *)line_lst->next->content)->tmp_line, "", 1))) // | |
-	{
-		ft_error("Syntax error: parse error", SYNTAX, 1);
-		return (-1);
-	}
-	else if (sign == 3 && ((((t_input *)line_lst->next->content)->redir_sign // 空值且redir
-		&& !ft_strncmp(((t_input *)line_lst->next->content)->tmp_line, "", 1))
-		|| (((t_input *)line_lst->next->content)->pipe_sign // 空值且pipe
-		&& !ft_strncmp(((t_input *)line_lst->next->content)->tmp_line, "", 1))))
-	{
-		ft_error("Syntax error: parse error", SYNTAX, 1);
-		return (-1);
-	}
-	return (0);
+			&& !ft_strncmp(((t_input *)line_lst->next->content)
+				->tmp_line, "", 1)))
+		ret = -1;
+	else if (sign == 3 && ((((t_input *)line_lst->next->content)->redir_sign
+				&& !ft_strncmp(((t_input *)line_lst->next->content)
+					->tmp_line, "", 1))
+			|| (((t_input *)line_lst->next->content)->pipe_sign
+				&& !ft_strncmp(((t_input *)line_lst->next->content)
+					->tmp_line, "", 1))))
+		ret = -1;
+	if (ret == -1)
+		ft_error("minishell: Syntax error: parse error", SYNTAX, 1);
+	return (ret);
 }
 
-static void trim_pipe(t_list **line_lst)
+static void	trim_pipe(t_list **line_lst)
 {
 	t_list	*tmp;
 

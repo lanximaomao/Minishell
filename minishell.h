@@ -1,11 +1,13 @@
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# include "libft_42/inc/ft_printf.h"
 # include "libft.h"
+# include "libft_42/inc/ft_printf.h"
 # include <dirent.h>
 # include <errno.h>
 # include <fcntl.h>
+# include <readline/history.h>
+# include <readline/readline.h>
 # include <signal.h>
 # include <stdarg.h>
 # include <stdio.h>
@@ -17,12 +19,10 @@
 # include <sys/wait.h>
 # include <termios.h>
 # include <unistd.h>
-# include <readline/history.h>
-# include <readline/readline.h>
 
 # define FILE_OP 1
 # define MALLOC 2
-# define SYNTAX 3
+# define SYNTAX 2
 # define FUNC 4
 
 extern int	g_exitcode;
@@ -39,7 +39,7 @@ typedef struct s_input
 	int		quote_type;
 	int		pipe_sign;
 	int		redir_sign;
-	int		ignore_sign; // 0 for no ignore, 1 for ignore
+	int ignore_sign; // 0 for no ignore, 1 for ignore
 }			t_input;
 
 /*
@@ -70,7 +70,7 @@ void		rl_clear_history(void);
 void		rl_replace_line(const char *text, int clear_undo);
 
 /* main */
-void			readline_prompt(t_mini *mini);
+void		readline_prompt(t_mini *mini);
 void		minishell(t_mini *mini, char *line);
 void		ascii_art_pattern(void);
 void		exit_with_empty_line(char *msg, int exit_code);
@@ -81,7 +81,8 @@ void		env_init(t_mini *mini, char **env);
 char		**env_split(char const *s, char c);
 char		*env_handler(t_list **env, char *str);
 char		**env_convert(t_list **env);
-int			env_find_and_replace(t_list **env, char *to_find, char *to_replace, int sign);
+int			env_find_and_replace(t_list **env, char *to_find, char *to_replace,
+				int sign);
 
 /* lexer */
 t_list		*lexer_get_linelst(char *line, t_list *line_lst, int i);
@@ -98,7 +99,8 @@ char		*handle_exitcode(char *str);
 char		*replace_env_value(char *tmp_exp, t_list *env_lst, int *sign);
 char		*replace_env(char *tmp_exp, t_list *env_lst);
 char		*ft_mulstrjoin(char **tmp_exp, int len);
-char		**split_replace(char **tmp_exp, int *i, t_list *env_lst, char *tmp_str);
+char		**split_replace(char **tmp_exp, int *i, t_list *env_lst,
+				char *tmp_str);
 /* expander_utils2.c */
 char		*replace_env_expand(char *tmp_line, t_list *env_lst);
 
@@ -112,7 +114,7 @@ void		redir_heredoc(t_token *cmd_tokens, t_list *line_lst,
 				t_list *env_lst, int i);
 
 /* signal.c */
-void		handle_signal(int sig); // signal.c main.c
+void	handle_signal(int sig); // signal.c main.c
 void		handle_cmd(int sig);
 void		handle_signal_heredoc(int sig);
 

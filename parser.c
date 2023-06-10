@@ -26,7 +26,8 @@ static void	parse_redir(t_token *cmd_tokens, t_list *line_lst, t_list *env_lst,
 	else
 	{
 		if (line_lst->next)
-			cmd_tokens->file_redir[i] = ft_strdup(((t_input *)line_lst->next->content)->tmp_line);
+			cmd_tokens->file_redir[i] =
+				ft_strdup(((t_input *)line_lst->next->content)->tmp_line);
 		if (!cmd_tokens->file_redir[i])
 			ft_error(" minishell: malloc fail", MALLOC, 0);
 		if (((t_input *)line_lst->content)->redir_sign == 1)

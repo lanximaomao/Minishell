@@ -27,7 +27,7 @@ static int	handle_quote(t_input *input, char *line, int i, int *len)
 	{
 		if (!line[i])
 		{
-			ft_error("Syntax error: quote not closed", SYNTAX, 1);
+			ft_error("minishell: Syntax error: quote not closed", SYNTAX, 1);
 			return (-1);
 		}
 		count++;

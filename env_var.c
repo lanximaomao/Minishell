@@ -46,7 +46,8 @@ void	env_init(t_mini *mini, char **env)
 	while (env[i])
 	{
 		env_content = env_split(env[i], '=');
-		is_oldpwd = ft_strncmp(env_content[0], "OLDPWD", ft_strlen(env_content[0]));
+		is_oldpwd = ft_strncmp(env_content[0], "OLDPWD",
+			ft_strlen(env_content[0]));
 		if (is_oldpwd == 0)
 			ft_bzero(env_content[1], ft_strlen(env_content[1]));
 		node = ft_lstnew(env_content);
@@ -118,7 +119,8 @@ char	**env_convert(t_list **env)
 /*
 ** this function is used to update the enviromental varible
 */
-int	env_find_and_replace(t_list **env, char *to_find, char *to_replace, int sign)
+int	env_find_and_replace(t_list **env, char *to_find, char *to_replace,
+	int sign)
 {
 	char	**env_content;
 	t_list	*tmp;
