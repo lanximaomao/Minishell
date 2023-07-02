@@ -26,7 +26,7 @@ OBJS = $(SRCS:.c=.o)
 
 NAME = minishell
 CC = cc
-CFLAGS = -Werror -Wall -Wextra -I./libft_42/inc
+CFLAGS = -Werror -Wall -Wextra -I./libft_42/inc -g
 LDFLAGS = -L./libft_42 -lft
 FSANITIZE	= -fsanitize=address -g
 
