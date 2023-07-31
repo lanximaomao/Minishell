@@ -49,7 +49,7 @@ It minics the behavior of bash:
 **2- build a command table :**
 ![Visulization](diagram/command_table.png)
 
-**3- create a pipe :**
+**3- Connect pipe :**
 ![Visulization](diagram/pipe.png)
 
 <br>
