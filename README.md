@@ -46,11 +46,8 @@ It minics the behavior of bash:
 **1- lexer && parser :**
 ![Visulization](diagram/parser.png)
 
-**2- build a command table :**
+**2- build a command table and connect the pipes :**
 ![Visulization](diagram/command_table.png)
-
-**3- Connect pipe :**
-![Visulization](diagram/pipe.png)
 
 <br>
 
