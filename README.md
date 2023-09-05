@@ -2,7 +2,7 @@
 
 ## Description
 
-Minishell is a shell programme written in C. Detailed project requirment can be found [here](minishell.pdf).
+Minishell is a shell programme written in C. Detailed project requirements can be found [here](minishell.pdf).
 
 <bt>
 
